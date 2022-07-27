@@ -2,9 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-const superuserRoutes = require('./routes/superuserRoutes');
-const officerRoutes = require('./routes/officerRoutes');
-const ownerRoutes = require('./routes/ownerRoutes');
+const clientRoutes = require('./routes/clientRoutes');
 
 // environmental variables
 require('dotenv').config();
@@ -38,6 +36,5 @@ app.use((req, res, next) => {
 	next();
 });
 
-app.use('/superuser', superuserRoutes);
-app.use('/officer', officerRoutes);
-app.use('/owner', ownerRoutes);
+//routes
+app.use('/client', clientRoutes);
