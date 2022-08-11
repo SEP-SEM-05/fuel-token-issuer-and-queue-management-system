@@ -2,7 +2,7 @@ let mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 require('dotenv').config();
 
-const Client = require('../models/client');
+const Personal = require('../models/personal');
 
 const auth = require('../middleware/auth');
 const encHandler = require('../middleware/encryptionHandler');

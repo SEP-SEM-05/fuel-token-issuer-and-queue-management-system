@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-const clientRoutes = require('./routes/clientRoutes');
+const personalRoutes = require('./routes/personalRoutes');
 
 // environmental variables
 require('dotenv').config();
@@ -37,4 +37,4 @@ app.use((req, res, next) => {
 });
 
 //routes
-app.use('/client', clientRoutes);
+app.use('/personal', personalRoutes);
