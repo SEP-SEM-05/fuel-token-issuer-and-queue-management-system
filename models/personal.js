@@ -33,7 +33,7 @@ const personalSchema = new Schema({
         required: true
     },
     noOfVehicles: {
-        type: String,
+        type: Number,
         default: 0
     },
 }, { timestamps: true });

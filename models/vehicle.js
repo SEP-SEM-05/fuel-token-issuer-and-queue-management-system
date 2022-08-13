@@ -11,6 +11,10 @@ const vehicleSchema = new Schema({
         type: String,
         required: true
     },
+    type: {
+        type: String,
+        required: true
+    },
     fuelType: {
         type: String,
         required: true
