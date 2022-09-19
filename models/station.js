@@ -19,6 +19,10 @@ const stationSchema = new Schema({
         type: String,
         required: true
     },
+    company: {
+        type: String,
+        required: true
+    },
     email: {
         type: String,
         required: true,
@@ -29,30 +33,10 @@ const stationSchema = new Schema({
         of: Number,
         default: {
             Diesel: 0,
-            Super_diesel: 0,
-            Octane92: 0,
-            Octane95: 0
+            Petrol: 0
         }
-    },
-    issueQuota: {
-        type: Map,
-        of: Number,
-        default: {
-            Diesel: 0,
-            Super_diesel: 0,
-            Octane92: 0,
-            Octane95: 0
-        }
-    },
+    }
 }, { timestamps: true });
 
 const Station = mongoose.model('Station', stationSchema);
 module.exports = Station;
-
-// registerationNo
-// password
-// email
-// location
-// contactNo
-// volume: obj(contains all fuel types)
-// issueQuota: obj(contains all fuel types)
