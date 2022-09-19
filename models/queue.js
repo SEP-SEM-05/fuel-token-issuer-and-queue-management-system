@@ -15,6 +15,10 @@ const queueSchema = new Schema({
         type: [String],
         default: []
     },
+    state: {
+        type: String,
+        default: "waiting"
+    },
 }, { timestamps: true });
 
 const Queue = mongoose.model('Queue', queueSchema);
