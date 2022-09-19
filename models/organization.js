@@ -39,6 +39,10 @@ const organizationSchema = new Schema({
     vehicles: {
         type: [String],
         default: []
+    },
+    stations: {
+        type: [String],
+        default: []
     }
 }, { timestamps: true });
 
