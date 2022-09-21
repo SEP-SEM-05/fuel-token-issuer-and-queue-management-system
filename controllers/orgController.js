@@ -2,24 +2,27 @@ let mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 require('dotenv').config();
 
-const personalDBHelper = require('../services/personalDBHelper');
+const orgDBHelper = require('../services/orgDBHelper');
 const vehicleDBHelper = require('../services/vehicleDBHelper');
 
 const auth = require('../middleware/auth');
 const encHandler = require('../middleware/encryptionHandler');
 
-//register a personal client
+//register an organization
 const register_post = async (req, res) => {
+
+    //registration process is different
+    //register all the vehicles under the organization to the system
 
     let data = req.body;
     let password = data.password;
-    let nic = data.nic;
+    let registrationNo = data.registrationNo;
 
     data.password = await encHandler.encryptCredential(password);
-    let err = personalDBHelper.saveClient(data);
+    let err = orgDBHelper.saveClient(data);
 
     if(err){
-        let errField = (err.keyValue.email) ? 'email' : 'nic';
+        let errField = (err.keyValue.email) ? 'email' : 'registrationNo';
         res.status(400).json({
             status: 'error',
             error: errField + ' already exists!',
@@ -27,32 +30,32 @@ const register_post = async (req, res) => {
     }
     else{
 
-        let user = await personalDBHelper.findClientByNic(nic);
+        let user = await orgDBHelper.findClientByregistrationNo(registrationNo);
         let token = auth.createToken();
-        let fullName = user.firstName + " " + user.lastName;
+        let name = user.name;
 
         res.json({
             status: 'ok',
             token: token,
-            userType: 'personal',
+            userType: 'organization',
             data: {
-                nic: nic,
+                registrationNo: registrationNo,
                 id: user._id,
-                fullName: fullName
+                name: name
             }
         });
     }
 }
 
-//post personal client login details
+//post organization login details
 const login_post = async (req, res) => {
 
-    const nic = req.body.nic;
+    const registrationNo = req.body.registrationNo;
     const password = req.body.password;
 
     try {
 
-        const user = await personalDBHelper.findClientByNic(nic);
+        const user = await orgDBHelper.findClientByRegNo(registrationNo);
 
         if(user !== null){
             
@@ -61,16 +64,16 @@ const login_post = async (req, res) => {
             if(password_check){
 
                 let token = auth.createToken();
-                let fullName = user.firstName + " " + user.lastName;
+                let name = user.name;
 
                 return_data = {
                     status: 'ok',
                     token: token,
-                    userType: 'personal',
+                    userType: 'organization',
                     data: {
-                        nic: nic,
+                        registrationNo: registrationNo,
                         id: user._id,
-                        fullName: fullName
+                        name: name
                     }
                 }
                 res.json(return_data);
@@ -95,18 +98,18 @@ const login_post = async (req, res) => {
     }
 }
 
-//get personal client dashboard info
+//get organization dashboard info
 const get_dashboard = async (req, res) => {
 
     let id = req.params.id;
 
     try{
 
-        let user = await personalDBHelper.findClientByID(id);
+        let user = await orgDBHelper.findClientByID(id);
 
         if(user !== null){
 
-            let vehicles = await vehicleDBHelper.findAllByNic(user.nic);
+            let vehicles = await vehicleDBHelper.findAllByregistrationNoArray(user.vehicles);
 
             res.json({
                 status: 'ok',
