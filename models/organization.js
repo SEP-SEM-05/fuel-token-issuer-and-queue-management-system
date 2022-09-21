@@ -48,13 +48,3 @@ const organizationSchema = new Schema({
 
 const Organizatioin = mongoose.model('Organization', organizationSchema);
 module.exports = Organizatioin;
-
-// registerationNo
-// name
-// password
-// contactNo
-// address
-// email
-// vehicles[registrationNos]
-// lastFilledDate
-// isRegistered

@@ -23,8 +23,3 @@ const queueSchema = new Schema({
 
 const Queue = mongoose.model('Queue', queueSchema);
 module.exports = Queue;
-
-// stationID
-// fuelType
-// vehicles[registrationNos]
-// (station has four queues - one for each fuel type)

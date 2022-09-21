@@ -35,10 +35,3 @@ const vehicleSchema = new Schema({
 
 const Vehicle = mongoose.model('Vehicle', vehicleSchema);
 module.exports = Vehicle;
-
-// registrationNo
-// ownerNIC
-// fuelType
-// stations[station registration Nos]
-// isRegistered
-// lastFilledDate
