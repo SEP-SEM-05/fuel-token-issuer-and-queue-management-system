@@ -12,18 +12,16 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import PersonIcon from '@mui/icons-material/Person';
 import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import LogoutIcon from '@mui/icons-material/Logout';
 import BellIcon from '@mui/icons-material/Notifications';
 import { NavLink } from 'react-router-dom';
-import Avatar from '@mui/material/Avatar';
 import FUELIMG from '../../assets/station.gif'
-import { Badge, Card, CardMedia, Grid, ImageListItem, ListItemIcon, Menu, MenuItem, Paper, Tooltip } from '@mui/material';
+import { Badge, Grid, ListItemIcon, Menu, MenuItem, Tooltip } from '@mui/material';
 
 const drawerWidth = 240;
-const navItems = ['Home-home', 'Queues-fuelqueues', 'Distribution-fueldistribution'];
+const navItems = ['Home-home', 'Queues-fuelqueues', 'Distribution-fueldistribution'];   //nav items list with corresponding navLinks
 
 function DrawerAppBar() {
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -42,11 +40,11 @@ function DrawerAppBar() {
     };
 
     const drawer = (
-        <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+        <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center', color:'white' ,backgroundColor:'#0f0f22', height:'100%' }}>
             <Typography variant="h6" sx={{ my: 2 }}>
                 Fast Fueler
             </Typography>
-            <Divider />
+            <Divider sx={{backgroundColor:'white'}} />
             <List>
                 {navItems.map((item) => (
                     <ListItem key={item} disablePadding>
@@ -58,8 +56,6 @@ function DrawerAppBar() {
             </List>
         </Box>
     );
-
-
 
     return (
         <Box>
@@ -156,7 +152,7 @@ function DrawerAppBar() {
             </Box>
             <Toolbar />
             <Box sx={{ display: 'flex' }}>
-                <Grid container boxShadow={2} sx={{ width: '100%', minHeight: 150, pl: 5, pt: 2, pr: 10, backgroundColor: '', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} >
+                <Grid container boxShadow={2} sx={{ width: '100%', minHeight: 150, pl: 5, pt: 2, pr: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} >
                     <Grid item xs={12} md={7}>
                         <Typography variant="h4" sx={{ fontWeight: 'bold' }} >
                             Fuel Distribution and Queue Management system
@@ -171,7 +167,7 @@ function DrawerAppBar() {
                         </Grid>
                     </Grid>
                     <Grid item >
-                        <img width='350px' alt='station' src={FUELIMG} />
+                        <img width='320px' alt='station' src={FUELIMG} />
                     </Grid>
                 </Grid>
 
