@@ -5,8 +5,6 @@ require('dotenv').config();
 const admin_username = process.env.ADMIN_USERNAME
 const admin_psw = process.env.ADMIN_PASSWORD
 
-// const Client = require('../models/client');
-
 const auth = require('../middleware/auth');
 const encHandler = require('../middleware/encryptionHandler');
 
