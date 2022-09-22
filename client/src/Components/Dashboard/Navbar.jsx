@@ -19,6 +19,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import BellIcon from '@mui/icons-material/Notifications';
 import { NavLink } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
+import FUELIMG from '../../assets/station.gif'
 import { Badge, Card, CardMedia, Grid, ImageListItem, ListItemIcon, Menu, MenuItem, Paper, Tooltip } from '@mui/material';
 
 const drawerWidth = 240;
@@ -155,21 +156,25 @@ function DrawerAppBar() {
             </Box>
             <Toolbar />
             <Box sx={{ display: 'flex' }}>
-                <Grid container boxShadow={2} sx={{ width: '100%', minHeight: 150, pl: 3, pt: 2, backgroundColor: '', display:'flex', alignItems:'end' }} >
-                    <Grid item xs={12}>
-                        <Typography variant="h5"  sx={{ fontWeight: 'bold' }} >
+                <Grid container boxShadow={2} sx={{ width: '100%', minHeight: 150, pl: 5, pt: 2, pr: 10, backgroundColor: '', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} >
+                    <Grid item xs={12} md={7}>
+                        <Typography variant="h4" sx={{ fontWeight: 'bold' }} >
                             Fuel Distribution and Queue Management system
                         </Typography>
-                        <Grid item sm={4}>
-                            <Typography variant="caption" sx={{}}>
-                                We will provide the best ways to reduce fuel ques and fill your tanks as quicker as possible
+                        <Grid item>
+                            <Typography variant="subtitle1" sx={{}}>
+                                We will provide you with a optimal solution to get your fuel needs. No waiting in queues.
+                            </Typography>
+                            <Typography variant="button" sx={{}}>
+                                Come Refill Go.
                             </Typography>
                         </Grid>
-                        <Grid>
-                            <img width="100px" alt='station' src="/client/src/assets/station.png" />
-                        </Grid>
+                    </Grid>
+                    <Grid item >
+                        <img width='350px' alt='station' src={FUELIMG} />
                     </Grid>
                 </Grid>
+
             </Box>
         </Box>
     );
