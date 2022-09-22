@@ -4,6 +4,8 @@ const cors = require('cors');
 // environmental variables
 require('dotenv').config();
 
+const authRoutes = require('./routes/authRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const personalRoutes = require('./routes/personalRoutes');
 const orgRoutes = require('./routes/orgRoutes');
 
@@ -28,6 +30,8 @@ const makeApp = () => {
     });
 
     //routes
+    app.use('/auth', authRoutes);
+    app.use('/admin', adminRoutes);
     app.use('/personal', personalRoutes);
     app.use('/org', orgRoutes);
 
