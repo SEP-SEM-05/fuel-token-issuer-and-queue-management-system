@@ -17,7 +17,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import LogoutIcon from '@mui/icons-material/Logout';
 import BellIcon from '@mui/icons-material/Notifications';
 import { NavLink } from 'react-router-dom';
-import FUELIMG from '../../assets/station.gif'
+import FUELIMG from '../../../assets/station.gif'
 import { Badge, Grid, ListItemIcon, Menu, MenuItem, Tooltip } from '@mui/material';
 
 const drawerWidth = 240;
@@ -40,11 +40,11 @@ function DrawerAppBar() {
     };
 
     const drawer = (
-        <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center', color:'white' ,backgroundColor:'#0f0f22', height:'100%' }}>
+        <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center', color: 'white', backgroundColor: '#0f0f22', height: '100%' }}>
             <Typography variant="h6" sx={{ my: 2 }}>
                 Fast Fueler
             </Typography>
-            <Divider sx={{backgroundColor:'white'}} />
+            <Divider sx={{ backgroundColor: 'white' }} />
             <List>
                 {navItems.map((item) => (
                     <ListItem key={item} disablePadding>
@@ -167,7 +167,7 @@ function DrawerAppBar() {
                         </Grid>
                     </Grid>
                     <Grid item >
-                        <img width='320px' alt='station' src={FUELIMG} />
+                        <img width='310px' alt='station' src={FUELIMG} />
                     </Grid>
                 </Grid>
 
