@@ -6,6 +6,8 @@ import DashboardContent from './Components/Dashboard/Dashboard';
 import StockComponent from './Components/StockComponent';
 import QueuesComponent from './Components/QueuesComponent';
 
+import QuotaComponent from './Components/Admin/QuotaComponent';
+
 function App() {
   return (
     <div>
@@ -15,6 +17,9 @@ function App() {
           <Route index element={<StockComponent />} />
           <Route path="home" element={<StockComponent />} />
           <Route path="fuelqueues" element={<QueuesComponent />} />
+        </Route>
+
+        <Route path="admin" element={<QuotaComponent />} >
         </Route>
       </Routes>
     </BrowserRouter>
