@@ -5,7 +5,7 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Chip, Divider, FormHelperText, Grid, InputAdornment, Slider, TextField } from '@mui/material';
+import { Chip, Divider, Grid, InputAdornment, Slider, TextField } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import OpacityIcon from '@mui/icons-material/Opacity';
 import DialogContent from '@mui/material/DialogContent';
