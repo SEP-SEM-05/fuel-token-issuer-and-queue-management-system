@@ -127,9 +127,7 @@ function DrawerAppBar() {
                                     </ListItemIcon>
                                     Logout
                                 </MenuItem>
-
                             </Menu>
-
                         </Box>
                     </Toolbar>
                 </AppBar>
@@ -170,7 +168,6 @@ function DrawerAppBar() {
                         <img width='310px' alt='station' src={FUELIMG} />
                     </Grid>
                 </Grid>
-
             </Box>
         </Box>
     );
