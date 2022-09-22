@@ -2,9 +2,9 @@ import './App.css';
 import { Routes, Route } from "react-router-dom";
 import { BrowserRouter } from "react-router-dom";
 
-import DashboardContent from './Components/Dashboard/Dashboard';
-import StockComponent from './Components/StockComponent';
-import QueuesComponent from './Components/QueuesComponent';
+import DashboardContent from './Components/FuelStation/Dashboard/Dashboard';
+import StockComponent from './Components/FuelStation/StockComponent';
+import QueuesComponent from './Components/FuelStation/QueuesComponent';
 
 function App() {
   return (

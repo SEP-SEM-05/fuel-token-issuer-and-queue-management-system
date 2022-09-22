@@ -47,10 +47,10 @@ const StockComponent = () => {
   return (
     <Box>
       <Dialog open={open} onClose={handleClose}>
-        
-          <DialogTitle sx={{fontWeight:'bold'}} textAlign={'center'}>{fuelType}</DialogTitle>
-          <Box sx={{ display: 'flex', pr: 2, pb:2, pl:2 }}>
-          <DialogContent sx={{ pr: 1}}>
+
+        <DialogTitle sx={{ fontWeight: 'bold' }} textAlign={'center'}>{fuelType}</DialogTitle>
+        <Box sx={{ display: 'flex', pr: 2, pb: 2, pl: 2 }}>
+          <DialogContent sx={{ pr: 1 }}>
             <FormControl variant="outlined">
               <InputLabel>Fuel Amount</InputLabel>
               <OutlinedInput
@@ -59,14 +59,14 @@ const StockComponent = () => {
               />
             </FormControl>
           </DialogContent>
-          <DialogActions sx={{ mr: 2, display:'flex' }}>
-            <Button size="large" variant='contained' color='info' onClick={handleClose} sx={{pt:'13px', pb:'13px', fontWeight:'bold'}}>Add</Button>
+          <DialogActions sx={{ mr: 2, display: 'flex' }}>
+            <Button size="large" variant='contained' color='info' onClick={handleClose} sx={{ pt: '13px', pb: '13px', fontWeight: 'bold' }}>Add</Button>
           </DialogActions>
-          </Box>
+        </Box>
       </Dialog>
 
 
-      <Grid item xs={12} sx={{pl:{xs:"unset", lg:20}, my:-3}} ><h1>Fuel Stocks</h1></Grid>
+      <Grid item xs={12} sx={{ pl: { xs: "unset", lg: 3 }, my: -3 }} ><h1>Fuel Stocks</h1></Grid>
       <Grid container spacing={8} justifyContent="center">
         {fuel_types.map((ft) => (
           <Grid key={ft[0]} item md={5} >
