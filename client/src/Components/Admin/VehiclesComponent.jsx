@@ -52,12 +52,10 @@ const VehiclesComponent = () => {
     const series2 = [17109,13546,18658,24879,5237,9456,15789];
 
   return (
-    <Container>
-        
+    <Container> 
         <Typography variant="h4" marginY={2}>
             Vehicle Details
         </Typography>
-        
         <Grid 
             marginY={2} 
             paddingY={1} 
@@ -79,14 +77,11 @@ const VehiclesComponent = () => {
                 </Typography>
             </Grid>
         </Grid>
-
         <Grid marginY={2} container display="flex" alignItems={'center'} justifyContent="space-around">
             <Grid item xs={11} sm={9} md={5} marginY={2} sx={{backgroundColor:'#dadada', borderRadius: 8}}>
-
                 <Typography variant="h5" marginY={2} textAlign={'center'}>
                     Personal Vehicles
                 </Typography>
-
                 <Grid marginY={2}>
                     <Chart
                         options={options1}
@@ -98,13 +93,10 @@ const VehiclesComponent = () => {
                     </Chart>
                 </Grid>
             </Grid>
-
             <Grid item xs={11} sm={9} md={5} marginY={2} sx={{backgroundColor:'#dadada', borderRadius: 8}}>
-
                 <Typography variant="h5" marginY={2} textAlign={'center'}>
                     Organization Vehicles
                 </Typography>
-
                 <Grid marginY={2}>
                     <Chart
                         options={options2}
