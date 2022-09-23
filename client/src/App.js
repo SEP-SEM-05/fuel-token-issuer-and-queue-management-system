@@ -11,6 +11,8 @@ import RegisteredComponent from './Components/Admin/RegisteredComponent';
 import LoginComponent from './Components/Admin/LoginComponent';
 import UnregisteredComponent from './Components/Admin/UnregisteredComponent';
 import VehiclesComponent from './Components/Admin/VehiclesComponent';
+import DistributionComponent from './Components/FuelStation/DistributionComponent';
+import PersonalVehicles from './Components/PersonalCLient/PersonalVehiclesComponent';
 
 
 function App() {
@@ -22,6 +24,7 @@ function App() {
           <Route index element={<StockComponent />} />
           <Route path="home" element={<StockComponent />} />
           <Route path="fuelqueues" element={<QueuesComponent />} />
+          <Route path="fueldistribution" element={<DistributionComponent />} />
         </Route>
 
         <Route path="admin" >
@@ -31,7 +34,13 @@ function App() {
           <Route path="registered" element={<RegisteredComponent />} />
           <Route path="unregistered" element={<UnregisteredComponent />} />
           <Route path="vehicles" element={<VehiclesComponent />} />
+        </Route>
 
+        <Route path="userp" element={<DashboardContent />} >
+          <Route index element={<PersonalVehicles />} />
+          <Route path="home" element={<PersonalVehicles />} />
+          <Route path="fuelqueues" element={<QueuesComponent />} />
+          <Route path="fueldistribution" element={<DistributionComponent />} /> 
         </Route>
       </Routes>
     </BrowserRouter>
