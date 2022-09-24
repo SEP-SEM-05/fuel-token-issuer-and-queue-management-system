@@ -15,7 +15,9 @@ import DistributionComponent from './Components/FuelStation/DistributionComponen
 import PersonalVehicles from './Components/PersonalCLient/PersonalVehiclesComponent';
 import PersonalDashboard from './Components/PersonalCLient/Dashboard/Dashboard';
 import AddVehicle from './Components/PersonalCLient/AddVehicle';
-import RequestFuelPersonal from './Components/PersonalCLient/RequestFuelPersonal';
+import OrgDashboard from './Components/Organization/Dashboard/Dashboard';
+import OrgVehicles from './Components/Organization/OrgVehiclesComponent';
+import RequestFuelOrg from './Components/Organization/RequestFuelOrg';
 
 
 function App() {
@@ -43,7 +45,12 @@ function App() {
           <Route index element={<PersonalVehicles />} />
           <Route path="home" element={<PersonalVehicles />} />
           <Route path="addvehicle" element={<AddVehicle />} />
-          <Route path="req" element={<RequestFuelPersonal />} />
+        </Route>
+
+        <Route path="usero" element={<OrgDashboard />} >
+          <Route index element={<RequestFuelOrg />} />
+          <Route path="home" element={<RequestFuelOrg />} />
+          <Route path="vehicles" element={<OrgVehicles />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -118,7 +118,7 @@ const Distribution = () => {
                     <Chip sx={{fontWeight:'bold'}} icon={<AccessTimeIcon />} label={`Start Time ${ft[1]}`} color={ft[4]}></Chip>
                   </Typography>
                   <Typography variant="h6" display="block" gutterBottom>
-                    <DepartureBoardIcon /> <strong>{ft[2]}</strong> vehicles remaining
+                    <DepartureBoardIcon /> <strong>{ft[2]}</strong> vehicles
                   </Typography>
                 </CardContent>
                 <CardActions sx={{ display: 'flex', alignItems: 'stretch', justifyContent: { xs: 'center', md: 'unset' } }}>

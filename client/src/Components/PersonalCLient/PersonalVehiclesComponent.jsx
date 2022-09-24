@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -6,25 +6,23 @@ import { Autocomplete, Box, Button, CardActions, Chip, Dialog, DialogActions, Di
 import OpacityIcon from '@mui/icons-material/Opacity';
 import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 
-const stations = [
-    'a','b','f','k','ABC 1234', 'Diesel', '19/09/2022', 'Mortor Car', 'ABD 4234', 'Petrol', '17/08/2022', 'Mortor Bike'
-];
+
+const stationNameandCity = [
+    "station 01", "station 02", "station 03", "station 04"
+  ];
 
 const vehicles = [
-    ['ABC 1234', 'Diesel', '19/09/2022', 'Mortor Car', 34, 40 , ['a','b']],
-    ['ABD 4234', 'Petrol', '17/08/2022', 'Mortor Bike', 4, 5, ['a','b', 'f']],
-    ['ADT 4569', 'Petrol', '12/07/2022', 'Van', 30, 30, ['a','b', 'k']]
+    ['ABC 1234', 'Diesel', '19/09/2022', 'Mortor Car', 34, 40, ['station 01', 'station 02', 'station 04']],
+    ['ABD 4234', 'Petrol', '17/08/2022', 'Mortor Bike', 4, 5, ['station 01']],
+    ['ADT 4569', 'Petrol', '12/07/2022', 'Van', 30, 30, ['station 01', 'station 02']]
 ]
-
-
 
 
 export default function PersonalVehicles() {
     const [open, setOpen] = React.useState(false);
     const [openSt, setOpenSt] = React.useState(false);
     const [vehicle, setVehicle] = React.useState([]);
-    const [selectedStation, setSelectedStation] = React.useState('');
-    const [selectedStations, setSelectedStations] = React.useState([]);
+    const [value, setValue] = React.useState();
 
     const handleClickOpen = (vehicle) => {
         setOpen(true);
@@ -37,29 +35,12 @@ export default function PersonalVehicles() {
 
     const handleClickOpenSt = (vehicle) => {
         setOpenSt(true);
-        setVehicle(vehicle);
+        setValue(vehicle[6]);
     };
 
     const handleCloseSt = () => {
         setOpenSt(false);
     };
-
-    const addStation = (newValue) => {
-        // if (newValue !== null && selectedStations.indexOf(newValue) === -1 && selectedStations.length < 3) {
-        //     setSelectedStations(...selectedStations.concat([newValue]));
-        // }
-        setSelectedStations(newValue)
-        console.log(selectedStation);
-        
-    }
-
-    const removeSelectedStation = (st) => {
-        selectedStations.splice(selectedStations.indexOf(st), 1);
-
-        console.log(selectedStations);
-
-    }
-
 
     return (
         <Box>
@@ -93,36 +74,39 @@ export default function PersonalVehicles() {
             <Dialog open={openSt} onClose={handleCloseSt}  >
 
                 <DialogTitle sx={{ fontWeight: 'bold', pb: 1 }} >
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}><PublishedWithChangesIcon sx={{ pr: 1 }} /> Selected Fuel Stations</Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>Selected Fuel Stations</Box>
                 </DialogTitle>
                 <Divider />
 
-                <DialogContent sx={{ pr: 8, pl: 4 }}>
+                <DialogContent sx={{ pr: 8, pl: 4, pt:3 }}>
+
                     <Autocomplete
                         multiple
-                        autoSelect
-                        id="tags-standard"
-                        options={stations}
-                        defaultValue={vehicle[6]}
-                        onChange={(event, val)=>addStation(val)}
+                        id="fixed-tags-demo"
+                        value={value}
+                        onChange={(event, newValue) => {
+                            newValue.length < 4 && setValue(newValue);
+                        }}
+                        options={stationNameandCity}
+                        renderTags={(tagValue, getTagProps) =>
+                            tagValue.map((option, index) => (
+                                <Chip
+                                    sx={{fontWeight:'bold'}}
+                                    label={option}
+                                    {...getTagProps({ index })}
+                                />
+                            ))
+                        }
+                        sx={{ minWidth: {md:500, xs:'unset'} }}
                         renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                variant="standard"
-                                label="Multiple values"
-                                placeholder="Favorites"
-                            />
+                            <TextField {...params} label="Fuel Stations" variant='outlined' color='info' focused />
                         )}
                     />
-
-
-                    
                 </DialogContent>
-                <DialogActions sx={{ pr: 3, pl: 3, pb: 3 }}>
-                    <Button variant='outlined' color={vehicle[1] === 'Diesel' ? 'success' : 'warning'} sx={{ width: "100%" }} >Change Stations</Button>
+                <DialogActions sx={{ p:3 }}>
+                    <Button variant='outlined' color={'success'} sx={{ width: "100%" }} >Save Changes</Button>
                 </DialogActions>
             </Dialog>
-
 
             <Grid item xs={12} sx={{ pl: { xs: "unset", lg: 3 }, my: -3 }} ><h1>Own Vehicles</h1></Grid>
             <Grid container spacing={8} justifyContent="center">

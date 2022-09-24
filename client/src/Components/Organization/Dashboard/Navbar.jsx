@@ -21,7 +21,7 @@ import FUELIMG from '../../../assets/station.gif'
 import { Badge, Grid, ListItemIcon, Menu, MenuItem, Tooltip } from '@mui/material';
 
 const drawerWidth = 240;
-const navItems = ['Home-home', 'Add Vehicle-addvehicle'];   //nav items list with corresponding navLinks
+const navItems = ['Home-home', 'Vehicles-vehicles'];   //nav items list with corresponding navLinks
 
 function DrawerAppBar() {
     const [mobileOpen, setMobileOpen] = React.useState(false);
