@@ -11,10 +11,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme();
 
-
 const LoginComponent = () => {
-
-    
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -25,7 +22,6 @@ const LoginComponent = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            
           }}
         >
           <Typography component="h1" variant="h5">
@@ -41,7 +37,6 @@ const LoginComponent = () => {
               name="uname"
               autoComplete="uname"
               autoFocus
-              
             />
             <TextField
               margin="normal"
@@ -59,7 +54,7 @@ const LoginComponent = () => {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-                Log In
+              Log In
             </Button>
             <Grid container>
               <Grid item xs>
