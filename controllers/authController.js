@@ -220,7 +220,55 @@ const login_post_org = async (req, res) => {
 }
 
 //post station login details
-const login_post_station = async (req, res) => {}
+const login_post_station = async (req, res) => {
+    
+    const registrationNo = req.body.registrationNo;
+    const password = req.body.password;
+
+    try {
+
+        const user = await stationDBHelper.findStationByRegNo(registrationNo);
+
+        if(user !== null){
+            
+            let password_check = await encHandler.checkEncryptedCredential(password, user.password);
+
+            if(password_check){
+
+                let token = auth.createToken();
+                let name = user.name;
+
+                return_data = {
+                    status: 'ok',
+                    token: token,
+                    userType: 'station',
+                    data: {
+                        registrationNo: registrationNo,
+                        id: user._id,
+                        name: name
+                    }
+                }
+                res.json(return_data);
+            }
+            else{
+                res.status(400).json({
+                    status: 'error',
+                    error: 'Authentication error!'
+                });
+            }
+        }
+        else{
+            res.status(400).json({
+                status: 'error',
+                error: 'Authentication error!'
+            });
+        }
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({});
+    }
+}
 
 module.exports = {
     register_post_personal,
