@@ -41,6 +41,26 @@ const get_dashboard = async (req, res) => {
     }
 }
 
+//change stations for a vehicle
+const change_stations = async (req, res) => {
+
+    let regNo = req.body.registrationNo;
+    let stations = req.body.stations;
+
+    try {
+        //handle any possible errors
+        let result = await vehicleDBHelper.updateStations(regNo, stations);
+        res.json({
+            status: 'ok',
+        });
+    } 
+    catch (error) {
+        console.log(error);
+        res.status(500).json({});
+    }
+}
+
 module.exports = {
     get_dashboard,
+    change_stations,
 }
