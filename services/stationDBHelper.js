@@ -4,4 +4,21 @@ require('dotenv').config();
 
 const Station = require('../models/station');
 
-module.exports = {}
+//find a station given the registration No.
+const findStationByRegNo = async (registrationNo) => {
+
+    let station = await Station.findOne({registrationNo});
+    return station;
+}
+
+//find a stationgiven the _id
+const findStationByID = async (id) => {
+
+    let station = await Station.findById(mongoose.Types.ObjectId(id));
+    return station;
+}
+
+module.exports = {
+    findStationByRegNo,
+    findStationByID,
+}

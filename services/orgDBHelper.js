@@ -20,7 +20,7 @@ const saveClient = (data) => {
 }
 
 //find an organization given the registration No.
-const findClientByRegNo = async (nic) => {
+const findClientByRegNo = async (registrationNo) => {
 
     let client = await Org.findOne({registrationNo});
     return client;
