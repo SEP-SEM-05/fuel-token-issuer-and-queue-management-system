@@ -28,12 +28,18 @@ const stationSchema = new Schema({
         required: true,
         unique: true
     },
-    volume: {
+    isRegistered: {
+        type: Boolean,
+        default: false
+    },
+    volumes: {
         type: Map,
         of: Number,
         default: {
-            Diesel: 0,
-            Petrol: 0
+            'Lanka Auto Diesel': 0,
+            'Lanka Super Diesel': 0,
+            'Petrol 92 Octane': 0,
+            'Petrol 95 Octane': 0
         }
     }
 }, { timestamps: true });
