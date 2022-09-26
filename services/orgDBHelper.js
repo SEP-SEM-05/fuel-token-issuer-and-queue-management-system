@@ -5,6 +5,7 @@ require('dotenv').config();
 const Org = require('../models/organization');
 
 //save an organization to the database
+//since the organizations are pre-populated, this should change the isRegistered to true
 const saveClient = (data) => {
 
     let client = new Org(data);
