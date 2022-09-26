@@ -41,6 +41,27 @@ const get_dashboard = async (req, res) => {
     }
 }
 
+//change stations for an organization
+const change_stations = async (req, res) => {
+
+    let regNo = req.body.registrationNo;
+    let stations = req.body.stations;
+
+    try {
+        //handle any possible errors
+        let result = await orgDBHelper.updateStations(regNo, stations);
+        //return necessary data
+        res.json({
+            status: 'ok',
+        });
+    } 
+    catch (error) {
+        console.log(error);
+        res.status(500).json({});
+    }
+}
+
 module.exports = {
     get_dashboard,
+    change_stations,
 }

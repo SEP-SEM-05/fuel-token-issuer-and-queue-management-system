@@ -50,6 +50,7 @@ const change_stations = async (req, res) => {
     try {
         //handle any possible errors
         let result = await vehicleDBHelper.updateStations(regNo, stations);
+        //return necessary data
         res.json({
             status: 'ok',
         });
