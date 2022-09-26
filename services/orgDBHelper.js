@@ -34,8 +34,15 @@ const findClientByID = async (id) => {
     return client;
 }
 
+//update the station, given the registrationNo.
+const updateStations = async (regNo, stations) => {
+    let result = await Org.updateOne({registrationNo: regNo}, {stations: stations});
+    return result;
+}
+
 module.exports = {
     saveClient,
     findClientByRegNo,
     findClientByID,
+    updateStations,
 }
