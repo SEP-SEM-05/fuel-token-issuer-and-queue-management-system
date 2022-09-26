@@ -94,4 +94,18 @@ describe("Database access methods for organizations", () => {
             expect(quriedClient).toEqual(mockClient);
         });
     });
+
+    describe("updateStations - Given the a registration No. and an array of stations, update the stations of the organization", () => {
+
+        // it("check whether the client is successfully saved", async () => {
+
+        //     const mockClient = {};
+        //     const mockData = {};
+
+        //     const err = await saveClient(mockData);
+        //     const quriedClient = await Personal.findOne({nic: mockData.nic});
+
+        //     expect(quriedClient).toEqual(mockClient);
+        // });
+    });
 });
