@@ -52,10 +52,10 @@ const VehiclesComponent = () => {
     const series2 = [17109,13546,18658,24879,5237,9456,15789];
 
   return (
-    <Container> 
-        <Typography variant="h4" marginY={2}>
-            Vehicle Details
-        </Typography>
+    <Container>
+        <Grid item xs={12} sx={{ pl: { xs: "unset", lg: 3 }, mt: -3 }} >
+            <h1>Vehicle Details</h1>
+        </Grid>
         <Grid 
             marginY={2} 
             paddingY={1} 

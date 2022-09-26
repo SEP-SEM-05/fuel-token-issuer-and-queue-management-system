@@ -4,7 +4,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
-import { Button, Grid, Typography } from '@mui/material';
+import { Box, Button, Divider, Grid } from '@mui/material';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -37,27 +37,26 @@ const UnregisteredComponent = () => {
     return (
         <Container >
             <TableContainer>
-                <Typography variant="h4" marginY={3}>
-                    Unregistered Fuel station
-                </Typography>
+                <Grid item xs={12} sx={{ pl: { xs: "unset", lg: 3 }, mt: -3 }} >
+                    <h1>Unregistered Fuel station</h1>
+                </Grid>
 
-                <Grid sx={{ borderRadius: 4, backgroundColor:"black", paddingBottom: "3px"}}>
+                <Grid sx={{ borderRadius: 4, backgroundColor:"#282835", paddingBottom: "3px"}}>
                     <Table aria-label="simple table">
                         <TableBody>
                             {rows.map((row) => (
                                 <TableRow
                                     key={row.name}
                                 >
-                                    <TableCell align="center" style={{color:"white"}} component="th" scope="row">
+                                    <TableCell align="center" style={{color:"white", fontSize:"22px"}} component="th" scope="row">
                                         {row.station}
                                     </TableCell>
                                     <TableCell align="center">
                                         <Button 
+                                            variant='contained'
+                                            color='info'
                                             onClick={handleClickOpen} 
                                             sx={{
-                                                backgroundColor:"white",
-                                                "&:hover": {backgroundColor: "#dadada"}, 
-                                                color :"black", 
                                                 borderRadius: 10
                                             }}
                                         >
@@ -70,10 +69,9 @@ const UnregisteredComponent = () => {
                     </Table>
                     <Grid display="flex" justifyContent="center" margin={3} >
                         <Button 
+                            variant='contained'
+                            color='error'
                             sx={{
-                                backgroundColor: "white",
-                                "&:hover": {backgroundColor: "#dadada"}, 
-                                color: "black", 
                                 borderRadius: 3, 
                                 paddingX: "30px"
                             }}
@@ -85,12 +83,12 @@ const UnregisteredComponent = () => {
             </TableContainer>
 
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle align='center'>
-                    Station Details
+                <DialogTitle sx={{ fontWeight: 'bold', pb: 1 }} >
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>Station Details</Box>
                 </DialogTitle>
+                <Divider />
                 <DialogContent>
                     <TextField
-                        id="filled-read-only-input"
                         label="Registration No"
                         defaultValue="xxxxxxxxxxxx"
                         InputProps={{
@@ -101,7 +99,6 @@ const UnregisteredComponent = () => {
                     />
                     <br/>
                     <TextField
-                        id="filled-read-only-input"
                         label="Email"
                         defaultValue="xxxxxxxxxxxxxxxxx"
                         InputProps={{
@@ -112,7 +109,6 @@ const UnregisteredComponent = () => {
                     />
                     <br/>
                     <TextField
-                        id="filled-read-only-input"
                         label="Contact No"
                         defaultValue="xxxxxxxxxx"
                         InputProps={{
@@ -123,7 +119,6 @@ const UnregisteredComponent = () => {
                     />
                     <br/>
                     <TextField
-                        id="filled-read-only-input"
                         label="Address"
                         defaultValue="xxxxxxxxxxxx xxxxxxxxxx xxxxxxxxxxx"
                         InputProps={{
@@ -133,13 +128,8 @@ const UnregisteredComponent = () => {
                         style={{width: "450px"}}
                     />
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>
-                        Cancel
-                    </Button>
-                    <Button onClick={handleClose}>
-                        Register
-                    </Button>
+                <DialogActions sx={{ pr: 3, pl: 3, pb: 3 }}>
+                    <Button variant='outlined' color='info' sx={{ width: "100%" }} >REGISTER</Button>
                 </DialogActions>
             </Dialog>
         </Container>

@@ -26,13 +26,12 @@ const UnregisteredComponent = () => {
       <TableContainer >
         {isNewly && 
           <Grid display="flex" justifyContent="center" marginY={4}>
-            <Grid padding={1} sx={{backgroundColor: "black", borderRadius: 4,}}>
+            <Grid padding={1} sx={{backgroundColor: "#282835", borderRadius: 4,}}>
               <Button 
+                variant='contained'
+                color='warning'
                 onClick={() => {setIsNewly(true)}} 
                 sx={{
-                  backgroundColor: "white",
-                  "&:hover": {backgroundColor: "#dadada"}, 
-                  color: "black", 
                   paddingX: "50px", 
                   borderRadius: 10, 
                   marginX: "5px"
@@ -41,11 +40,11 @@ const UnregisteredComponent = () => {
                 Newly Registered
               </Button>
               <Button 
+                variant='contained'
+                color='success'
                 onClick={() => {setIsNewly(false)}} 
                 sx={{
-                  backgroundColor: "black", 
-                  "&:hover": {backgroundColor: "#dadada", color: "black"}, 
-                  color: "white", 
+                  backgroundColor: "#282835", 
                   paddingX: "50px", 
                   borderRadius: 10, 
                   marginX: "5px",
@@ -59,13 +58,13 @@ const UnregisteredComponent = () => {
 
         {!isNewly && 
           <Grid display="flex" justifyContent="center" marginY={4}>
-            <Grid padding={1} sx={{backgroundColor: "black", borderRadius: 4,}}>
+            <Grid padding={1} sx={{backgroundColor: "#282835", borderRadius: 4,}}>
               <Button 
+                variant='contained'
+                color='warning'
                 onClick={() => {setIsNewly(true)}} 
                 sx={{
-                  backgroundColor: "black",
-                  "&:hover": {backgroundColor: "#dadada", color: "black"}, 
-                  color: "white", 
+                  backgroundColor: "#282835",
                   paddingX: "50px", 
                   borderRadius: 10, 
                   marginX: "5px"
@@ -74,11 +73,10 @@ const UnregisteredComponent = () => {
                 Newly Registered
               </Button>
               <Button 
+                variant='contained'
+                color='success'
                 onClick={() => {setIsNewly(false)}} 
                 sx={{
-                  backgroundColor: "white", 
-                  "&:hover": {backgroundColor: "#dadada", color: "black"}, 
-                  color: "black", 
                   paddingX: "50px", 
                   borderRadius: 10, 
                   marginX: "5px",

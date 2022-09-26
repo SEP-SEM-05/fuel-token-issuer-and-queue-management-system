@@ -19,22 +19,21 @@ const rows = [
 
 const NewlyRegistered = () => {
   return (
-    <Grid sx={{borderRadius: 4,backgroundColor:"black", paddingBottom: "3px"}} >
+    <Grid sx={{borderRadius: 4,backgroundColor:"#282835", paddingBottom: "3px"}} >
       <Table  aria-label="simple table">
         <TableBody>
           {rows.map((row) => (
             <TableRow
               key={row.name}
             >
-              <TableCell align="center" sx={{color:"white"}} component="th" scope="row">
+              <TableCell align="center" sx={{color:"white", fontSize:"22px"}} component="th" scope="row">
                 {row.station}
               </TableCell>
               <TableCell align="center">
                 <Button 
+                  variant='contained'
+                  color='info'
                   sx={{
-                    backgroundColor:"white",
-                    "&:hover": {backgroundColor: "#dadada"}, 
-                    color :"black", 
                     borderRadius: 10, 
                     paddingX:"15px"
                   }}
@@ -48,10 +47,9 @@ const NewlyRegistered = () => {
       </Table>
       <Grid display="flex" justifyContent="center" margin={3} >
         <Button 
+          variant='contained'
+          color='error'
           sx={{
-            backgroundColor: "white",
-            "&:hover": {backgroundColor: "#dadada"}, 
-            color: "black", 
             borderRadius: 3, 
             paddingX:"25px"
           }}

@@ -8,7 +8,6 @@ import QueuesComponent from './Components/FuelStation/QueuesComponent';
 
 import QuotaComponent from './Components/Admin/QuotaComponent';
 import RegisteredComponent from './Components/Admin/RegisteredComponent';
-import LoginComponent from './Components/Admin/LoginComponent';
 import UnregisteredComponent from './Components/Admin/UnregisteredComponent';
 import VehiclesComponent from './Components/Admin/VehiclesComponent';
 import DistributionComponent from './Components/FuelStation/DistributionComponent';
@@ -18,6 +17,7 @@ import AddVehicle from './Components/PersonalCLient/AddVehicle';
 import OrgDashboard from './Components/Organization/Dashboard/Dashboard';
 import OrgVehicles from './Components/Organization/OrgVehiclesComponent';
 import RequestFuelOrg from './Components/Organization/RequestFuelOrg';
+import AdminDashboard from './Components/Admin/Dashboard/Dashboard';
 
 
 function App() {
@@ -32,10 +32,9 @@ function App() {
           <Route path="fueldistribution" element={<DistributionComponent />} />
         </Route>
 
-        <Route path="admin" >
+        <Route path="admin" element={<AdminDashboard />}>
           <Route index element={<QuotaComponent />} />
           <Route path="home" element={<QuotaComponent />} />
-          <Route path="login" element={<LoginComponent />} />
           <Route path="registered" element={<RegisteredComponent />} />
           <Route path="unregistered" element={<UnregisteredComponent />} />
           <Route path="vehicles" element={<VehiclesComponent />} />
