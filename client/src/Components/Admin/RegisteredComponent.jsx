@@ -5,17 +5,6 @@ import Container from '@mui/material/Container';
 import OngoingComponent from './OngoingComponent';
 import NewlyRegistered from './NewlyRegistered';
 
-function createData(station) {
-  return { station };
-}
-  
-const rows = [
-  createData('Station 01'),
-  createData('Station 02'),
-  createData('Station 03'),
-  createData('Station 04'),
-  createData('Station 05'),
-];
 
 const UnregisteredComponent = () => {
 
