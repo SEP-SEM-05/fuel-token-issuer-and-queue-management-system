@@ -5,6 +5,7 @@ require('dotenv').config();
 const Org = require('../models/organization');
 
 //save an organization to the database
+//since the organizations are pre-populated, this should change the isRegistered to true
 const saveClient = (data) => {
 
     let client = new Org(data);
@@ -20,7 +21,7 @@ const saveClient = (data) => {
 }
 
 //find an organization given the registration No.
-const findClientByRegNo = async (nic) => {
+const findClientByRegNo = async (registrationNo) => {
 
     let client = await Org.findOne({registrationNo});
     return client;
@@ -33,8 +34,15 @@ const findClientByID = async (id) => {
     return client;
 }
 
+//update the station, given the registrationNo.
+const updateStations = async (regNo, stations) => {
+    let result = await Org.updateOne({registrationNo: regNo}, {stations: stations});
+    return result;
+}
+
 module.exports = {
     saveClient,
     findClientByRegNo,
     findClientByID,
+    updateStations,
 }

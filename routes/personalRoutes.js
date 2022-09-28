@@ -7,4 +7,7 @@ const router = express.Router();
 //get dashboard info
 router.get('/dashboard/:id', auth.requireAuth, personalController.get_dashboard);
 
+//change stations
+router.post('/changeStatioins', auth.requireAuth, personalController.change_stations);
+
 module.exports = router;
