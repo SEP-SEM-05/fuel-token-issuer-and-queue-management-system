@@ -21,11 +21,18 @@ import FUELIMG from '../../../assets/station.gif'
 import { Badge, Grid, ListItemIcon, Menu, MenuItem, Tooltip } from '@mui/material';
 
 const drawerWidth = 240;
-const navItems = ['Home-home', 'Queues-fuelqueues', 'Distribution-fueldistribution'];   //nav items list with corresponding navLinks
+const navItems = ['Home-home', 'Add Vehicle-addvehicle'];   //nav items list with corresponding navLinks
 
 function DrawerAppBar() {
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const [anchorElNotf, setAnchorElNotf] = React.useState(null);
+    const [notifications] = React.useState([
+        { 'nid': 0, 'read': 0, 'title': 'notification 01', 'msg': 'sample msg smaple msg sample msg as the sample msg...', 'time': '11:12AM' },
+        { 'nid': 1, 'read': 0, 'title': 'notification 02', 'msg': 'sample msg smaple msg sample msg...', 'time': '11:12AM' },
+        { 'nid': 2, 'read': 1, 'title': 'notification 03', 'msg': 'sample msg smaple msg sample msg...', 'time': '11:12AM' },
+        { 'nid': 3, 'read': 1, 'title': 'notification 04', 'msg': 'sample msg smaple msg sample msg...', 'time': '11:12AM' },
+    ]);
 
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
@@ -33,6 +40,14 @@ function DrawerAppBar() {
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
+    };
+
+    const handleOpenNotfMenu = (event) => {
+        setAnchorElNotf(event.currentTarget);
+    };
+
+    const handleCloseNotfMenu = () => {
+        setAnchorElNotf(null);
     };
 
     const handleDrawerToggle = () => {
@@ -90,12 +105,53 @@ function DrawerAppBar() {
                             ))}
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <IconButton sx={{ pr: 2 }} onClick={handleOpenUserMenu}>
+                            <IconButton sx={{ pr: 2 }} onClick={handleOpenNotfMenu}>
                                 <Badge badgeContent={4} color="secondary">
                                     <BellIcon sx={{ color: 'white' }} />
                                 </Badge>
                             </IconButton>
-                            <Typography noWrap sx={{ pr: 1 }}>{"Station Name"}</Typography>
+                            <Menu
+                                sx={{ mt: "40px", maxWidth: '400px' }}
+                                id="menu-appbar"
+                                anchorEl={anchorElNotf}
+                                anchorOrigin={{
+                                    vertical: "top",
+                                    horizontal: "right",
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: "top",
+                                    horizontal: "right",
+                                }}
+                                open={Boolean(anchorElNotf)}
+                                onClose={handleCloseNotfMenu}
+                            >
+                                <MenuItem>
+                                    <Typography sx={{ fontWeight: 'bold' }}>Notifications</Typography>
+                                </MenuItem>
+                                <Divider />
+                                {notifications.map((notification) => {
+                                    return (
+                                        <MenuItem key={notification.nid} sx={{borderBottom: '1px solid #e8eaf6', backgroundColor: notification.read ? '': '#e3f2fd' }}>
+                                            <Grid container sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                <Grid item xs={10}>
+                                                    <Typography sx={{ fontWeight: 'bold' }}>{notification.title}</Typography>
+                                                </Grid>
+                                                <Grid item xs={2}>
+                                                    <Typography variant='caption'>{notification.time}</Typography>
+                                                </Grid>
+                                                <Grid item sx={{}} xs={12}>
+                                                    <Typography noWrap variant='body1'>{notification.msg}</Typography>
+                                                </Grid>
+
+                                            </Grid>
+
+                                        </MenuItem>
+                                    );
+                                })}
+                            </Menu>
+
+                            <Typography noWrap sx={{ pr: 1 }}>{"User Name"}</Typography>
                             <Tooltip title='Logout'>
                                 <IconButton onClick={handleOpenUserMenu}>
                                     <MoreVertIcon sx={{ color: 'white' }} />
@@ -118,7 +174,7 @@ function DrawerAppBar() {
                                 onClose={handleCloseUserMenu}
                             >
                                 <MenuItem disabled>
-                                    {"1290456N"}
+                                    {"199912312123"}
                                 </MenuItem>
                                 <Divider />
                                 <MenuItem onClick={handleCloseUserMenu}>

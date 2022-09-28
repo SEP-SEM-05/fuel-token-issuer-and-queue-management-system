@@ -5,11 +5,11 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { FormControl, Grid, InputAdornment, InputLabel, LinearProgress, OutlinedInput } from '@mui/material';
+import { Grid, InputAdornment, LinearProgress, TextField } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
+import DialogTitle from '@mui/material/DialogTitle'; 
 
 function LinearProgressWithLabel(props) {
   return (
@@ -47,26 +47,34 @@ const StockComponent = () => {
   return (
     <Box>
       <Dialog open={open} onClose={handleClose}>
-        
-          <DialogTitle sx={{fontWeight:'bold'}} textAlign={'center'}>{fuelType}</DialogTitle>
-          <Box sx={{ display: 'flex', pr: 2, pb:2, pl:2 }}>
-          <DialogContent sx={{ pr: 1}}>
-            <FormControl variant="outlined">
-              <InputLabel>Fuel Amount</InputLabel>
-              <OutlinedInput
-                endAdornment={<InputAdornment position="end" >Liters</InputAdornment>}
-                label="Fuel Amount"
-              />
-            </FormControl>
+
+        <DialogTitle sx={{ fontWeight: 'bold' }} textAlign={'center'}>{fuelType}</DialogTitle>
+        <Box sx={{ display: 'flex', pr: 2, pb: 2, pl: 2 }}>
+          <DialogContent sx={{ pr: 1 }}>
+            <TextField
+              focused
+              required
+              color='info'
+              label="Fuel Amount"
+              type='number'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    Liters
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ width: '80%' }}
+            />
           </DialogContent>
-          <DialogActions sx={{ mr: 2, display:'flex' }}>
-            <Button size="large" variant='contained' color='info' onClick={handleClose} sx={{pt:'13px', pb:'13px', fontWeight:'bold'}}>Add</Button>
+          <DialogActions sx={{ mr: 2, display: 'flex' }}>
+            <Button size="large" variant='contained' color='info' onClick={handleClose} sx={{ pt: '13px', pb: '13px', fontWeight: 'bold' }}>Add</Button>
           </DialogActions>
-          </Box>
+        </Box>
       </Dialog>
 
 
-      <Grid item xs={12} sx={{pl:{xs:"unset", lg:20}, my:-3}} ><h1>Fuel Stocks</h1></Grid>
+      <Grid item xs={12} sx={{ pl: { xs: "unset", lg: 3 }, my: -3 }} ><h1>Fuel Stocks</h1></Grid>
       <Grid container spacing={8} justifyContent="center">
         {fuel_types.map((ft) => (
           <Grid key={ft[0]} item md={5} >
@@ -83,7 +91,7 @@ const StockComponent = () => {
                 </Typography>
               </CardContent>
               <CardActions sx={{ display: 'flex', alignItems: 'stretch', justifyContent: { xs: 'center', md: 'unset' } }}>
-                <Button onClick={() => handleClickOpen(ft[0])} color={ft[4]} variant="contained" ><Typography variant='h6' sx={{ fontWeight: 'bold' }}>Add<br />Fuel</Typography></Button>
+                <Button onClick={() => handleClickOpen(ft[0])} color={ft[4]} variant="contained" sx={{ minWidth: '120px' }} ><Typography variant='h6' sx={{ fontWeight: 'bold' }}>Add<br />Fuel</Typography></Button>
               </CardActions>
             </Card>
           </Grid>
