@@ -18,7 +18,7 @@ function LinearProgressWithLabel(props) {
         <LinearProgress variant="determinate" value={(props.remainder / props.capacity) * 100} {...props} />
       </Box>
       <Box sx={{ minWidth: 35 }}>
-        <Typography variant="body2" color="text.light" ><strong>{props.remainder}</strong> From {props.capacity} Leters Available</Typography>
+        <Typography variant="body2" color="text.light" ><strong>{props.remainder}</strong> From {props.capacity} Liters Available</Typography>
       </Box>
     </Box>
   );

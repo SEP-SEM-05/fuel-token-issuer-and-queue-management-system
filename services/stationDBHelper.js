@@ -7,7 +7,7 @@ const Station = require('../models/station');
 //find a station given the registration No.
 const findStationByRegNo = async (registrationNo) => {
 
-    let station = await Station.findOne({registrationNo});
+    let station = await Station.findOne({ registrationNo });
     return station;
 }
 
@@ -18,7 +18,16 @@ const findStationByID = async (id) => {
     return station;
 }
 
+//update the fuel amount, given the fuel type
+const updateAmount = async (regNo, fuelType, addedAmount) => {
+    let station = findStationByID(regNo);
+    station.volumes[fuelType] += addedAmount;
+    let result = await Station.updateOne({ registrationNo: regNo }, { volumes: station.volumes });
+    return result;
+}
+
 module.exports = {
     findStationByRegNo,
     findStationByID,
+    updateAmount,
 }

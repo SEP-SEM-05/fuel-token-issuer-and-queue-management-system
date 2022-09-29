@@ -36,8 +36,8 @@ const stationSchema = new Schema({
         type: Map,
         of: Number,
         default: {
-            'Lanka Auto Diesel': 0,
-            'Lanka Super Diesel': 0,
+            'Auto Diesel': 0,
+            'Super Diesel': 0,
             'Petrol 92 Octane': 0,
             'Petrol 95 Octane': 0
         }
