@@ -8,6 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const personalRoutes = require('./routes/personalRoutes');
 const orgRoutes = require('./routes/orgRoutes');
+const stationRoutes = require('./routes/stationRoutes');
 
 const makeApp = () => {
     // express app
@@ -34,6 +35,7 @@ const makeApp = () => {
     app.use('/admin', adminRoutes);
     app.use('/personal', personalRoutes);
     app.use('/org', orgRoutes);
+    app.use('/station', stationRoutes);
 
     return app;
 }
