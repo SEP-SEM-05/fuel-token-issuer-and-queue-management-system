@@ -23,9 +23,9 @@ const findAllByregistrationNoArray = async (regNoArray) => {
     return vehicles;
 }
 
-//update the station, given the registrationNo.
-const updateStations = async (regNo, stations) => {
-    let result = await Vehicle.updateOne({registrationNo: regNo}, {stations: stations});
+//update the station and mark as registered, given the registrationNo.
+const updateStationsAndRegister = async (regNo, stations) => {
+    let result = await Vehicle.updateOne({registrationNo: regNo}, {stations: stations, isRegistered: true});
     return result;
 }
 
@@ -33,5 +33,5 @@ module.exports = {
     findVehicleByRegNo,
     findAllByNic,
     findAllByregistrationNoArray,
-    updateStations,
+    updateStationsAndRegister,
 }
