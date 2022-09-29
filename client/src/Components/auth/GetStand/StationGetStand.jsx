@@ -7,6 +7,7 @@ import { createTheme } from '@mui/material/styles';
 import { IconButton, InputAdornment, ThemeProvider } from '@mui/material';
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { useForm } from "react-hook-form";
 
 const darkTheme = createTheme({
     palette: {
@@ -15,9 +16,10 @@ const darkTheme = createTheme({
 });
 
 export default function StationGetStand() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-  };
+    const { register, handleSubmit, formState: { errors } } = useForm();
+
+    const onSubmit = (data) => console.log(data);
+    console.log(errors);
 
   const [values, setValues] = React.useState({
     temppass: "",
@@ -67,7 +69,7 @@ export default function StationGetStand() {
                 >
                     WELCOME
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"
                         variant="outlined"
@@ -75,9 +77,14 @@ export default function StationGetStand() {
                         label="Temp. Password"
                         type="text"
                         fullWidth
-                        inputProps={{ minLength: 4 }}
-                        required
                         autoComplete='off'
+                        {...register("temp", 
+                            { 
+                                required: "Temp. Password is required.",
+                            })
+                        }
+                        error={Boolean(errors.temp)}
+                        helperText={errors.temp?.message}
                     />		
                     <TextField
                         margin="normal"
@@ -86,9 +93,22 @@ export default function StationGetStand() {
                         label="New Password"
                         variant="outlined"
                         id="newpassword"
-                        inputProps={{ minLength: 8 }}
-                        required
                         autoComplete='off'
+                        {...register("newpassword", 
+                            { 
+                                required: "New Password is required.",
+                                minLength:{
+                                    value: 8,
+                                    message: "New Password must be more than 7 characters"
+                                },
+                                maxLength: {
+                                    value: 12,
+                                    message: "New Password cannot exceed more than 12 characters"
+                                }
+                            })
+                        }
+                        error={Boolean(errors.newpassword)}
+                        helperText={errors.newpassword?.message}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
@@ -111,8 +131,22 @@ export default function StationGetStand() {
                         variant="outlined"
                         id="confirmpassword"
                         inputProps={{ minLength: 8 }}
-                        required
                         autoComplete='off'
+                        {...register("confirmpassword", 
+                            { 
+                                required: "Confirm Password is required.",
+                                minLength:{
+                                    value: 8,
+                                    message: "Confirm Password must be more than 7 characters"
+                                },
+                                maxLength: {
+                                    value: 12,
+                                    message: "Confirm Password cannot exceed more than 12 characters"
+                                }
+                            })
+                        }
+                        error={Boolean(errors.confirmpassword)}
+                        helperText={errors.confirmpassword?.message}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">

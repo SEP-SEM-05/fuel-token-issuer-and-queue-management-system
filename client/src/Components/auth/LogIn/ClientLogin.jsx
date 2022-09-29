@@ -9,6 +9,7 @@ import { createTheme } from '@mui/material/styles';
 import { IconButton, InputAdornment, ThemeProvider } from '@mui/material';
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { useForm } from "react-hook-form";
 
 const darkTheme = createTheme({
     palette: {
@@ -17,9 +18,11 @@ const darkTheme = createTheme({
 });
 
 export default function ClientLogin() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-  };
+
+    const { register, handleSubmit, formState: { errors } } = useForm();
+
+    const onSubmit = (data) => console.log(data);
+    console.log(errors);
 
   const [values, setValues] = React.useState({
     username: "",
@@ -61,7 +64,7 @@ export default function ClientLogin() {
                 >
                     CLIENT LOGIN
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"
                         variant="outlined"
@@ -69,9 +72,10 @@ export default function ClientLogin() {
                         label="User ID"
                         type="text"
                         fullWidth
-                        inputProps={{ minLength: 3 }}
-                        required
                         autoComplete='off'
+                        {...register("userid", { required: "User ID is required." })}
+                        error={Boolean(errors.userid)}
+                        helperText={errors.userid?.message}
                     />		
                     <TextField
                         margin="normal"
@@ -80,9 +84,14 @@ export default function ClientLogin() {
                         label="Password"
                         variant="outlined"
                         id="password"
-                        inputProps={{ minLength: 8 }}
-                        required
                         autoComplete='off'
+                        {...register("password", 
+                            { 
+                                required: "Password is required",
+                            })
+                        }
+                        error={Boolean(errors.password)}
+                        helperText={errors.password?.message}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">

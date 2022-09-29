@@ -9,6 +9,7 @@ import { createTheme } from '@mui/material/styles';
 import { IconButton, InputAdornment, ThemeProvider } from '@mui/material';
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { useForm } from "react-hook-form";
 
 const darkTheme = createTheme({
     palette: {
@@ -17,10 +18,11 @@ const darkTheme = createTheme({
 });
 
 export default function SignUpPer() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
+    const { register, handleSubmit, formState: { errors } } = useForm();
+
+    const onSubmit = (data) => console.log(data);
+    console.log(errors);
     
-  };
 
   const [values, setValues] = React.useState({
     fname: "",
@@ -76,7 +78,7 @@ export default function SignUpPer() {
                 >
                     PERSONAL SIGNUP
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"
                         variant="outlined"
@@ -84,10 +86,19 @@ export default function SignUpPer() {
                         label="First Name"
                         type="text"
                         fullWidth
-                        inputProps={{ minLength: 3 }}
-                        required
                         autoComplete='off'
                         size="small"
+                        {...register("fname", 
+                            { 
+                                required: "First Name is required.",
+                                minLength:{
+                                    value: 3,
+                                    message: "First Name must be more than 2 characters"
+                                }
+                            })
+                        }
+                        error={Boolean(errors.fname)}
+                        helperText={errors.fname?.message}
                     />		
                     <TextField
                         margin="normal"
@@ -96,10 +107,19 @@ export default function SignUpPer() {
                         label="Last Name"
                         type="text"
                         fullWidth
-                        inputProps={{ minLength: 3 }}
-                        required
                         autoComplete='off'
                         size="small"
+                        {...register("lname", 
+                            { 
+                                required: "Last Name is required.",
+                                minLength:{
+                                    value: 3,
+                                    message: "Last Name must be more than 2 characters"
+                                }
+                            })
+                        }
+                        error={Boolean(errors.lname)}
+                        helperText={errors.lname?.message}
                     />		
                     <TextField
                         margin="normal"
@@ -108,10 +128,19 @@ export default function SignUpPer() {
                         label="Email"
                         type="email"
                         fullWidth
-                        inputProps={{ minLength: 5 }}
-                        required
                         autoComplete='off'
                         size="small"
+                        {...register("email", 
+                            { 
+                                required: "Email is required.",
+                                pattern:{
+                                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                                    message: "This is not a valid email"
+                                }
+                            })
+                        }
+                        error={Boolean(errors.email)}
+                        helperText={errors.email?.message}
                     />		
                     <TextField
                         margin="normal"
@@ -120,10 +149,23 @@ export default function SignUpPer() {
                         label="NIC"
                         type="text"
                         fullWidth
-                        inputProps={{ minLength: 10 }}
-                        required
                         autoComplete='off'
                         size="small"
+                        {...register("nic", 
+                            { 
+                                required: "NIC is required.",
+                                minLength:{
+                                    value: 10,
+                                    message: "NIC must be more than 9 characters"
+                                },
+                                maxLength: {
+                                    value: 12,
+                                    message: "NIC cannot exceed more than 12 characters"
+                                }
+                            })
+                        }
+                        error={Boolean(errors.nic)}
+                        helperText={errors.nic?.message}
                     />		
                     <TextField
                         margin="normal"
@@ -132,10 +174,19 @@ export default function SignUpPer() {
                         label="Address"
                         type="text"
                         fullWidth
-                        inputProps={{ minLength: 3 }}
-                        required
                         autoComplete='off'
                         size="small"
+                        {...register("address", 
+                            { 
+                                required: "Address is required.",
+                                minLength:{
+                                    value: 4,
+                                    message: "Address must be more than 3 characters"
+                                }
+                            })
+                        }
+                        error={Boolean(errors.address)}
+                        helperText={errors.address?.message}
                     />		
                     <TextField
                         margin="normal"
@@ -144,10 +195,23 @@ export default function SignUpPer() {
                         label="Contact Number"
                         type="text"
                         fullWidth
-                        inputProps={{ minLength: 9 }}
-                        required
                         autoComplete='off'
                         size="small"
+                        {...register("contactNo", 
+                            { 
+                                required: "Contact Number is required.",
+                                minLength:{
+                                    value: 10,
+                                    message: "Contact Number must 10 characters"
+                                },
+                                maxLength: {
+                                    value: 10,
+                                    message: "Contact Number must 10 characters"
+                                }
+                            })
+                        }
+                        error={Boolean(errors.contactNo)}
+                        helperText={errors.contactNo?.message}
                     />		
                     <TextField
                         margin="normal"
@@ -156,8 +220,6 @@ export default function SignUpPer() {
                         label="Password"
                         variant="outlined"
                         id="password"
-                        inputProps={{ minLength: 8 }}
-                        required
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
@@ -172,6 +234,21 @@ export default function SignUpPer() {
                             ),
                         }}
                         size="small"
+                        {...register("password", 
+                            { 
+                                required: "Password is required.",
+                                minLength:{
+                                    value: 8,
+                                    message: "Password must be more than 7 characters"
+                                },
+                                maxLength: {
+                                    value: 12,
+                                    message: "Password cannot exceed more than 12 characters"
+                                }
+                            })
+                        }
+                        error={Boolean(errors.password)}
+                        helperText={errors.password?.message}
                     />
                     <TextField
                         margin="normal"
@@ -180,8 +257,6 @@ export default function SignUpPer() {
                         label="Confirm Password"
                         variant="outlined"
                         id="confirmPassword"
-                        inputProps={{ minLength: 8 }}
-                        required
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
@@ -196,6 +271,21 @@ export default function SignUpPer() {
                             ),
                         }}
                         size="small"
+                        {...register("confirmPassword", 
+                            { 
+                                required: "Confirm Password is required.",
+                                minLength:{
+                                    value: 8,
+                                    message: "Confirm Password must be more than 8 characters"
+                                },
+                                maxLength: {
+                                    value: 12,
+                                    message: "Confirm Password cannot exceed more than 12 characters"
+                                }
+                            })
+                        }
+                        error={Boolean(errors.confirmPassword)}
+                        helperText={errors.confirmPassword?.message}
                     />
                     <Button
                         type="submit"
