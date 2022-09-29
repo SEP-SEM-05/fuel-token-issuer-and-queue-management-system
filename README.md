@@ -16,3 +16,9 @@
 
 ### 2. To run the full application
 ### `npm run dev`
+
+### 3. To run tests
+### `npm test`
+
+### 4. To run a specific test file
+### `npm test -- bar.test.js`

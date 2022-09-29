@@ -11,7 +11,9 @@
     "server": "nodemon server.js",
     "client": "npm run start --prefix client",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
-    "test": "jest"
+    "test": "jest",
+    "test_force_exit": "jest --forceExit",
+    "test_detectOpenHandles": "jest --detectOpenHandles"
   },
   "repository": {
     "type": "git",
