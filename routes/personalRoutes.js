@@ -7,7 +7,7 @@ const router = express.Router();
 //get dashboard info
 router.get('/dashboard/:id', auth.requireAuth, personalController.get_dashboard);
 
-//change stations
-router.post('/changeStatioins', auth.requireAuth, personalController.change_stations);
+//register a vehicle and add stations to it or change stations of an alredy registered one
+router.post('/changeStatioins', auth.requireAuth, personalController.register_and_change_stations);
 
 module.exports = router;
