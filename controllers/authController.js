@@ -46,7 +46,7 @@ const register_post_personal = async (req, res) => {
     }
 }
 
-//register an organization
+//register an organization - incomplete
 const register_post_org = async (req, res) => {
 
     //registration process is different

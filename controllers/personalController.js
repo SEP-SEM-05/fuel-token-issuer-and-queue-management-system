@@ -41,15 +41,15 @@ const get_dashboard = async (req, res) => {
     }
 }
 
-//change stations for a vehicle
-const change_stations = async (req, res) => {
+//register a vehicle and add stations to it or change stations of an alredy registered one
+const register_and_change_stations = async (req, res) => {
 
     let regNo = req.body.registrationNo;
     let stations = req.body.stations;
 
     try {
         //handle any possible errors
-        let result = await vehicleDBHelper.updateStations(regNo, stations);
+        let result = await vehicleDBHelper.updateStationsAndRegister(regNo, stations);
         //return necessary data
         res.json({
             status: 'ok',
@@ -63,5 +63,5 @@ const change_stations = async (req, res) => {
 
 module.exports = {
     get_dashboard,
-    change_stations,
+    register_and_change_stations,
 }
