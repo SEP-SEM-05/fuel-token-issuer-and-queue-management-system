@@ -33,8 +33,12 @@ const organizationSchema = new Schema({
         default: false
     },
     lastFilledDate: {
-        type: Date,
-        default: null
+        type: Map,
+        of: Date,
+        default: {
+            'Petrol': null,
+            'Diesel': null
+        }
     },
     vehicles: {
         type: [String],

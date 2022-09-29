@@ -5,7 +5,7 @@ require('dotenv').config();
 const dbURI = process.env.DB_URI;
 
 const Vehicle = require('../../../models/vehicle');
-const {findVehicleByRegNo, findAllByNic, findAllByregistrationNoArray, updateStations} = require('../../../services/vehicleDBHelper');
+const {findVehicleByRegNo, findAllByNic, findAllByregistrationNoArray, updateStationsAndRegister} = require('../../../services/vehicleDBHelper');
 
 describe("Database access methods for vehicles", () => {
     
@@ -91,7 +91,7 @@ describe("Database access methods for vehicles", () => {
         });
     });
 
-    describe("updateStations - Given the a registration No. and an array of stations, update the stations of the vehicle", () => {
+    describe("updateStationsAndRegister - Given the a registration No. and an array of stations, update the stations of the vehicle and mark as registered", () => {
 
         // it("check whether the client is successfully saved", async () => {
 

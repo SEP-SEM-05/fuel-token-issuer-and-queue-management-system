@@ -24,9 +24,13 @@ const get_dashboard = async (req, res) => {
         error: "Invalid User!",
       });
     }
+
   } catch (err) {
     console.log(err);
-    res.status(500).json({});
+    res.status(500).json({
+      status: "error",
+      error: "Internal server error!",
+    });
   }
 };
 
@@ -43,10 +47,13 @@ const update_fuel_amount = async (req, res) => {
     res.json({
       status: "ok",
     });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({});
-  }
+  } catch(err){
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
 };
 
 module.exports = {
