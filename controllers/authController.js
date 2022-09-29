@@ -139,8 +139,8 @@ const login_post_admin = async (req, res) => {
             });
         }
     } 
-    catch (error) {
-        console.error(error);
+    catch (err) {
+        console.error(err);
         res.status(500).json({
             status: 'error',
             error: 'Internal server error!'
@@ -193,8 +193,8 @@ const login_post_personal = async (req, res) => {
             });
         }
     }
-    catch (error) {
-        console.log(error);
+    catch (err) {
+        console.log(err);
         res.status(500).json({
             status: 'error',
             error: 'Internal server error!'
@@ -247,8 +247,8 @@ const login_post_org = async (req, res) => {
             });
         }
     }
-    catch (error) {
-        console.log(error);
+    catch (err) {
+        console.log(err);
         res.status(500).json({
             status: 'error',
             error: 'Internal server error!'
@@ -301,9 +301,12 @@ const login_post_station = async (req, res) => {
             });
         }
     }
-    catch (error) {
-        console.log(error);
-        res.status(500).json({});
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
     }
 }
 

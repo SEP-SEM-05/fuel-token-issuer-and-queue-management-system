@@ -44,16 +44,62 @@ const get_dashboard = async (req, res) => {
     }
 }
 
-//register a vehicle and add stations to it or change stations of an alredy registered one
-const add_vehicle_and_change_stations = async (req, res) => {
+//register a vehicle to the system
+const add_vehicle = async (req, res) => {
+
+    let nic = req.body.nic
+    let regNo = req.body.registrationNo;
+    let stations = req.body.stations;
+
+    try {
+
+        let vehicle = await vehicleDBHelper.findVehicleByRegNo(regNo);
+
+        if(!vehicle){
+            res.status(400).json({
+                status: 'error',
+                error: 'Invalid registration No.!'
+            });
+        }
+        else if(nic !== vehicle.ownerNIC){
+            res.status(400).json({
+                status: 'error',
+                error: 'Invalid Owner!'
+            });
+        }
+        else if(vehicle.isRegistered){
+            res.status(400).json({
+                status: 'error',
+                error: 'Vehicle has already registered!'
+            });
+        }
+        else{
+
+            let result = await vehicleDBHelper.updateStationsAndRegister(regNo, stations);
+            res.json({
+                status: 'ok',
+            });
+        }
+    } 
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
+}
+
+//add change stations of a registered vehicle
+const change_stations = async (req, res) => {
 
     let regNo = req.body.registrationNo;
     let stations = req.body.stations;
 
     try {
-        //handle any possible errors
+
         let result = await vehicleDBHelper.updateStationsAndRegister(regNo, stations);
-        //return necessary data
+
         res.json({
             status: 'ok',
         });
@@ -69,5 +115,6 @@ const add_vehicle_and_change_stations = async (req, res) => {
 
 module.exports = {
     get_dashboard,
-    add_vehicle_and_change_stations,
+    add_vehicle,
+    change_stations,
 }
