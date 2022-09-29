@@ -45,7 +45,7 @@ const get_dashboard = async (req, res) => {
 }
 
 //register a vehicle and add stations to it or change stations of an alredy registered one
-const register_and_change_stations = async (req, res) => {
+const add_vehicle_and_change_stations = async (req, res) => {
 
     let regNo = req.body.registrationNo;
     let stations = req.body.stations;
@@ -69,5 +69,5 @@ const register_and_change_stations = async (req, res) => {
 
 module.exports = {
     get_dashboard,
-    register_and_change_stations,
+    add_vehicle_and_change_stations,
 }
