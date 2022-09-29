@@ -1,3 +1,4 @@
+const { Timestamp } = require('mongodb');
 const mongoose = require('mongoose');
 
 // environmental variables
@@ -5,7 +6,7 @@ require('dotenv').config();
 const dbURI = process.env.DB_URI;
 
 const Organization = require('../../../models/organization');
-const {saveClient, findClientByRegNo, findClientByID} = require('../../../services/orgDBHelper');
+const {saveClient, findClientByRegNo, findClientByID, updateStations} = require('../../../services/orgDBHelper');
 
 describe("Database access methods for organizations", () => {
     
@@ -14,65 +15,48 @@ describe("Database access methods for organizations", () => {
         await mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
     });
 
+    afterAll(async () => {
+        await mongoose.disconnect();
+    });
+
     describe("saveClient - Save an organization to the database", () => {
 
-        // it("should return an error with email field for already exsisting email address", async () => {
+        it("should update the document based on the registration No. with the provided validated data", async () => {
 
-        //     const mockClient = {};
-        //     const mockError = "";
+            const mockRegNo = "sampleRegNo999"
+            const mockClient = {
+                "registrationNo": mockRegNo,
+                "name": "sampleOrgName",
+                "password": "$2a$12$zXIzE0x2Eq1t8J06Bt6YF.9PawV5dV81HHbWy3kdkfyPQCY8rvqVy",
+                "contactNo": "2837363682823",
+                "address": "119/2, sample, address",
+                "email": Date.now().toString(36) + Math.random().toString(36).substr(2) + "@example.com",
+                "stations": [
+                    "283648236846",
+                    "237223873872"
+                ]
+            };
 
-        //     const err = await saveClient(mockClient);
+            const result = await saveClient(mockRegNo ,mockClient);
 
-        //     expect(err).toEqual(mockError);
-        // });
-
-        // it("should return an error with nic field for already exsisting nic", async () => {
-
-        //     const mockClient = {};
-        //     const mockError = "";
-
-        //     const err = await saveClient(mockClient);
-
-        //     expect(err).toEqual(mockError);
-        // });
-
-        // it("should return false if the client been successfully saved", async () => {
-
-        //     const mockClient = {};
-
-        //     const err = await saveClient(mockClient);
-
-        //     expect(err).toEqual(false);
-        // });
-
-        // it("check whether the client is successfully saved", async () => {
-
-        //     const mockClient = {};
-        //     const mockData = {};
-
-        //     const err = await saveClient(mockData);
-        //     const quriedClient = await Personal.findOne({nic: mockData.nic});
-
-        //     expect(quriedClient).toEqual(mockClient);
-        // });
+            expect(result.modifiedCount).toEqual(1);
+        });
     });
 
     describe("findClientByRegNo - Find an organization by registrationNo.", () => {
 
         it("should return a null object for non exsisting registrationNo", async () => {
 
-            const client = await findClientByRegNo('9929988750');
+            const client = await findClientByRegNo('non-existing regNo');
 
             expect(client).toEqual(null);
         });
 
         it("should return a valid organization object for an exsisting registrationNo", async () => {
 
-            const mockClient = {};
+            const quriedClient = await findClientByRegNo('mockRegNo999');
 
-            const quriedClient = await findClientByRegNo('1544657956');
-
-            expect(quriedClient).toEqual(mockClient);
+            expect(quriedClient._id).toEqual(mongoose.Types.ObjectId("6335c554d94e2a08227ac7b2"));
         });
     });
 
@@ -80,32 +64,40 @@ describe("Database access methods for organizations", () => {
 
         it("should return a null object for non exsisting id", async () => {
 
-            const client = await findClientByID('sample _id');
+            const client = await findClientByID('0335c554d94e2a08227ac7b0');
 
             expect(client).toEqual(null);
         });
 
         it("should return a valid organization object for an exsisting id", async () => {
 
-            const mockClient = {};
+            const quriedClient = await findClientByID("6335c554d94e2a08227ac7b2");
 
-            const quriedClient = await findClientByID('exsisting _id');
-
-            expect(quriedClient).toEqual(mockClient);
+            expect(quriedClient.registrationNo).toEqual("mockRegNo999");
         });
     });
 
     describe("updateStations - Given the a registration No. and an array of stations, update the stations of the organization", () => {
 
-        // it("check whether the client is successfully saved", async () => {
+        it("should fail to update any document for an invalid registration No.", async () => {
 
-        //     const mockClient = {};
-        //     const mockData = {};
+            const mockRegNo = "mockRegNo111";
+            const mockStations = ['stationRegNo01', 'stationRegNo02'];
 
-        //     const err = await saveClient(mockData);
-        //     const quriedClient = await Personal.findOne({nic: mockData.nic});
+            let result = await updateStations(mockRegNo, mockStations);
 
-        //     expect(quriedClient).toEqual(mockClient);
-        // });
+            expect(result.matchedCount).toEqual(0);
+        });
+
+        it("should update the stations of a particular organization with provided stations array for a valid registration No.", async () => {
+
+            const mockRegNo = "mockRegNo999";
+            const mockStations = ['stationRegNo01', 'stationRegNo02'];
+
+            let result = await updateStations(mockRegNo, mockStations);
+            let quriedClient = await Organization.findOne({registrationNo: mockRegNo});
+
+            expect(quriedClient.stations).toEqual(mockStations);
+        });
     });
 });
