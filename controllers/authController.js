@@ -20,47 +20,39 @@ const register_post_personal = async (req, res) => {
     try {
 
         data.password = await encHandler.encryptCredential(password);
-        let err = personalDBHelper.saveClient(data);
-    
-        if(err){
-            let errField = (err.keyValue.email) ? 'email' : 'nic';
-            res.status(400).json({
-                status: 'error',
-                error: errField + ' already exists!',
-            });
-        }
-        else{
-    
-            let user = await personalDBHelper.findClientByNic(nic);
-            let token = auth.createToken();
-            let fullName = user.firstName + " " + user.lastName;
-    
-            res.json({
-                status: 'ok',
-                token: token,
-                userType: 'personal',
-                data: {
-                    nic: nic,
-                    id: user._id,
-                    fullName: fullName
-                }
-            });
-        }
+
+        await personalDBHelper.saveClient(data);
+
+        let user = await personalDBHelper.findClientByNic(nic);
+
+        let token = auth.createToken();
+        let fullName = user.firstName + " " + user.lastName;
+
+        res.json({
+            status: 'ok',
+            token: token,
+            userType: 'personal',
+            data: {
+                nic: nic,
+                id: user._id,
+                fullName: fullName
+            }
+        });
     } 
-    catch (error) {
-        console.log(error);
-        res.status(500).json({
+    catch (err) {
+
+        console.log(err);
+
+        let errField = (err.keyValue.email) ? 'email' : 'nic';
+        res.status(400).json({
             status: 'error',
-            error: 'Internal server error!'
+            error: errField + ' already exists!',
         });
     }
 }
 
-//register an organization - incomplete
+//register an organization and register all the vehicles belongs to it
 const register_post_org = async (req, res) => {
-
-    //registration process is different
-    //register all the vehicles under the organization to the system
 
     let data = req.body;
     let password = data.password;
@@ -68,21 +60,36 @@ const register_post_org = async (req, res) => {
 
     try {
 
-        data.password = await encHandler.encryptCredential(password);
-        let err = orgDBHelper.saveClient(data);
-    
-        if(err){
-            let errField = (err.keyValue.email) ? 'email' : 'registrationNo';
+        let orgClient = await orgDBHelper.findClientByRegNo(registrationNo);
+
+        if(!orgClient){
             res.status(400).json({
                 status: 'error',
-                error: errField + ' already exists!',
+                error: 'Invalid Registration No.!',
+            });
+        }
+        else if(orgClient.isRegistered){
+            res.status(400).json({
+                status: 'error',
+                error: 'Organization is already registered!',
+            });
+        }
+        else if(orgClient.email === data.email){
+            res.status(400).json({
+                status: 'error',
+                error: 'email already exists!',
             });
         }
         else{
-    
-            let user = await orgDBHelper.findClientByregistrationNo(registrationNo);
+
+            data.isRegistered = true;
+            data.password = await encHandler.encryptCredential(password);
+
+            await orgDBHelper.saveClient(registrationNo, data);
+            await vehicleDBHelper.registerAll(orgClient.vehicles);
+
             let token = auth.createToken();
-            let name = user.name;
+            let name = data.name;
     
             res.json({
                 status: 'ok',
@@ -90,18 +97,18 @@ const register_post_org = async (req, res) => {
                 userType: 'organization',
                 data: {
                     registrationNo: registrationNo,
-                    id: user._id,
+                    id: orgClient._id,
                     name: name
                 }
             });
         }
     }
-    catch (error) {
-        console.log(error);
+    catch (err) {
+        console.log(err);
         res.status(500).json({
             status: 'error',
             error: 'Internal server error!'
-        });
+        })
     }
 }
 
@@ -121,7 +128,8 @@ const login_post_admin = async (req, res) => {
 
             res.json({
                 status: 'ok',
-                token: token
+                token: token,
+                userType: 'admin',
             });
         }
         else{
