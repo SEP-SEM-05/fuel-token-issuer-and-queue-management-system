@@ -2,14 +2,16 @@ import React, { useEffect } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import { Autocomplete, Box, Button, CardActions, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, InputAdornment, TextField } from '@mui/material';
+import { Autocomplete, Box, Button, CardActions, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, IconButton, InputAdornment, Switch, TextField, Tooltip } from '@mui/material';
 import OpacityIcon from '@mui/icons-material/Opacity';
 import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
+import QrCode2Icon from '@mui/icons-material/QrCode2';
+import QRIMG from '../../assets/QR.svg'
 
 
 const stationNameandCity = [
     "station 01", "station 02", "station 03", "station 04"
-  ];
+];
 
 const vehicles = [
     ['ABC 1234', 'Diesel', '19/09/2022', 'Mortor Car', 34, 40, ['station 01', 'station 02', 'station 04']],
@@ -21,6 +23,7 @@ const vehicles = [
 export default function PersonalVehicles() {
     const [open, setOpen] = React.useState(false);
     const [openSt, setOpenSt] = React.useState(false);
+    const [openQR, setOpenQR] = React.useState(false);
     const [vehicle, setVehicle] = React.useState([]);
     const [value, setValue] = React.useState();
 
@@ -41,6 +44,16 @@ export default function PersonalVehicles() {
     const handleCloseSt = () => {
         setOpenSt(false);
     };
+
+    const handleClickOpenQR = (vehicle) => {
+        setOpenQR(true);
+        setValue(vehicle[6]);
+    };
+
+    const handleCloseQR = () => {
+        setOpenQR(false);
+    };
+
 
     return (
         <Box>
@@ -64,6 +77,12 @@ export default function PersonalVehicles() {
                         <strong>{vehicle[4]}</strong> liters remaining
                     </Typography>
                 </DialogContent>
+                <DialogActions sx={{ pr: 3, pl: 3, pb: 3, display: 'flex', justifyContent: 'flex-start' }}>
+                    <Typography variant='subtitle2' >
+                        {vehicle[1] === 'Diesel' ? 'Super Diesel' : 'Petrol 95 Octane'}
+                    </Typography>
+                    <Switch color={vehicle[1] === 'Diesel' ? 'success' : 'warning'} />
+                </DialogActions>
                 <DialogActions sx={{ pr: 3, pl: 3, pb: 3 }}>
                     <Button variant='outlined' color={vehicle[1] === 'Diesel' ? 'success' : 'warning'} sx={{ width: "100%" }} >Request</Button>
                 </DialogActions>
@@ -78,7 +97,7 @@ export default function PersonalVehicles() {
                 </DialogTitle>
                 <Divider />
 
-                <DialogContent sx={{ pr: 8, pl: 4, pt:3 }}>
+                <DialogContent sx={{ pr: 8, pl: 4, pt: 3 }}>
 
                     <Autocomplete
                         multiple
@@ -91,21 +110,30 @@ export default function PersonalVehicles() {
                         renderTags={(tagValue, getTagProps) =>
                             tagValue.map((option, index) => (
                                 <Chip
-                                    sx={{fontWeight:'bold'}}
+                                    sx={{ fontWeight: 'bold' }}
                                     label={option}
                                     {...getTagProps({ index })}
                                 />
                             ))
                         }
-                        sx={{ minWidth: {md:500, xs:'unset'} }}
+                        sx={{ minWidth: { md: 500, xs: 'unset' } }}
                         renderInput={(params) => (
                             <TextField {...params} label="Fuel Stations" variant='outlined' color='info' focused />
                         )}
                     />
                 </DialogContent>
-                <DialogActions sx={{ p:3 }}>
+                <DialogActions sx={{ p: 3 }}>
                     <Button variant='outlined' color={'success'} sx={{ width: "100%" }} >Save Changes</Button>
                 </DialogActions>
+            </Dialog>
+
+            <Dialog open={openQR} onClose={handleCloseQR}>
+                <DialogTitle sx={{ fontWeight: 'bold', pb: 1 }} >
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>QR Code</Box>
+                </DialogTitle>
+                <DialogContent>
+                    <img alt='QR' src={QRIMG} />
+                </DialogContent>
             </Dialog>
 
             <Grid item xs={12} sx={{ pl: { xs: "unset", lg: 3 }, my: -3 }} ><h1>Own Vehicles</h1></Grid>
@@ -123,6 +151,9 @@ export default function PersonalVehicles() {
                                 <Typography variant="caption" display="block" gutterBottom sx={{ pb: 5 }}>
                                     Last refilled date : {vehicle[2]}
                                 </Typography>
+                                <CardActions>
+
+                                </CardActions>
                                 <Box sx={{ alignItems: 'center', display: "flex", pb: 1 }}>
                                     <OpacityIcon sx={{ pr: '5px' }} />
                                     <Typography variant="h6" display="block" >
@@ -131,8 +162,13 @@ export default function PersonalVehicles() {
                                 </Box>
                                 <Button onClick={() => handleClickOpenSt(vehicle)} variant='contained' size='small' color='error' sx={{ fontWeight: 'bold' }}>Fuel Stations</Button>
                             </CardContent>
-                            <CardActions sx={{ display: 'flex', alignItems: 'stretch', justifyContent: { xs: 'center', md: 'unset' } }}>
-                                <Button onClick={() => handleClickOpen(vehicle)} variant='contained' color='info'>
+                            <CardActions sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: { xs: 'column', md: 'row' }, justifyContent: { xs: 'center', md: 'unset' } }}>
+                                <Tooltip placement="top" title={'QR code'}>
+                                    <IconButton onClick={() => handleClickOpenQR(vehicle)} >
+                                        <QrCode2Icon sx={{ color: 'white' }} />
+                                    </IconButton>
+                                </Tooltip>
+                                <Button sx={{ alignSelf: 'stretch' }} onClick={() => handleClickOpen(vehicle)} variant='contained' color='info'>
                                     <Typography variant='h6' sx={{ fontWeight: 'bold' }}>Request<br />Fuel</Typography>
                                 </Button>
                             </CardActions>
