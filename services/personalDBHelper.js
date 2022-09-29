@@ -7,15 +7,18 @@ const Personal = require('../models/personal');
 //save a personal client to the database
 const saveClient = (data) => {
 
-    let client = new Personal(data);
+    return new Promise(async (resolve, reject) => {
 
-    client.save((err) => {
-        if(err){
-            return err;
-        }
-        else{
-            return false;
-        }
+        let client = new Personal(data);
+
+        client.save((err) => {
+            if(err){
+                reject(err);
+            }
+            else{
+                resolve();
+            }
+        });
     });
 }
 
