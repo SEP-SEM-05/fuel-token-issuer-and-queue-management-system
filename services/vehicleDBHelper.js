@@ -29,9 +29,16 @@ const updateStationsAndRegister = async (regNo, stations) => {
     return result;
 }
 
+//register all the vehicles matches a given registration No. array
+const registerAll = async (regNoArray) => {
+    let result = await Vehicle.updateMany({registrationNo: { $in: regNoArray }}, {isRegistered: true});
+    return result;
+}
+
 module.exports = {
     findVehicleByRegNo,
     findAllByNic,
     findAllByregistrationNoArray,
     updateStationsAndRegister,
+    registerAll,
 }
