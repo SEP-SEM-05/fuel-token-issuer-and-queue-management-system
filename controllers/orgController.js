@@ -3,6 +3,7 @@ mongoose.Promise = global.Promise;
 require('dotenv').config();
 
 const orgDBHelper = require('../services/orgDBHelper');
+const stationDBHelper = require('../services/stationDBHelper');
 const vehicleDBHelper = require('../services/vehicleDBHelper');
 
 const auth = require('../middleware/auth');
@@ -10,6 +11,7 @@ const encHandler = require('../middleware/encryptionHandler');
 
 
 //get organization dashboard info
+//fuel quota - remaining and full
 const get_dashboard = async (req, res) => {
 
     let id = req.params.id;
@@ -20,7 +22,133 @@ const get_dashboard = async (req, res) => {
 
         if(user !== null){
 
+            // return_user = {};
+
+            //calculate the remaining quota and full quota
+            //send stations of org
+            //send all stations
+
             let vehicles = await vehicleDBHelper.findAllByregistrationNoArray(user.vehicles);
+            let stations = await stationDBHelper.findAllRegisteredStations();
+            let quotas = await vehicleDBHelper.getQuotas();
+
+            let fullQuotaDiesel, totalUsedQuotaDiesel;
+            let fullQuotaPetrol, totalUsedQuotaPetrol;
+            vehicles.forEach((vehicle) => {
+
+                //select the corresponding quota from quotas
+                //add amount to the fullQuota
+                //calculate and add total used quota using vehicle.usedQuota
+
+                for(const quota in quotas){
+
+                    if(quota.vehicleType === vehicle.type && quota.fuelType === vehicle.fuelType){
+
+                        if(quota.fuelType === 'Diesel'){
+                            fullQuotaDiesel += quota.amount;
+                        }
+                        else{
+                            fullQuotaPetrol += quota.amount;
+                        }
+                        break;
+                    }
+                }
+
+                if(vehicle.fuelType === 'Diesel'){
+                    totalUsedQuotaDiesel += vehicle.usedQuota;
+                }
+                else{
+                    totalUsedQuotaPetrol += vehicle.usedQuota;
+                }
+            })
+
+            let remainingQuotaDiesel = fullQuotaDiesel - totalUsedQuotaDiesel;
+            let remainingQuotaPetrol = fullQuotaPetrol - totalUsedQuotaPetrol
+
+            user['fullDieselQuota'] = fullQuotaDiesel;
+            user['fullPetrolQuota'] = fullQuotaPetrol;
+
+            user['remainingDieselQuota'] = remainingQuotaDiesel;
+            user['remainingPetrolQuota'] = remainingQuotaPetrol;
+
+            // return_user['fullDieselQuota'] = fullQuotaDiesel;
+            // return_user['fullPetrolQuota'] = fullQuotaPetrol;
+
+            // return_user['remainingDieselQuota'] = remainingQuotaDiesel;
+            // return_user['remainingPetrolQuota'] = remainingQuotaPetrol;
+
+            //stations array must contain strings with regNo and name concatde with '-'
+            let org_stations = [];
+            stations.forEach((station) => {
+
+                if(user.stations.includes(station.registrationNo)){
+                    org_stations.push(station.registrationNo + '-' + station.name);
+                }
+            })
+            user['stations'] = org_stations;
+
+            // return_user['stations'] = org_stations;
+            // delete user.stations;
+
+            // for(const key in user){
+            //     return_user[key] = user[key];
+            // }
+
+            //create a string array containing all the stations
+            //each string must contain regNo and name concated with '-'
+            let return_stations = [];
+            stations.forEach((station) => {
+                return_stations.push(station.registrationNo + '-' + station.name);
+            })
+
+            res.json({
+                status: 'ok',
+                user: user,
+                vehicles: vehicles,
+                stations: return_stations
+            });
+        }
+        else{
+            res.status(400).json({
+                status: 'error',
+                error: 'Invalid User!'
+            });
+        }  
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
+}
+
+//get organization vehicle details
+const get_vehicles = async (req, res) => {
+
+    let id = req.params.id;
+
+    try{
+
+        let user = await orgDBHelper.findClientByID(id);
+
+        if(user !== null){
+
+            let vehicles = await vehicleDBHelper.findAllByregistrationNoArray(user.vehicles);
+            let quotas = await vehicleDBHelper.getQuotas();
+
+            vehicles.forEach((vehicle) => {
+
+                for(const quota in quotas){
+
+                    if(quota.vehicleType === vehicle.type && quota.fuelType === vehicle.fuelType){
+                        
+                        vehicle['weeklyQuota'] = quota.amount;
+                        break;
+                    }
+                }
+            })
 
             res.json({
                 status: 'ok',
@@ -69,5 +197,6 @@ const change_stations = async (req, res) => {
 
 module.exports = {
     get_dashboard,
+    get_vehicles,
     change_stations,
 }
