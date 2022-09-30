@@ -1,18 +1,18 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import { createTheme } from '@mui/material/styles';
-import { IconButton, InputAdornment, ThemeProvider } from '@mui/material';
+import * as React from "react";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import { createTheme } from "@mui/material/styles";
+import { IconButton, InputAdornment, ThemeProvider } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useForm } from "react-hook-form";
 
 const darkTheme = createTheme({
-    palette: {
-        mode: 'dark',
-    },
+  palette: {
+    mode: "dark",
+  },
 });
 
 export default function StationGetStand() {
@@ -31,30 +31,30 @@ export default function StationGetStand() {
 
   const handlePassVisibilty = () => {
     setValues({
-        ...values,
-        showPass: !values.showPass,
+      ...values,
+      showPass: !values.showPass,
     });
   };
   const handleConfirmPassVisibilty = () => {
     setValues({
-        ...values,
-        showConfirmPass: !values.showConfirmPass,
+      ...values,
+      showConfirmPass: !values.showConfirmPass,
     });
   };
 
-    return (
-        <ThemeProvider theme={darkTheme}>
-            <Box
-                sx={{
-                my: 6,
-                mx: 4,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                backgroundColor: '#282835',
-                borderRadius: 5,
-                p:5
-            }}
+  return (
+    <ThemeProvider theme={darkTheme}>
+      <Box
+        sx={{
+          my: 6,
+          mx: 4,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          backgroundColor: "#282835",
+          borderRadius: 5,
+          p: 5,
+        }}
             >
                 <Typography 
                     component="h1" 

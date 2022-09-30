@@ -14,6 +14,10 @@ describe("Database access methods for personal clients", () => {
         await mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
     });
 
+    afterAll(async () => {
+        await mongoose.disconnect();
+    });
+
     describe("saveClient - Save a personal client to the database", () => {
 
         it("should return an error with email field for already exsisting email address", async () => {

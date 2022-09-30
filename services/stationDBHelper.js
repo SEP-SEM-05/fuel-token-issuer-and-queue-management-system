@@ -7,7 +7,7 @@ const Station = require('../models/station');
 //find a station given the registration No.
 const findStationByRegNo = async (registrationNo) => {
 
-    let station = await Station.findOne({ registrationNo });
+    let station = await Station.findOne({registrationNo, isRegistered: true});
     return station;
 }
 

@@ -6,24 +6,16 @@ const Org = require('../models/organization');
 
 //save an organization to the database
 //since the organizations are pre-populated, this should change the isRegistered to true
-const saveClient = (data) => {
+const saveClient = async (registrationNo, data) => {
 
-    let client = new Org(data);
-
-    client.save((err) => {
-        if(err){
-            return err;
-        }
-        else{
-            return false;
-        }
-    });
+    let result = await Org.updateOne({registrationNo}, data);
+    return result;
 }
 
-//find an organization given the registration No.
+//find an registered organization given the registration No.
 const findClientByRegNo = async (registrationNo) => {
 
-    let client = await Org.findOne({registrationNo});
+    let client = await Org.findOne({registrationNo, isRegistered: true});
     return client;
 }
 

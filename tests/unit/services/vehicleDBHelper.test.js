@@ -14,6 +14,10 @@ describe("Database access methods for vehicles", () => {
         await mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
     });
 
+    afterAll(async () => {
+        await mongoose.disconnect();
+    });
+
     describe("findVehicleByRegNo - Find a vehicle that matches the given registration No.", () => {
 
         it("should return a null object for non exsisting registrtation No.", async () => {
