@@ -3,6 +3,7 @@ mongoose.Promise = global.Promise;
 require('dotenv').config();
 
 const personalDBHelper = require('../services/personalDBHelper');
+const stationDBHelper = require('../services/stationDBHelper');
 const vehicleDBHelper = require('../services/vehicleDBHelper');
 
 const auth = require('../middleware/auth');
@@ -10,6 +11,8 @@ const encHandler = require('../middleware/encryptionHandler');
 
 
 //get personal client dashboard info
+//vehicles string array - for each vehicle calculate the full quota and the remaining quota
+//stations string array
 const get_dashboard = async (req, res) => {
 
     let id = req.params.id;
@@ -21,11 +24,66 @@ const get_dashboard = async (req, res) => {
         if(user !== null){
 
             let vehicles = await vehicleDBHelper.findAllByNic(user.nic);
+            let stations = await stationDBHelper.findAllRegisteredStations();
+            let quotas = await vehicleDBHelper.getQuotas();
+
+            let return_vehicles = [];
+            vehicles.forEach((vehicle) => {
+
+                // let return_vehicle = {};
+
+                //select the corresponding quota from quotas
+                //add amount as fullQuota
+                //calculate and add remaining quota using vehicle.usedQuota
+
+                let fullQuota;
+                for(const quota in quotas){
+
+                    if(quota.vehicleType === vehicle.type && quota.fuelType === vehicle.fuelType){
+
+                        fullQuota = quota.amount;
+                        break;
+                    }
+                }
+                vehicle['fullQuota'] = fullQuota;
+                vehicle['remainingQuota'] = fullQuota - vehicle.usedQuota;
+
+                // return_vehicle['fullQuota'] = fullQuota;
+                // return_vehicle['remainingQuota'] = fullQuota - vehicle.usedQuota;
+
+                //stations array must contain strings with regNo and name concatde with '-'
+                let vehicle_stations = [];
+                stations.forEach((station) => {
+
+                    if(vehicle.stations.includes(station.registrationNo)){
+                        vehicle_stations.push(station.registrationNo + '-' + station.name);
+                    }
+                })
+                vehicle['stations'] = vehicle_stations;
+
+                // return_vehicle['stations'] = vehicle_stations;
+                // delete vehicle.stations;
+
+                // for(const key in vehicle){
+                //     return_vehicle[key] = vehicle[key];
+                // }
+
+                return_vehicles.push(vehicle);
+                // return_vehicles.push(return_vehicle);
+            })
+
+            //create a string array containing all the stations
+            //each string must contain regNo and name concated with '-'
+            let return_stations = [];
+            stations.forEach((station) => {
+                return_stations.push(station.registrationNo + '-' + station.name);
+            })
 
             res.json({
                 status: 'ok',
                 user: user,
-                vehicles: vehicles,
+                vehicles: return_vehicles,
+                stations: return_stations
             });
         }
         else{
@@ -49,16 +107,17 @@ const add_vehicle = async (req, res) => {
 
     let nic = req.body.nic
     let regNo = req.body.registrationNo;
+    let engineNo = req.body.engineNo;
     let stations = req.body.stations;
 
     try {
 
-        let vehicle = await vehicleDBHelper.findVehicleByRegNo(regNo);
+        let vehicle = await vehicleDBHelper.findVehicleByRegNoAndEngNo(regNo, engineNo);
 
         if(!vehicle){
             res.status(400).json({
                 status: 'error',
-                error: 'Invalid registration No.!'
+                error: 'Invalid registration No. or engine No.!'
             });
         }
         else if(nic !== vehicle.ownerNIC){
