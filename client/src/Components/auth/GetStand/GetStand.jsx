@@ -36,6 +36,7 @@ export default function GetStand() {
               Fast Fueler
             </Typography>
           </Grid>
+          {/* import the form from another file */}
           <StationGetStand />
         </Grid>
       </Grid>

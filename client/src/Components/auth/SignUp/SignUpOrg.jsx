@@ -9,7 +9,8 @@ import { createTheme } from "@mui/material/styles";
 import { IconButton, InputAdornment, ThemeProvider } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { useForm } from "react-hook-form";
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 const darkTheme = createTheme({
   palette: {
@@ -18,24 +19,40 @@ const darkTheme = createTheme({
 });
 
 export default function SignUpOrg() {
-    const { register, handleSubmit, formState: { errors } } = useForm();
 
-    const onSubmit = (data) => console.log(data);
-    console.log(errors);
+  //Form validation regexes
+  const passwordRegExp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+  const contactRegExp = (/^[0-9]{10}$/i);
 
-
-  const [values, setValues] = React.useState({
+  const initialValues = {
     regNo: "",
     name: "",
     email: "",
     address: "",
     contactNo: "",
-    pass: "",
-    confirmPass: "",
+    password: "",
+    confirmPassword: ""
+  }
+
+  //Form validation schemas
+  const validationSchema = Yup.object().shape({
+    regNo: Yup.string().min(3, "Minimum characters should be 3").required("Required"),
+    name: Yup.string().min(3, "Minimum characters should be 3").required("Required"),
+    email: Yup.string().email("Enter valid email").required("Required"),
+    address: Yup.string().min(3, "Minimum characters should be 3").required("Required"),
+    contactNo: Yup.string().matches(contactRegExp, "Enter valid contact No").required("Required"),
+    password: Yup.string().min(8, "Minimum characters should be 8")
+      .matches(passwordRegExp, "Password must have one upper, lower case, number").required('Required'),
+    confirmPassword: Yup.string().oneOf([Yup.ref('password')], "Password not matches").required('Required')
+  })
+
+  const onSubmit = (data) => console.log(data);
+
+  //variables and functions for show password and hide password
+  const [values, setValues] = React.useState({
     showPass: false,
     showConfirmPass: false,
   });
-
   const handlePassVisibilty = () => {
     setValues({
       ...values,
@@ -63,9 +80,9 @@ export default function SignUpOrg() {
           p: 5,
         }}
       >
-        <Typography 
-          component="h1" 
-          variant="h4" 
+        <Typography
+          component="h1"
+          variant="h4"
           align='center'
           sx={{
             marginBottom: 2,
@@ -77,199 +94,144 @@ export default function SignUpOrg() {
         >
           ORGANIZATION SIGNUP
         </Typography>
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            variant="outlined"
-            id="regNo"
-            label="Registration No"
-            type="text"
-            fullWidth
-            autoComplete='off'
-            size="small"
-            {...register("regNo", 
-              { 
-                required: "Registration No is required.",
-                minLength:{
-                  value: 3,
-                  message: "Registration No must be more than 2 characters"
-                }
-              })
-            }
-            error={Boolean(errors.regNo)}
-            helperText={errors.regNo?.message}
-          />		
-          <TextField
-            margin="normal"
-            variant="outlined"
-            id="name"
-            label="Name"
-            type="text"
-            fullWidth
-            autoComplete='off'
-            size="small"
-            {...register("name", 
-              { 
-                required: "Name is required.",
-                minLength:{
-                  value: 8,
-                  message: "Name must be more than 2 characters"
-                }
-              })
-            }
-            error={Boolean(errors.name)}
-            helperText={errors.name?.message}
-          />		
-          <TextField
-            margin="normal"
-            variant="outlined"
-            id="email"
-            label="Email"
-            type="email"
-            fullWidth
-            autoComplete='off'
-            size="small"
-            {...register("email", 
-              { 
-                required: "Email is required.",
-                pattern:{
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                  message: "This is not a valid email"
-                }
-              })
-            }
-            error={Boolean(errors.email)}
-            helperText={errors.email?.message}
-          />		
-          <TextField
-            margin="normal"
-            variant="outlined"
-            id="address"
-            label="Address"
-            type="text"
-            fullWidth
-            autoComplete='off'
-            size="small"
-            {...register("address", 
-              { 
-                required: "Password is required.",
-                minLength:{
-                  value: 4,
-                  message: "Password must be more than 3 characters"
-                }
-              })
-            }
-            error={Boolean(errors.address)}
-            helperText={errors.address?.message}
-          />			
-          <TextField
-            margin="normal"
-            variant="outlined"
-            id="contactNo"
-            label="Contact Number"
-            type="text"
-            fullWidth
-            autoComplete='off'
-            size="small"
-            {...register("contactNo", 
-              { 
-                required: "Contact Number is required.",
-                minLength:{
-                  value: 10,
-                  message: "Contact Number must 10 characters"
-                },
-                maxLength: {
-                  value: 10,
-                  message: "Contact Number must 10 characters"
-                }
-              })
-            }
-            error={Boolean(errors.contactNo)}
-            helperText={errors.contactNo?.message}
-          />		
-          <TextField
-            margin="normal"
-            type={values.showPass ? "text" : "password"}
-            fullWidth
-            label="Password"
-            variant="outlined"
-            id="password"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={handlePassVisibilty}
-                    aria-label="toggle password"
-                    edge="end"
-                  >
-                    {values.showPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            size="small"
-            {...register("password", 
-              { 
-                required: "Password is required.",
-                minLength:{
-                  value: 8,
-                  message: "Password must be more than 7 characters"
-                },
-                maxLength: {
-                  value: 12,
-                  message: "Password cannot exceed more than 12 characters"
-                }
-              })
-            }
-            error={Boolean(errors.password)}
-            helperText={errors.password?.message}
-          />
-          <TextField
-            margin="normal"
-            type={values.showConfirmPass ? "text" : "password"}
-            fullWidth
-            label="Confirm Password"
-            variant="outlined"
-            id="confirmPassword"
-            inputProps={{ minLength: 8 }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={handleConfirmPassVisibilty}
-                    aria-label="toggle password"
-                    edge="end"
-                  >
-                    {values.showConfirmPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            size="small"
-            {...register("confirmPassword", 
-              { 
-                required: "Confirm Password is required.",
-                minLength:{
-                  value: 8,
-                  message: "Confirm Password must be more than 8 characters"
-                },
-                maxLength: {
-                  value: 12,
-                  message: "Confirm Password cannot exceed more than 12 characters"
-                }
-              })
-            }
-            error={Boolean(errors.confirmPassword)}
-            helperText={errors.confirmPassword?.message}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2, fontWeight: 700 }}
-          >
-            SUBMIT
-          </Button>
+        <Box sx={{ mt: 1 }}>
+          <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+            {(props) => (
+              <Form noValidate>
+                <Field as={TextField}
+                  name='regNo'
+                  margin="normal"
+                  variant="outlined"
+                  id="regNo"
+                  label="Registration No"
+                  type="text"
+                  fullWidth
+                  autoComplete='off'
+                  size="small"
+                  required
+                  error={props.errors.regNo && props.touched.regNo}
+                  helperText={<ErrorMessage name='regNo' />}
+                />
+                <Field as={TextField}
+                  name='name'
+                  margin="normal"
+                  variant="outlined"
+                  id="name"
+                  label="Name"
+                  type="text"
+                  fullWidth
+                  autoComplete='off'
+                  size="small"
+                  required
+                  error={props.errors.name && props.touched.name}
+                  helperText={<ErrorMessage name='name' />}
+                />
+                <Field as={TextField}
+                  name='email'
+                  margin="normal"
+                  variant="outlined"
+                  id="email"
+                  label="Email"
+                  type="text"
+                  fullWidth
+                  autoComplete='off'
+                  size="small"
+                  required
+                  error={props.errors.email && props.touched.email}
+                  helperText={<ErrorMessage name='email' />}
+                />
+                <Field as={TextField}
+                  name='address'
+                  margin="normal"
+                  variant="outlined"
+                  id="address"
+                  label="Address"
+                  type="text"
+                  fullWidth
+                  autoComplete='off'
+                  size="small"
+                  required
+                  error={props.errors.address && props.touched.address}
+                  helperText={<ErrorMessage name='address' />}
+                />
+                <Field as={TextField}
+                  name='contactNo'
+                  margin="normal"
+                  variant="outlined"
+                  id="contactNo"
+                  label="Contact Number"
+                  type="text"
+                  fullWidth
+                  autoComplete='off'
+                  size="small"
+                  required
+                  error={props.errors.contactNo && props.touched.contactNo}
+                  helperText={<ErrorMessage name='contactNo' />}
+                />
+                <Field as={TextField}
+                  name='password'
+                  margin="normal"
+                  type={values.showPass ? "text" : "password"}
+                  fullWidth
+                  label="Password"
+                  variant="outlined"
+                  id="password"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={handlePassVisibilty}
+                          aria-label="toggle password"
+                          edge="end"
+                        >
+                          {values.showPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  size="small"
+                  required
+                  error={props.errors.password && props.touched.password}
+                  helperText={<ErrorMessage name='password' />}
+                />
+                <Field as={TextField}
+                  name='confirmPassword'
+                  margin="normal"
+                  type={values.showConfirmPass ? "text" : "password"}
+                  fullWidth
+                  label="Confirm Password"
+                  variant="outlined"
+                  id="confirmPassword"
+                  inputProps={{ minLength: 8 }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={handleConfirmPassVisibilty}
+                          aria-label="toggle password"
+                          edge="end"
+                        >
+                          {values.showConfirmPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  size="small"
+                  required
+                  error={props.errors.confirmPassword && props.touched.confirmPassword}
+                  helperText={<ErrorMessage name='confirmPassword' />}
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2, fontWeight: 700 }}
+                >
+                  SUBMIT
+                </Button>
+              </Form>
+            )}
+          </Formik>
           <Grid>
             <Grid item align="right">
               <Link href="#" variant="body2">

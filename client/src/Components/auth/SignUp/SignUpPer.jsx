@@ -43,7 +43,7 @@ export default function SignUpPer() {
     email: Yup.string().email("Enter valid email").required("Required"),
     nic: Yup.string().matches(nicRegExp, "Enter valid NIC").required("Required"),
     address: Yup.string().min(3, "Minimum characters should be 3").required("Required"),
-    contactNo: Yup.string().matches(nicRegExp, "Enter valid contact No").required("Required"),
+    contactNo: Yup.string().matches(contactRegExp, "Enter valid contact No").required("Required"),
     password: Yup.string().min(8, "Minimum characters should be 8")
       .matches(passwordRegExp, "Password must have one upper, lower case, number").required('Required'),
     confirmPassword: Yup.string().oneOf([Yup.ref('password')], "Password not matches").required('Required')
