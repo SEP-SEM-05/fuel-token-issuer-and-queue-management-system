@@ -32,8 +32,8 @@ const get_dashboard = async (req, res) => {
             let stations = await stationDBHelper.findAllRegisteredStations();
             let quotas = await vehicleDBHelper.getQuotas();
 
-            let fullQuotaDiesel, totalUsedQuotaDiesel;
-            let fullQuotaPetrol, totalUsedQuotaPetrol;
+            let fullQuotaDiesel, fullQuotaPetrol;
+            // let totalUsedQuotaDiesel, totalUsedQuotaPetrol;
             vehicles.forEach((vehicle) => {
 
                 //select the corresponding quota from quotas
@@ -54,22 +54,22 @@ const get_dashboard = async (req, res) => {
                     }
                 }
 
-                if(vehicle.fuelType === 'Diesel'){
-                    totalUsedQuotaDiesel += vehicle.usedQuota;
-                }
-                else{
-                    totalUsedQuotaPetrol += vehicle.usedQuota;
-                }
+                // if(vehicle.fuelType === 'Diesel'){
+                //     totalUsedQuotaDiesel += vehicle.usedQuota;
+                // }
+                // else{
+                //     totalUsedQuotaPetrol += vehicle.usedQuota;
+                // }
             })
 
-            let remainingQuotaDiesel = fullQuotaDiesel - totalUsedQuotaDiesel;
-            let remainingQuotaPetrol = fullQuotaPetrol - totalUsedQuotaPetrol
+            // let remainingQuotaDiesel = fullQuotaDiesel - totalUsedQuotaDiesel;
+            // let remainingQuotaPetrol = fullQuotaPetrol - totalUsedQuotaPetrol
 
             user['fullDieselQuota'] = fullQuotaDiesel;
             user['fullPetrolQuota'] = fullQuotaPetrol;
 
-            user['remainingDieselQuota'] = remainingQuotaDiesel;
-            user['remainingPetrolQuota'] = remainingQuotaPetrol;
+            // user['remainingDieselQuota'] = remainingQuotaDiesel;
+            // user['remainingPetrolQuota'] = remainingQuotaPetrol;
 
             // return_user['fullDieselQuota'] = fullQuotaDiesel;
             // return_user['fullPetrolQuota'] = fullQuotaPetrol;
@@ -194,6 +194,8 @@ const change_stations = async (req, res) => {
         });
     }
 }
+
+//request fuel
 
 module.exports = {
     get_dashboard,
