@@ -1,20 +1,19 @@
-import { Box } from '@mui/system'
-import React from 'react'
-import { Outlet } from 'react-router-dom'
-import StickyFooter from './Footer'
-import DrawerAppBar from './Navbar'
+import { Box } from "@mui/system";
+import React from "react";
+import { Outlet } from "react-router-dom";
+import StickyFooter from "./Footer";
+import DrawerAppBar from "./Navbar";
 
 const Dashboard = () => {
   return (
-    <Box component={'main'}>
+    <Box component={"main"}>
       <DrawerAppBar />
-      <Box sx={{p:2}}>
-      <Outlet />
+      <Box sx={{ p: 2 }}>
+        <Outlet />
       </Box>
       <StickyFooter />
     </Box>
-    
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;
