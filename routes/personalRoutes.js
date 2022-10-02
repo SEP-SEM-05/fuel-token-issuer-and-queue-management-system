@@ -16,4 +16,8 @@ router.post('/addVehicle', auth.requireAuth, personalController.add_vehicle);
 router.post('/changeStations', auth.requireAuth, personalController.change_stations);
 // router.post('/changeStations', personalController.change_stations);
 
+//request fuel for a vehicle
+router.post('/requestFuel', auth.requireAuth, personalController.request_fuel);
+// router.post('/requestFuel', personalController.request_fuel);
+
 module.exports = router;
