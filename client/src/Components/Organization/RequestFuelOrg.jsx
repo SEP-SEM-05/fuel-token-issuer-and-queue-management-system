@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Autocomplete,
   Box,
@@ -23,6 +23,8 @@ import {
 import EventRepeatIcon from "@mui/icons-material/EventRepeat";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 
+import axios from "axios";
+
 const stationNameandCity = [
   "station 01",
   "station 02",
@@ -30,7 +32,31 @@ const stationNameandCity = [
   "station 04",
 ];
 
+// It looks like you wrote useEffect(async () => ...) or returned a Promise. Instead, write the async function inside your effect and call it immediately:
+
+// useEffect(() => {
+//   async function fetchData() {
+//     // You can await here
+//     const response = await MyAPI.getData(someId);
+//     // ...
+//   }
+//   fetchData();
+// }, [someId]); // Or [] if effect doesn't need props or state
+
 const RequestFuelOrg = () => {
+
+  // const token = sessionStorage.getItem('org_token');
+
+  // if (!token) {
+  //   sessionStorage.clear();
+  //   document.location = '/';
+  // }
+
+  // const storageUserData = JSON.parse(sessionStorage.getItem("userData"));
+  // const user_id = storageUserData.id;
+  // // let storageUserData = JSON.parse(sessionStorage.getItem("userData"));
+  // // storageUserData = {id: '8364834836843'};
+
   const [open, setOpen] = React.useState(false);
   const [openSt, setOpenSt] = React.useState(false);
   const [fuelType, setFuelType] = React.useState("");
@@ -40,6 +66,40 @@ const RequestFuelOrg = () => {
   const [lastDate] = useState("29/09/2022");
   const [vehicleCount] = useState(12);
   const [stations] = useState(["station 01", "station 02", "station 03"]);
+
+  // useEffect(async () => {
+
+  //   try {
+
+  //     let response = await axios.get(`http://localhost:5000/org/dashboard/${user_id}`, {
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         token: token,
+  //       }
+  //     })
+  
+  //     let status = response.data.status;
+  //     let user = response.data.user;
+  //     let vehicles = response.data.vehicles;
+  //     let stations = response.data.stations;
+  
+  //     if (status === 'ok') {
+  //       // setOwnVehicles(vehicles);
+  //       // setUser(user_data);
+  //       console.log(response.data);
+  //     }
+  //     else if (status === 'auth-error') {
+  //       // sessionStorage.clear();
+  //       // document.location = '/';
+  //     }
+  //     else {
+  //       console.log(response.error);
+  //     }
+  //   } 
+  //   catch (err) {
+  //     console.log(err);
+  //   }
+  // }, [])
 
   const handleChange = (event) => {
     setFuelType(event.target.value);
