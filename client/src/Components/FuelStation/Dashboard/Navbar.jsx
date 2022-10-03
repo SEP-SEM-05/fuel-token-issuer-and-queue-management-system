@@ -15,11 +15,9 @@ import Button from "@mui/material/Button";
 import LocalGasStationIcon from "@mui/icons-material/LocalGasStation";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import LogoutIcon from "@mui/icons-material/Logout";
-import BellIcon from "@mui/icons-material/Notifications";
 import { NavLink } from "react-router-dom";
 import FUELIMG from "../../../assets/station.gif";
 import {
-  Badge,
   Grid,
   ListItemIcon,
   Menu,
