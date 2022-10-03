@@ -25,6 +25,7 @@ let requireAuth = (req, res, next) => {
                 });
             }
             else{
+                // req.decodedID = decodedToken;
                 next();
             }
         });
@@ -46,7 +47,14 @@ const createToken = () => {
     });
 };
 
+const createTokenWithUserID = (userID) => {
+    return jwt.sign({userID}, process.env.JWT_ENV, {
+        expiresIn: maxAge
+    });
+};
+
 module.exports = {
     requireAuth,
     createToken,
+    createTokenWithUserID,
 };

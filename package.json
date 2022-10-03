@@ -13,7 +13,8 @@
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
     "test": "jest",
     "test_force_exit": "jest --forceExit",
-    "test_detectOpenHandles": "jest --detectOpenHandles"
+    "test_detectOpenHandles": "jest --detectOpenHandles",
+    "test_mocha": "mocha --recursive --exit"
   },
   "repository": {
     "type": "git",
@@ -27,21 +28,19 @@
   "homepage": "https://github.com/SEP-SEM-05/fuel-token-issuer-and-queue-management-system#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "chai": "^4.3.6",
     "concurrently": "^7.3.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^8.5.1",
+    "mocha": "^10.0.0",
+    "mockgoose": "^8.0.4",
     "mongodb": "^4.8.0",
     "mongoose": "^6.4.7",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.19",
-    "react": "^18.2.0",
-    "react-apexcharts": "^1.4.0",
-    "react-dom": "^18.2.0",
-    "react-hook-form": "^7.36.1",
-    "react-redux-form": "^1.16.14",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

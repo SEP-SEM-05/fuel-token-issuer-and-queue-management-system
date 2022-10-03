@@ -9,6 +9,7 @@ import { createTheme } from "@mui/material/styles";
 import { IconButton, InputAdornment, ThemeProvider } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { useForm } from "react-hook-form";
 
 import axios from "axios";
 
@@ -43,33 +44,11 @@ async function loginPersonal(data) {
 }
 
 export default function ClientLogin() {
-  const handleSubmit = async (event) => {
-    event.preventDefault();
 
-    let type, response;
+    const { register, handleSubmit, formState: { errors } } = useForm();
 
-    let userID_arr = username.split("-");
-
-    if (userID_arr[0].trim().toLowerCase() === "org") {
-      //org login
-      type = "organization";
-
-      response = await loginOrg({
-        registrationNo: userID_arr[1].trim().toLowerCase(),
-        password: password,
-      });
-    } else {
-      //personal login
-      type = "personal";
-
-      response = await loginPersonal({
-        nic: userID_arr[0].trim().toLowerCase(),
-        password: password,
-      });
-    }
-
-    console.log(response);
-  };
+    const onSubmit = (data) => console.log(data);
+    console.log(errors);
 
   const [showPass, setShowPass] = React.useState(false);
   const [username, setUsername] = React.useState("");
@@ -93,20 +72,20 @@ export default function ClientLogin() {
           p: 5,
         }}
       >
-        <Typography
-          component="h1"
-          variant="h4"
+        <Typography 
+          component="h1" 
+          variant="h4" 
           sx={{
             marginBottom: 2,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            color: "#ffffff",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            color: '#ffffff'
           }}
         >
           CLIENT LOGIN
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             variant="outlined"
@@ -114,11 +93,11 @@ export default function ClientLogin() {
             label="User ID"
             type="text"
             fullWidth
-            inputProps={{ minLength: 3 }}
-            required
-            autoComplete="off"
-            onInput={(e) => setUsername(e.target.value)}
-          />
+            autoComplete='off'
+            {...register("userid", { required: "User ID is required." })}
+            error={Boolean(errors.userid)}
+            helperText={errors.userid?.message}
+          />		
           <TextField
             margin="normal"
             type={showPass ? "text" : "password"}
@@ -126,10 +105,14 @@ export default function ClientLogin() {
             label="Password"
             variant="outlined"
             id="password"
-            inputProps={{ minLength: 8 }}
-            required
-            autoComplete="off"
-            onInput={(e) => setPassword(e.target.value)}
+            autoComplete='off'
+            {...register("password", 
+              { 
+                required: "Password is required",
+              })
+            }
+            error={Boolean(errors.password)}
+            helperText={errors.password?.message}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -148,7 +131,7 @@ export default function ClientLogin() {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2, fontWeight: 700 }}
+            sx={{ mt: 3, mb: 2, fontWeight: 700}}
           >
             SUBMIT
           </Button>
@@ -164,16 +147,11 @@ export default function ClientLogin() {
               </Link>
             </Grid>
           </Grid>
-          <Typography
-            sx={{ mt: 5 }}
-            color="text.secondary"
-            variant="subtitle2"
-            align="center"
-          >
+          <Typography sx={{ mt: 5 }} color="text.secondary" variant="subtitle2"  align="center">
             Copyright © 2022 Fast Fueler
           </Typography>
         </Box>
       </Box>
-    </ThemeProvider>
+    </ThemeProvider> 
   );
 }

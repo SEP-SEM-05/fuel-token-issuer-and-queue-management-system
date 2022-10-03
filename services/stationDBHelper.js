@@ -18,6 +18,13 @@ const findStationByID = async (id) => {
     return station;
 }
 
+//get all registered stations
+const findAllRegisteredStations = async () => {
+
+    let stations = await Station.find({isRegistered: true});
+    return stations;
+}
+
 //update the fuel amount, given the fuel type
 const updateAmount = async (regNo, fuelType, addedAmount) => {
     let station = findStationByID(regNo);
@@ -29,5 +36,6 @@ const updateAmount = async (regNo, fuelType, addedAmount) => {
 module.exports = {
     findStationByRegNo,
     findStationByID,
+    findAllRegisteredStations,
     updateAmount,
 }

@@ -11,12 +11,13 @@ const queueSchema = new Schema({
         type: String,
         required: true
     },
-    vehicles: {
-        type: [String],
+    clients: {
+        type: [Map],
         default: []
     },
     state: {
         type: String,
+        enum: ['waiting', 'announced', 'active'],
         default: "waiting"
     },
 }, { timestamps: true });

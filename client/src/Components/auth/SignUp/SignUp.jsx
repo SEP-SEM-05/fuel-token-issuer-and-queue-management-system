@@ -13,6 +13,7 @@ import SignUpOrg from "./SignUpOrg";
 const theme = createTheme();
 
 export default function SignUp() {
+  //variable for identify the user type 
   const [isOrg, setIsOrg] = React.useState(false);
 
   return (
@@ -57,6 +58,7 @@ export default function SignUp() {
               Fast Fueler
             </Typography>
           </Grid>
+          {/* Signup form for respective user */}
           {!isOrg && <SignUpPer />}
           {isOrg && <SignUpOrg />}
         </Grid>

@@ -10,6 +10,7 @@ import { IconButton, InputAdornment, ThemeProvider } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import axios from "axios";
+import { useForm } from "react-hook-form";
 
 const darkTheme = createTheme({
   palette: {
@@ -30,18 +31,22 @@ async function loginStation(data) {
 }
 
 export default function StationLogin() {
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
 
-    let response;
+  //   let response;
 
-    response = await loginStation({
-      registrationNo: username.trim().toLowerCase(),
-      password: password,
-    });
+  //   response = await loginStation({
+  //     registrationNo: username.trim().toLowerCase(),
+  //     password: password,
+  //   });
 
-    console.log(response);
-  };
+  //   console.log(response);
+  // };
+  const { register, handleSubmit, formState: { errors } } = useForm();
+
+  const onSubmit = (data) => console.log(data);
+  console.log(errors);
 
   const [showPass, setShowPass] = React.useState(false);
   const [username, setUsername] = React.useState("");
@@ -78,7 +83,7 @@ export default function StationLogin() {
         >
           STATION LOGIN
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             variant="outlined"
@@ -87,10 +92,12 @@ export default function StationLogin() {
             type="text"
             fullWidth
             inputProps={{ minLength: 3 }}
-            required
-            autoComplete="off"
-            onInput={(e) => setUsername(e.target.value)}
-          />
+            autoComplete='off'
+            {...register("regNo", { required: "Registration No is required." })}
+            error={Boolean(errors.regNo)}
+            helperText={errors.regNo?.message}
+          />		
+
           <TextField
             margin="normal"
             type={showPass ? "text" : "password"}
@@ -98,10 +105,10 @@ export default function StationLogin() {
             label="Password"
             variant="outlined"
             id="password"
-            inputProps={{ minLength: 8 }}
-            required
-            autoComplete="off"
-            onInput={(e) => setPassword(e.target.value)}
+            autoComplete='off'
+            {...register("password", { required: "Password is required." })}
+            error={Boolean(errors.password)}
+            helperText={errors.password?.message}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">

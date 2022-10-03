@@ -30,7 +30,7 @@ describe("Database access methods for organizations", () => {
                 "password": "$2a$12$zXIzE0x2Eq1t8J06Bt6YF.9PawV5dV81HHbWy3kdkfyPQCY8rvqVy",
                 "contactNo": "2837363682823",
                 "address": "119/2, sample, address",
-                "email": Date.now().toString(36) + Math.random().toString(36).substr(2) + "@example.com",
+                "email": Date.now().toString(36) + Math.random().toString(36).substring(2) + "@example.com",
                 "stations": [
                     "283648236846",
                     "237223873872"

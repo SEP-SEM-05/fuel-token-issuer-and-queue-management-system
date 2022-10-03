@@ -22,42 +22,67 @@ describe("Database access methods for personal clients", () => {
 
         it("should return an error with email field for already exsisting email address", async () => {
 
-            const mockClient = {};
-            const mockError = "";
+            const mockNic = Date.now().toString().substring(2); //random
+            const mockExistingEmail = "Jaunita84@yahoo.com";
+            const mockClient = {
+                "nic": mockNic,
+                "firstName": "firstName",
+                "lastName": "lastName",
+                "password": "$2a$12$zXIzE0x2Eq1t8J06Bt6YF.9PawV5dV81HHbWy3kdkfyPQCY8rvqVy",
+                "contactNo": "2837363682823",
+                "address": "119/2, sample, address",
+                "email": mockExistingEmail
+            };
 
-            const err = await saveClient(mockClient);
-
-            expect(err).toEqual(mockError);
+            try {
+                const result = await saveClient(mockClient);
+            }
+            catch (err) {
+                expect(err.keyValue).toEqual({ email: 'Jaunita84@yahoo.com' });
+            }
         });
 
         it("should return an error with nic field for already exsisting nic", async () => {
 
-            const mockClient = {};
-            const mockError = "";
+            const mockExistingNic = "990972657v";
+            const mockEmail = Date.now().toString(36) + Math.random().toString(36).substring(2) + "@example.com"; //random
+            const mockClient = {
+                "nic": mockExistingNic,
+                "firstName": "firstName",
+                "lastName": "lastName",
+                "password": "$2a$12$zXIzE0x2Eq1t8J06Bt6YF.9PawV5dV81HHbWy3kdkfyPQCY8rvqVy",
+                "contactNo": "2837363682823",
+                "address": "119/2, sample, address",
+                "email": mockEmail
+            };
 
-            const err = await saveClient(mockClient);
-
-            expect(err).toEqual(mockError);
+            try {
+                const result = await saveClient(mockClient);
+            }
+            catch (err) {
+                expect(err.keyValue).toEqual({ nic: '990972657v' });
+            }
         });
 
-        it("should return false if the client been successfully saved", async () => {
+        it("should return no error and the document should able to be quried if the client has been successfully saved", async () => {
 
-            const mockClient = {};
+            const mockNic = Date.now().toString().substring(2); //random
+            const mockEmail = Date.now().toString(36) + Math.random().toString(36).substring(2) + "@example.com"; //random
+            const mockClient = {
+                "nic": mockNic,
+                "firstName": "firstName",
+                "lastName": "lastName",
+                "password": "$2a$12$zXIzE0x2Eq1t8J06Bt6YF.9PawV5dV81HHbWy3kdkfyPQCY8rvqVy",
+                "contactNo": "2837363682823",
+                "address": "119/2, sample, address",
+                "email": mockEmail
+            };
 
-            const err = await saveClient(mockClient);
+            const result = await saveClient(mockClient);
+            const quriedClient = await Personal.findOne({nic: mockNic});
 
-            expect(err).toEqual(false);
-        });
-
-        it("check whether the client is successfully saved", async () => {
-
-            const mockClient = {};
-            const mockData = {};
-
-            const err = await saveClient(mockData);
-            const quriedClient = await Personal.findOne({nic: mockData.nic});
-
-            expect(quriedClient).toEqual(mockClient);
+            expect(quriedClient.nic).toEqual(mockNic);
+            expect(quriedClient._id).toEqual(result);
         });
     });
 
@@ -72,11 +97,9 @@ describe("Database access methods for personal clients", () => {
 
         it("should return a valid personal client object for an exsisting nic", async () => {
 
-            const mockClient = {};
+            const quriedClient = await findClientByNic('990972657v');
 
-            const quriedClient = await findClientByNic('998662567v');
-
-            expect(quriedClient).toEqual(mockClient);
+            expect(quriedClient._id).toEqual(mongoose.Types.ObjectId("63357dc8ceafb5f66452a7ac"));
         });
     });
 
@@ -84,18 +107,16 @@ describe("Database access methods for personal clients", () => {
 
         it("should return a null object for non exsisting id", async () => {
 
-            const client = await findClientByID('sample _id');
+            const client = await findClientByID('0335c554d94e2a08227ac7b0');
 
             expect(client).toEqual(null);
         });
 
         it("should return a valid personal client object for an exsisting id", async () => {
 
-            const mockClient = {};
+            const quriedClient = await findClientByID('63357dc8ceafb5f66452a7ac');
 
-            const quriedClient = await findClientByID('exsisting _id');
-
-            expect(quriedClient).toEqual(mockClient);
+            expect(quriedClient.nic).toEqual("990972657v");
         });
     });
 });
