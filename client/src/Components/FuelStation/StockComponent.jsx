@@ -11,7 +11,6 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 
-
 //progress bar styles
 function LinearProgressWithLabel(props) {
   return (

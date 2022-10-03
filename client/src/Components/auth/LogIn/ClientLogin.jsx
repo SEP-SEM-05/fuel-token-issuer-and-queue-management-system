@@ -147,7 +147,7 @@ export default function ClientLogin() {
                   variant="contained"
                   sx={{ mt: 3, mb: 2, fontWeight: 700 }}
                 >
-                  SUBMIT
+                  login
                 </Button>
                 <Grid container>
                   <Grid item xs>

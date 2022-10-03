@@ -46,7 +46,7 @@ export default function SignIn() {
             component="div"
             align="right"
           >
-            Are you {isStation ? "a Client?" : "a Fuel Station?"}
+            Are you {isStation ? "a Client? " : "a Fuel Station? "}
             <Link
               onClick={() => {
                 setIsStation(!isStation);
