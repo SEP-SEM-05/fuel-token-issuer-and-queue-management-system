@@ -1,3 +1,7 @@
 a.nav-link.active {
   font-weight: bolder;
 }
+
+.mylink {
+  text-decoration: none;
+}

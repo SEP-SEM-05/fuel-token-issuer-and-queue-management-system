@@ -20,6 +20,7 @@ const darkTheme = createTheme({
 
 async function loginStation(data) {
   try {
+    console.log(data)
     let response = await axios.post(
       "http://localhost:5000/auth/loginStation",
       data
@@ -31,26 +32,20 @@ async function loginStation(data) {
 }
 
 export default function StationLogin() {
-  // const handleSubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   let response;
-
-  //   response = await loginStation({
-  //     registrationNo: username.trim().toLowerCase(),
-  //     password: password,
-  //   });
-
-  //   console.log(response);
-  // };
   const { register, handleSubmit, formState: { errors } } = useForm();
 
-  const onSubmit = (data) => console.log(data);
-  console.log(errors);
+  const onSubmit = async (data) => {
+    let response;
+
+      response = await loginStation({
+        registrationNo: data.regNo.trim().toLowerCase(),
+        password: data.password,
+      });
+
+      console.log(response);
+  };
 
   const [showPass, setShowPass] = React.useState(false);
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
 
   const handlePassVisibilty = () => {
     setShowPass(!showPass);

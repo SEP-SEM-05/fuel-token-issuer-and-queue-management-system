@@ -1,7 +1,6 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
@@ -12,6 +11,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useForm } from "react-hook-form";
 
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const darkTheme = createTheme({
   palette: {
@@ -47,12 +47,11 @@ export default function ClientLogin() {
 
     const { register, handleSubmit, formState: { errors } } = useForm();
 
-    const onSubmit = (data) => console.log(data);
-    console.log(errors);
+    const onSubmit = (data) => {
+
+    }
 
   const [showPass, setShowPass] = React.useState(false);
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
 
   const handlePassVisibilty = () => {
     setShowPass(!showPass);
@@ -72,15 +71,15 @@ export default function ClientLogin() {
           p: 5,
         }}
       >
-        <Typography 
-          component="h1" 
-          variant="h4" 
+        <Typography
+          component="h1"
+          variant="h4"
           sx={{
             marginBottom: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            color: '#ffffff'
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            color: "#ffffff",
           }}
         >
           CLIENT LOGIN
@@ -93,11 +92,11 @@ export default function ClientLogin() {
             label="User ID"
             type="text"
             fullWidth
-            autoComplete='off'
+            autoComplete="off"
             {...register("userid", { required: "User ID is required." })}
             error={Boolean(errors.userid)}
             helperText={errors.userid?.message}
-          />		
+          />
           <TextField
             margin="normal"
             type={showPass ? "text" : "password"}
@@ -105,12 +104,10 @@ export default function ClientLogin() {
             label="Password"
             variant="outlined"
             id="password"
-            autoComplete='off'
-            {...register("password", 
-              { 
-                required: "Password is required",
-              })
-            }
+            autoComplete="off"
+            {...register("password", {
+              required: "Password is required",
+            })}
             error={Boolean(errors.password)}
             helperText={errors.password?.message}
             InputProps={{
@@ -131,27 +128,34 @@ export default function ClientLogin() {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2, fontWeight: 700}}
+            sx={{ mt: 3, mb: 2, fontWeight: 700 }}
           >
             SUBMIT
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
+              <Link className="mylink" href="#" variant="body2">
+                <Typography color="primary">Forgot password?</Typography>
               </Link>
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
+              <Link to={"/signup"} className="mylink" href="#" variant="body2">
+                <Typography color="primary">
+                  Don't have an account? Sign Up
+                </Typography>
               </Link>
             </Grid>
           </Grid>
-          <Typography sx={{ mt: 5 }} color="text.secondary" variant="subtitle2"  align="center">
+          <Typography
+            sx={{ mt: 5 }}
+            color="text.secondary"
+            variant="subtitle2"
+            align="center"
+          >
             Copyright © 2022 Fast Fueler
           </Typography>
         </Box>
       </Box>
-    </ThemeProvider> 
+    </ThemeProvider>
   );
 }

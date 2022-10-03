@@ -32,7 +32,7 @@ export default function SignUp() {
             backgroundPosition: "center",
           }}
         />
-        <Grid item xs={12} sm={8} md={5} elevation={6} square>
+        <Grid item xs={12} sm={8} md={5} elevation={6} >
           <Typography
             sx={{ mx: 4, mt: 2 }}
             variant="body1"
