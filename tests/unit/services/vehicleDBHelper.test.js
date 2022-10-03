@@ -5,7 +5,7 @@ require('dotenv').config();
 const dbURI = process.env.DB_URI;
 
 const Vehicle = require('../../../models/vehicle');
-const {findVehicleByRegNo, findAllByNic, findAllByregistrationNoArray, updateStationsAndRegister} = require('../../../services/vehicleDBHelper');
+const {findVehicleByRegNo, findVehicleByRegNoAndEngNo, findAllByNic, findAllByregistrationNoArray, updateStationsAndRegister, registerAll, getQuotas, addToQueue, saveRequest, findWaitingRequest} = require('../../../services/vehicleDBHelper');
 
 describe("Database access methods for vehicles", () => {
     
@@ -19,6 +19,25 @@ describe("Database access methods for vehicles", () => {
     });
 
     describe("findVehicleByRegNo - Find a vehicle that matches the given registration No.", () => {
+
+        it("should return a null object for non exsisting registrtation No.", async () => {
+
+            const vehicle = await findVehicleByRegNo('SP-AAA-7863');
+
+            expect(vehicle).toEqual(null);
+        });
+
+        it("should return a valid vehicle object for an exsisting registration No.", async () => {
+
+            const mockVehicle = {};
+
+            const quriedVehicle = await findVehicleByRegNo('AAA-6756');
+
+            expect(quriedVehicle).toEqual(mockVehicle);
+        });
+    });
+
+    describe("findVehicleByRegNoAndEngNo - ", () => {
 
         it("should return a null object for non exsisting registrtation No.", async () => {
 
@@ -107,5 +126,62 @@ describe("Database access methods for vehicles", () => {
 
         //     expect(quriedClient).toEqual(mockClient);
         // });
+    });
+
+    describe("registerAll - ", () => {
+
+        it("should return a null object for non exsisting registrtation No.", async () => {
+
+            const vehicle = await findVehicleByRegNo('SP-AAA-7863');
+
+            expect(vehicle).toEqual(null);
+        });
+
+        it("should return a valid vehicle object for an exsisting registration No.", async () => {
+
+            const mockVehicle = {};
+
+            const quriedVehicle = await findVehicleByRegNo('AAA-6756');
+
+            expect(quriedVehicle).toEqual(mockVehicle);
+        });
+    });
+
+    describe("getQuotas - ", () => {
+
+        it("should return a null object for non exsisting registrtation No.", async () => {
+
+            const vehicle = await findVehicleByRegNo('SP-AAA-7863');
+
+            expect(vehicle).toEqual(null);
+        });
+
+        it("should return a valid vehicle object for an exsisting registration No.", async () => {
+
+            const mockVehicle = {};
+
+            const quriedVehicle = await findVehicleByRegNo('AAA-6756');
+
+            expect(quriedVehicle).toEqual(mockVehicle);
+        });
+    });
+
+    describe("getQuotas - ", () => {
+
+        it("should return a null object for non exsisting registrtation No.", async () => {
+
+            const vehicle = await findVehicleByRegNo('SP-AAA-7863');
+
+            expect(vehicle).toEqual(null);
+        });
+
+        it("should return a valid vehicle object for an exsisting registration No.", async () => {
+
+            const mockVehicle = {};
+
+            const quriedVehicle = await findVehicleByRegNo('AAA-6756');
+
+            expect(quriedVehicle).toEqual(mockVehicle);
+        });
     });
 });
