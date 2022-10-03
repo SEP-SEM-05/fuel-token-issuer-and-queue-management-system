@@ -120,11 +120,6 @@ function DrawerAppBar() {
               ))}
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconButton sx={{ pr: 2 }} onClick={handleOpenUserMenu}>
-                <Badge badgeContent={4} color="secondary">
-                  <BellIcon sx={{ color: "white" }} />
-                </Badge>
-              </IconButton>
               <Typography noWrap sx={{ pr: 1 }}>
                 {"Station Name"}
               </Typography>

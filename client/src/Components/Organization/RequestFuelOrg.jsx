@@ -14,14 +14,18 @@ import {
   Divider,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import EventRepeatIcon from "@mui/icons-material/EventRepeat";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
+import QrCode2Icon from "@mui/icons-material/QrCode2";
+import QRIMG from "../../assets/QR.svg";
 
 import axios from "axios";
 
@@ -66,6 +70,7 @@ const RequestFuelOrg = () => {
   const [lastDate] = useState("29/09/2022");
   const [vehicleCount] = useState(12);
   const [stations] = useState(["station 01", "station 02", "station 03"]);
+    const [openQR, setOpenQR] = React.useState(false);
 
   // useEffect(async () => {
 
@@ -120,6 +125,14 @@ const RequestFuelOrg = () => {
 
   const handleCloseSt = () => {
     setOpenSt(false);
+  };
+
+  const handleClickOpenQR = () => {
+    setOpenQR(true);
+  };
+
+  const handleCloseQR = () => {
+    setOpenQR(false);
   };
 
   return (
@@ -199,6 +212,15 @@ const RequestFuelOrg = () => {
             Save Changes
           </Button>
         </DialogActions>
+      </Dialog>
+
+      <Dialog open={openQR} onClose={handleCloseQR}>
+        <DialogTitle sx={{ fontWeight: "bold", pb: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>QR Code</Box>
+        </DialogTitle>
+        <DialogContent>
+          <img alt="QR" src={QRIMG} />
+        </DialogContent>
       </Dialog>
 
       <Grid item xs={12} sx={{ pl: { xs: "unset", lg: 3 }, my: -3 }}>
@@ -312,14 +334,21 @@ const RequestFuelOrg = () => {
               <CardActions
                 sx={{
                   display: "flex",
-                  alignItems: "stretch",
-                  justifyContent: { xs: "center", lg: "unset" },
+                  alignItems: "flex-start",
+                  flexDirection: { xs: "column", md: "row" },
+                  justifyContent: { xs: "center", md: "unset" },
                 }}
               >
+                <Tooltip placement="top" title={"QR code"}>
+                  <IconButton onClick={handleClickOpenQR}>
+                    <QrCode2Icon sx={{ color: "white" }} />
+                  </IconButton>
+                </Tooltip>
                 <Button
                   onClick={handleClickOpen}
                   variant="contained"
                   color="success"
+                  sx={{ alignSelf: "stretch" }}
                 >
                   <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                     Request

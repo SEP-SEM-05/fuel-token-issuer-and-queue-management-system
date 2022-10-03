@@ -19,7 +19,7 @@ export default function OrgVehicles() {
       </Grid>
       <Grid container spacing={8} justifyContent="center">
         {vehicles.map((vehicle) => (
-          <Grid item md={5} key={vehicle[0]}>
+          <Grid item md={3} key={vehicle[0]}>
             <Card
               variant="outlined"
               sx={{
@@ -31,6 +31,7 @@ export default function OrgVehicles() {
                 flexDirection: { xs: "column", md: "row" },
                 backgroundColor: "#282835",
                 color: "white",
+                mb:7
               }}
             >
               <CardContent sx={{ textAlign: { xs: "center", md: "unset" } }}>
@@ -64,21 +65,6 @@ export default function OrgVehicles() {
                   </Typography>
                 </Box>
               </CardContent>
-              <CardActions
-                sx={{
-                  display: "flex",
-                  alignItems: "stretch",
-                  justifyContent: { xs: "center", md: "unset" },
-                }}
-              >
-                <Button variant="contained" color="info">
-                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    Request
-                    <br />
-                    Fuel
-                  </Typography>
-                </Button>
-              </CardActions>
             </Card>
           </Grid>
         ))}
