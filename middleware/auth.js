@@ -9,7 +9,7 @@ let requireAuth = (req, res, next) => {
     }
     catch (err) {
         res.json({
-            status: 'error',
+            status: 'auth-error',
             error: "Your login session has expired, please re-login to proceed!"
         });
     }
@@ -20,11 +20,12 @@ let requireAuth = (req, res, next) => {
             if(err){
                 console.log(err.message);
                 res.json({
-                    status: 'error',
+                    status: 'auth-error',
                     error: "Your login session has expired, please re-login to proceed!"
                 });
             }
             else{
+                // req.decodedID = decodedToken;
                 next();
             }
         });
@@ -32,7 +33,7 @@ let requireAuth = (req, res, next) => {
     else{
         console.log('not token');
         res.json({
-            status: 'error',
+            status: 'auth-error',
             error: "Your login session has expired, please re-login to proceed!"
         });
     }
@@ -46,7 +47,14 @@ const createToken = () => {
     });
 };
 
+const createTokenWithUserID = (userID) => {
+    return jwt.sign({userID}, process.env.JWT_ENV, {
+        expiresIn: maxAge
+    });
+};
+
 module.exports = {
     requireAuth,
     createToken,
+    createTokenWithUserID,
 };

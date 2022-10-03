@@ -27,7 +27,7 @@ export default function GetStand() {
             backgroundPosition: "center",
           }}
         />
-        <Grid item xs={12} sm={8} md={5} elevation={6} square>
+        <Grid item xs={12} sm={8} md={5} elevation={6} >
           <Grid sx={{ display: "flex", mx: 3, my: 1, mt: 3 }}>
             <Box sx={{ mr: 1 }}>
               <LocalGasStationIcon fontSize="large" />

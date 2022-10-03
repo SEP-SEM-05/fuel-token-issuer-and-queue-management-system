@@ -16,7 +16,7 @@ const saveClient = (data) => {
                 reject(err);
             }
             else{
-                resolve();
+                resolve(client._id);
             }
         });
     });

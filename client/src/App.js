@@ -20,6 +20,8 @@ import RequestFuelOrg from "./Components/Organization/RequestFuelOrg";
 import AdminDashboard from "./Components/Admin/Dashboard/Dashboard";
 import GetStand from "./Components/auth/GetStand/GetStand";
 import SignIn from "./Components/auth/LogIn/Login";
+import StationGetStand from "./Components/auth/GetStand/StationGetStand";
+import SignUp from "./Components/auth/SignUp/SignUp";
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route index element={<SignIn />} />
+          <Route path="signup" element={<SignUp />} />
+          <Route path="fuelstationgetstands" element={<GetStand />} />
 
           <Route path="fuelstation" element={<DashboardContent />}>
             <Route index element={<StockComponent />} />

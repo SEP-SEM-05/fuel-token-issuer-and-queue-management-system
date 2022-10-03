@@ -9,7 +9,9 @@ import { createTheme } from "@mui/material/styles";
 import { IconButton, InputAdornment, ThemeProvider } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import axios from "axios";
 import { useForm } from "react-hook-form";
+import { signIn } from "../../../utils/api/fuelStation";
 
 const darkTheme = createTheme({
   palette: {
@@ -17,23 +19,25 @@ const darkTheme = createTheme({
   },
 });
 
+
 export default function StationLogin() {
   const { register, handleSubmit, formState: { errors } } = useForm();
 
-  const onSubmit = (data) => console.log(data);
-  console.log(errors);
+  const onSubmit = async (data) => {
+    let response;
 
-  const [values, setValues] = React.useState({
-    regNo: "",
-    pass: "",
-    showPass: false,
-  });
+      response = await signIn({
+        registrationNo: data.regNo.trim().toLowerCase(),
+        password: data.password,
+      });
+
+      console.log(response);
+  };
+
+  const [showPass, setShowPass] = React.useState(false);
 
   const handlePassVisibilty = () => {
-    setValues({
-      ...values,
-      showPass: !values.showPass,
-    });
+    setShowPass(!showPass);
   };
 
   return (
@@ -80,7 +84,7 @@ export default function StationLogin() {
 
           <TextField
             margin="normal"
-            type={values.showPass ? "text" : "password"}
+            type={showPass ? "text" : "password"}
             fullWidth
             label="Password"
             variant="outlined"
@@ -97,11 +101,7 @@ export default function StationLogin() {
                     aria-label="toggle password"
                     edge="end"
                   >
-                    {values.showPass ? (
-                      <VisibilityOffIcon />
-                    ) : (
-                      <VisibilityIcon />
-                    )}
+                    {showPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
                   </IconButton>
                 </InputAdornment>
               ),
@@ -113,7 +113,7 @@ export default function StationLogin() {
             variant="contained"
             sx={{ mt: 3, mb: 2, fontWeight: 700 }}
           >
-            SUBMIT
+            login
           </Button>
           <Grid container>
             <Grid item xs>
