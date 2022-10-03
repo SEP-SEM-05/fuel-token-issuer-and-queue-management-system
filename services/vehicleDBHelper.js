@@ -77,7 +77,7 @@ const saveRequest = (data) => {
     });
 }
 
-//find any waiting requests for a vehicle/organization given the registration No.
+//find any waiting/active requests for a vehicle/organization given the registration No.
 const findWaitingRequest = async (registrationNo, userType) => {
 
     result = await Request.findOne({registrationNo, userType, state: {$in: ['waiting', 'active']}});

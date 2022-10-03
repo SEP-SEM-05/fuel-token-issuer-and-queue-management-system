@@ -174,7 +174,7 @@ const change_stations = async (req, res) => {
 
 //request fuel for a vehicle
 const request_fuel = async (req, res) => {
-
+    //remaining quota should be more than some value
     let nic = req.body.nic;
     let regNo = req.body.registrationNo;
     let fuelType = req.body.fuelType;

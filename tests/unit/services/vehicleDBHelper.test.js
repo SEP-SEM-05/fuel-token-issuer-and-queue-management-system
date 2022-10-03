@@ -22,7 +22,7 @@ describe("Database access methods for vehicles", () => {
 
         it("should return a null object for non exsisting registrtation No.", async () => {
 
-            const vehicle = await findVehicleByRegNo('SP-AAA-7863');
+            const vehicle = await findVehicleByRegNo('non-existing-regNo');
 
             expect(vehicle).toEqual(null);
         });
@@ -37,7 +37,7 @@ describe("Database access methods for vehicles", () => {
         });
     });
 
-    describe("findVehicleByRegNoAndEngNo - ", () => {
+    describe("findVehicleByRegNoAndEngNo - find a vehicle given the registration No. and the engine No.", () => {
 
         it("should return a null object for non exsisting registrtation No.", async () => {
 
@@ -128,7 +128,7 @@ describe("Database access methods for vehicles", () => {
         // });
     });
 
-    describe("registerAll - ", () => {
+    describe("registerAll - register all the vehicles matches a given registration No. array", () => {
 
         it("should return a null object for non exsisting registrtation No.", async () => {
 
@@ -147,7 +147,7 @@ describe("Database access methods for vehicles", () => {
         });
     });
 
-    describe("getQuotas - ", () => {
+    describe("getQuotas - get all allowed fuel quotas", () => {
 
         it("should return a null object for non exsisting registrtation No.", async () => {
 
@@ -166,7 +166,45 @@ describe("Database access methods for vehicles", () => {
         });
     });
 
-    describe("getQuotas - ", () => {
+    describe("addToQueue - add a fuel request to queues of all the station based on fuel type", () => {
+
+        it("should return a null object for non exsisting registrtation No.", async () => {
+
+            const vehicle = await findVehicleByRegNo('SP-AAA-7863');
+
+            expect(vehicle).toEqual(null);
+        });
+
+        it("should return a valid vehicle object for an exsisting registration No.", async () => {
+
+            const mockVehicle = {};
+
+            const quriedVehicle = await findVehicleByRegNo('AAA-6756');
+
+            expect(quriedVehicle).toEqual(mockVehicle);
+        });
+    });
+
+    describe("saveRequest - save a fuel request to the database", () => {
+
+        it("should return a null object for non exsisting registrtation No.", async () => {
+
+            const vehicle = await findVehicleByRegNo('SP-AAA-7863');
+
+            expect(vehicle).toEqual(null);
+        });
+
+        it("should return a valid vehicle object for an exsisting registration No.", async () => {
+
+            const mockVehicle = {};
+
+            const quriedVehicle = await findVehicleByRegNo('AAA-6756');
+
+            expect(quriedVehicle).toEqual(mockVehicle);
+        });
+    });
+
+    describe("findWaitingRequest - find any waiting/active requests for a vehicle/organization given the registration No.", () => {
 
         it("should return a null object for non exsisting registrtation No.", async () => {
 

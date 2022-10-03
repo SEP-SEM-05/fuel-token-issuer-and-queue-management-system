@@ -197,7 +197,7 @@ const change_stations = async (req, res) => {
 
 //request fuel for an organization
 const request_fuel = async (req, res) => {
-
+    //last filled date for a fuel type should be a week or more before
     let regNo = req.body.registrationNo;
     let fuelType = req.body.fuelType;
     let quota = req.body.fullQuota; // send either the fullDieselQuota or the fullPetrolQuota based on the fuelType
