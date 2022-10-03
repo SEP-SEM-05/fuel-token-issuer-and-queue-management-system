@@ -20,6 +20,7 @@ import RequestFuelOrg from "./Components/Organization/RequestFuelOrg";
 import AdminDashboard from "./Components/Admin/Dashboard/Dashboard";
 import GetStand from "./Components/auth/GetStand/GetStand";
 import SignIn from "./Components/auth/LogIn/Login";
+import StationGetStand from "./Components/auth/GetStand/StationGetStand";
 
 function App() {
   return (
