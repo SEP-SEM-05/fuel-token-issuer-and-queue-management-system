@@ -11,6 +11,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import axios from "axios";
 import { useForm } from "react-hook-form";
+import { signIn } from "../../../utils/api/fuelStation";
 
 const darkTheme = createTheme({
   palette: {
@@ -18,18 +19,6 @@ const darkTheme = createTheme({
   },
 });
 
-async function loginStation(data) {
-  try {
-    console.log(data)
-    let response = await axios.post(
-      "http://localhost:5000/auth/loginStation",
-      data
-    );
-    return response.data; 
-  } catch (err) {
-    console.log(err);
-  }
-}
 
 export default function StationLogin() {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -37,7 +26,7 @@ export default function StationLogin() {
   const onSubmit = async (data) => {
     let response;
 
-      response = await loginStation({
+      response = await signIn({
         registrationNo: data.regNo.trim().toLowerCase(),
         password: data.password,
       });
