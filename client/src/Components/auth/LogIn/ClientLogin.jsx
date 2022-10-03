@@ -8,7 +8,8 @@ import { createTheme } from "@mui/material/styles";
 import { IconButton, InputAdornment, ThemeProvider } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { useForm } from "react-hook-form";
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -45,11 +46,24 @@ async function loginPersonal(data) {
 
 export default function ClientLogin() {
 
-    const { register, handleSubmit, formState: { errors } } = useForm();
+  //Form validation regex
+  const passwordRegExp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
 
-    const onSubmit = (data) => {
+  const initialValues = {
+    userid: "",
+    password: ""
+  }
 
-    }
+  //Form validation schemas
+  const validationSchema = Yup.object().shape({
+    userid: Yup.string().min(4, "Minimum characters should be 4").required("Required"),
+    password: Yup.string().min(8, "Minimum characters should be 8")
+      .matches(passwordRegExp, "Password must have one upper, lower case, number").required('Required'),
+  })
+
+  const onSubmit = (data) => {
+
+  }
 
   const [showPass, setShowPass] = React.useState(false);
 
@@ -84,68 +98,74 @@ export default function ClientLogin() {
         >
           CLIENT LOGIN
         </Typography>
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            variant="outlined"
-            id="userid"
-            label="User ID"
-            type="text"
-            fullWidth
-            autoComplete="off"
-            {...register("userid", { required: "User ID is required." })}
-            error={Boolean(errors.userid)}
-            helperText={errors.userid?.message}
-          />
-          <TextField
-            margin="normal"
-            type={showPass ? "text" : "password"}
-            fullWidth
-            label="Password"
-            variant="outlined"
-            id="password"
-            autoComplete="off"
-            {...register("password", {
-              required: "Password is required",
-            })}
-            error={Boolean(errors.password)}
-            helperText={errors.password?.message}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={handlePassVisibilty}
-                    aria-label="toggle password"
-                    edge="end"
-                  >
-                    {showPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2, fontWeight: 700 }}
-          >
-            SUBMIT
-          </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link className="mylink" href="#" variant="body2">
-                <Typography color="primary">Forgot password?</Typography>
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link to={"/signup"} className="mylink" href="#" variant="body2">
-                <Typography color="primary">
-                  Don't have an account? Sign Up
-                </Typography>
-              </Link>
-            </Grid>
-          </Grid>
+        <Box sx={{ mt: 1 }}>
+          <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+            {(props) => (
+              <Form noValidate>
+                <Field as={TextField}
+                  name='userid'
+                  margin="normal"
+                  variant="outlined"
+                  id="userid"
+                  label="User ID"
+                  type="text"
+                  fullWidth
+                  autoComplete="off"
+                  required
+                  error={props.errors.userid && props.touched.userid}
+                  helperText={<ErrorMessage name='userid' />}
+                />
+                <Field as={TextField}
+                  name='password'
+                  margin="normal"
+                  type={showPass ? "text" : "password"}
+                  fullWidth
+                  label="Password"
+                  variant="outlined"
+                  id="password"
+                  autoComplete="off"
+                  required
+                  error={props.errors.password && props.touched.password}
+                  helperText={<ErrorMessage name='password' />}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={handlePassVisibilty}
+                          aria-label="toggle password"
+                          edge="end"
+                        >
+                          {showPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2, fontWeight: 700 }}
+                >
+                  SUBMIT
+                </Button>
+                <Grid container>
+                  <Grid item xs>
+                    <Link className="mylink" href="#" variant="body2">
+                      <Typography color="primary">Forgot password?</Typography>
+                    </Link>
+                  </Grid>
+                  <Grid item>
+                    <Link to={"/signup"} className="mylink" href="#" variant="body2">
+                      <Typography color="primary">
+                        Don't have an account? Sign Up
+                      </Typography>
+                    </Link>
+                  </Grid>
+                </Grid>
+              </Form>
+            )}
+          </Formik>
           <Typography
             sx={{ mt: 5 }}
             color="text.secondary"
