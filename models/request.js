@@ -10,7 +10,7 @@ const requestSchema = new Schema({
         type: String,
         required: true,
     },
-    remainingQuota: {
+    quota: {
         type: Number,
         required: true,
     },

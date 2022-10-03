@@ -195,10 +195,67 @@ const change_stations = async (req, res) => {
     }
 }
 
-//request fuel
+//request fuel for an organization
+const request_fuel = async (req, res) => {
+    //last filled date for a fuel type should be a week or more before
+    let regNo = req.body.registrationNo;
+    let fuelType = req.body.fuelType;
+    let quota = req.body.fullQuota; // send either the fullDieselQuota or the fullPetrolQuota based on the fuelType
+    let stations = req.body.stations;
+    let userType = 'organization';
+
+    try {
+
+        //find any opened requests - if any, error
+        let result = await vehicleDBHelper.findWaitingRequest(regNo, userType);
+
+        if(!result) {
+
+            let reqDetails = {
+                userType: userType,
+                registrationNo,
+                quota: quota,
+                fuelType,
+                requestedStations: stations,
+            };
+    
+            //save request, get _id and add to client details
+            let reqId = await vehicleDBHelper.saveRequest(reqDetails);
+    
+            let clientDetails = {
+                userType: userType,
+                registrationNo: regNo,
+                quota: quota,
+                requestID: reqId
+            }
+    
+            await vehicleDBHelper.addToQueue(stations, fuelType, clientDetails);
+            delete clientDetails.requestID;
+    
+            res.json({
+                status: 'ok',
+                data: clientDetails
+            });
+        } 
+        else{
+            res.status(400).json({
+                status: 'error',
+                error: 'Multiple requests are not allowed!'
+            });
+        }
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
+}
 
 module.exports = {
     get_dashboard,
     get_vehicles,
     change_stations,
+    request_fuel,
 }
