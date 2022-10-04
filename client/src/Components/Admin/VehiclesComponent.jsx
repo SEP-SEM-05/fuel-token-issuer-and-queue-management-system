@@ -15,7 +15,6 @@ const VehiclesComponent = () => {
       "Lorries",
       "Buses",
     ],
-    //colors: ["#287872","#409832","#849028"],
     plotOptions: {
       pie: {
         donut: {
@@ -26,7 +25,6 @@ const VehiclesComponent = () => {
               show: true,
               fontSize: "20px",
               color: "#000000",
-              // showAlways: true,
             },
           },
         },
@@ -46,7 +44,6 @@ const VehiclesComponent = () => {
       "Lorries",
       "Buses",
     ],
-    //colors: ["#287872","#409832","#849028"],
     plotOptions: {
       pie: {
         donut: {
@@ -57,13 +54,13 @@ const VehiclesComponent = () => {
               show: true,
               fontSize: "20px",
               color: "#000000",
-              // showAlways: true,
             },
           },
         },
       },
     },
   };
+  //values of vehicle count
   const series2 = [17109, 13546, 18658, 24879, 5237, 9456, 15789];
 
   return (

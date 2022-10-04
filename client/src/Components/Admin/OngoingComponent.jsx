@@ -3,7 +3,9 @@ import { Grid, Typography } from "@mui/material";
 import Container from "@mui/material/Container";
 import Chart from "react-apexcharts";
 
+//main function
 const OngoingComponent = () => {
+  //data for pie chart
   const options1 = {
     labels: ["CEYPETC", "IOC"],
     plotOptions: {

@@ -17,6 +17,7 @@ const rows = [
   createData("Station 05"),
 ];
 
+//main function
 const NewlyRegistered = () => {
   return (
     <Grid

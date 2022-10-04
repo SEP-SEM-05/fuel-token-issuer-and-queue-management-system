@@ -24,6 +24,7 @@ const rows = [
   createData("Unregistered station 05"),
 ];
 
+//main function
 const UnregisteredComponent = () => {
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
@@ -98,6 +99,7 @@ const UnregisteredComponent = () => {
         </DialogTitle>
         <Divider />
         <DialogContent>
+          {/* field values will come from database */}
           <TextField
             label="Registration No"
             defaultValue="xxxxxxxxxxxx"

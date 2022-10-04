@@ -37,27 +37,28 @@ const dieselRows = [
   createData("Lorries", "50.000L"),
 ];
 
+//main function
 const QuotaComponent = () => {
-  const [isPetrol, setIsPetrol] = React.useState(true);
+  const [isPetrol, setIsPetrol] = React.useState(true);  // to assign fuel type
   const [rows, setRows] = React.useState(petrolRows);
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);    // to open the dialog box
   const [vehicleType, setVehicleType] = React.useState(null);
 
+  //function to popup the dialog box
   const handleClickOpen = (vehicleType) => {
     setOpen(true);
     setVehicleType(vehicleType);
   };
-
   const handleClose = () => {
     setOpen(false);
   };
 
+  // functions to change fuel type
   const handlePetrol = () => {
     setIsPetrol(true);
     setRows(petrolRows);
   };
-
   const handleDiesel = () => {
     setIsPetrol(false);
     setRows(dieselRows);
@@ -225,6 +226,7 @@ const QuotaComponent = () => {
             variant="outlined"
             color="info"
             focused
+            autoComplete="off"
           />
         </DialogContent>
         <DialogActions sx={{ pr: 3, pl: 3, pb: 3 }}>

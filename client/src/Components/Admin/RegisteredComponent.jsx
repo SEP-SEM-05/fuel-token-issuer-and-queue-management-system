@@ -5,6 +5,7 @@ import Container from "@mui/material/Container";
 import OngoingComponent from "./OngoingComponent";
 import NewlyRegistered from "./NewlyRegistered";
 
+//main function
 const UnregisteredComponent = () => {
   const [isNewly, setIsNewly] = React.useState(true);
 
@@ -88,7 +89,7 @@ const UnregisteredComponent = () => {
             </Grid>
           </Grid>
         )}
-
+        {/* import the suitable component depends on station type */}
         {isNewly && <NewlyRegistered />}
         {!isNewly && <OngoingComponent />}
       </TableContainer>
