@@ -10,8 +10,9 @@ import { IconButton, InputAdornment, ThemeProvider } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import axios from "axios";
-import { useForm } from "react-hook-form";
 import { signIn } from "../../../utils/api/fuelStation";
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 const darkTheme = createTheme({
   palette: {
@@ -19,19 +20,32 @@ const darkTheme = createTheme({
   },
 });
 
-
 export default function StationLogin() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+
+  //Form validation regex
+  const passwordRegExp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+
+  const initialValues = {
+    regNo: "",
+    password: ""
+  }
+
+  //Form validation schemas
+  const validationSchema = Yup.object().shape({
+    regNo: Yup.string().min(4, "Minimum characters should be 4").required("Required"),
+    password: Yup.string().min(8, "Minimum characters should be 8")
+      .matches(passwordRegExp, "Password must have one upper, lower case, number").required('Required'),
+  })
 
   const onSubmit = async (data) => {
     let response;
 
-      response = await signIn({
-        registrationNo: data.regNo.trim().toLowerCase(),
-        password: data.password,
-      });
+    response = await signIn({
+      registrationNo: data.regNo.trim().toLowerCase(),
+      password: data.password,
+    });
 
-      console.log(response);
+    console.log(response);
   };
 
   const [showPass, setShowPass] = React.useState(false);
@@ -67,61 +81,68 @@ export default function StationLogin() {
         >
           STATION LOGIN
         </Typography>
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            variant="outlined"
-            id="regNo"
-            label="Registration No"
-            type="text"
-            fullWidth
-            inputProps={{ minLength: 3 }}
-            autoComplete='off'
-            {...register("regNo", { required: "Registration No is required." })}
-            error={Boolean(errors.regNo)}
-            helperText={errors.regNo?.message}
-          />		
+        <Box sx={{ mt: 1 }}>
+          <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+            {(props) => (
+              <Form noValidate>
+                <Field as={TextField}
+                  name='regNo'
+                  margin="normal"
+                  variant="outlined"
+                  id="regNo"
+                  label="Registration No"
+                  type="text"
+                  fullWidth
+                  autoComplete='off'
+                  required
+                  error={props.errors.regNo && props.touched.regNo}
+                  helperText={<ErrorMessage name='regNo' />}
+                />
 
-          <TextField
-            margin="normal"
-            type={showPass ? "text" : "password"}
-            fullWidth
-            label="Password"
-            variant="outlined"
-            id="password"
-            autoComplete='off'
-            {...register("password", { required: "Password is required." })}
-            error={Boolean(errors.password)}
-            helperText={errors.password?.message}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={handlePassVisibilty}
-                    aria-label="toggle password"
-                    edge="end"
-                  >
-                    {showPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2, fontWeight: 700 }}
-          >
-            login
-          </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-          </Grid>
+                <Field as={TextField}
+                  name='password'
+                  margin="normal"
+                  type={showPass ? "text" : "password"}
+                  fullWidth
+                  label="Password"
+                  variant="outlined"
+                  id="password"
+                  autoComplete='off'
+                  required
+                  error={props.errors.password && props.touched.password}
+                  helperText={<ErrorMessage name='password' />}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={handlePassVisibilty}
+                          aria-label="toggle password"
+                          edge="end"
+                        >
+                          {showPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2, fontWeight: 700 }}
+                >
+                  login
+                </Button>
+                <Grid container>
+                  <Grid item xs>
+                    <Link href="#" variant="body2">
+                      Forgot password?
+                    </Link>
+                  </Grid>
+                </Grid>
+              </Form>
+            )}
+          </Formik>
           <Typography
             sx={{ mt: 5 }}
             color="text.secondary"

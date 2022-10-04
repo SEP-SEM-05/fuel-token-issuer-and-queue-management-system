@@ -1,7 +1,6 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
@@ -11,6 +10,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { Link } from "react-router-dom";
 
 const darkTheme = createTheme({
   palette: {
@@ -36,7 +36,7 @@ export default function SignUpOrg() {
 
   //Form validation schemas
   const validationSchema = Yup.object().shape({
-    regNo: Yup.string().min(3, "Minimum characters should be 3").required("Required"),
+    regNo: Yup.string().min(4, "Minimum characters should be 4").required("Required"),
     name: Yup.string().min(3, "Minimum characters should be 3").required("Required"),
     email: Yup.string().email("Enter valid email").required("Required"),
     address: Yup.string().min(3, "Minimum characters should be 3").required("Required"),
@@ -234,8 +234,10 @@ export default function SignUpOrg() {
           </Formik>
           <Grid>
             <Grid item align="right">
-              <Link href="#" variant="body2">
-                {"Already have an account? Log In"}
+              <Link to={"/"} className="mylink" href="#" variant="body2">
+                <Typography color="primary">
+                  Already have an account? Log In
+                </Typography>
               </Link>
             </Grid>
           </Grid>

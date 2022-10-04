@@ -32,13 +32,21 @@ export default function SignIn() {
           }}
         />
         <Grid item xs={12} sm={8} md={5} elevation={6}>
+          <Grid sx={{ display: "flex", mx: 3, mt: 3 }}>
+            <Box sx={{ mr: 1 }}>
+              <LocalGasStationIcon fontSize="large" />
+            </Box>
+            <Typography variant="h4" component="div">
+              Fast Fueler
+            </Typography>
+          </Grid>
           <Typography
-            sx={{ mx: 4, mt: 2 }}
+            sx={{ mx: 4 }}
             variant="body1"
             component="div"
             align="right"
           >
-            Are you {isStation ? "a Client?" : "a Fuel Station?"}
+            Are you {isStation ? "a Client? " : "a Fuel Station? "}
             <Link
               onClick={() => {
                 setIsStation(!isStation);
@@ -49,14 +57,6 @@ export default function SignIn() {
               {"Login Here"}
             </Link>
           </Typography>
-          <Grid sx={{ display: "flex", mx: 3, my: 1 }}>
-            <Box sx={{ mr: 1 }}>
-              <LocalGasStationIcon fontSize="large" />
-            </Box>
-            <Typography variant="h4" component="div">
-              Fast Fueler
-            </Typography>
-          </Grid>
           {!isStation && <SignInPer />}
           {isStation && <SignInOrg />}
         </Grid>

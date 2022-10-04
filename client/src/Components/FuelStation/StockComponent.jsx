@@ -11,6 +11,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 
+//progress bar styles
 function LinearProgressWithLabel(props) {
   return (
     <Box
@@ -38,10 +39,34 @@ function LinearProgressWithLabel(props) {
 }
 
 const fuel_types = [
-  ["Auto Diesel", "19/09/2022", 500.545, 1000, "success"],
-  ["Super Diesel", "10/09/2022", 45.5, 100, "success"],
-  ["Petrol 92 Octane", "01/09/2022", 890.34, 1000, "warning"],
-  ["Petrol 95 Octane", "12/09/2022", 50, 150, "warning"],
+  {
+    type: "Auto Diesel",
+    lastDate: "19/09/2022",
+    left: 500.545,
+    cap: 1000,
+    col: "success",
+  },
+  {
+    type: "Super Diesel",
+    lastDate: "08/09/2022",
+    left: 45.5,
+    cap: 100,
+    col: "success",
+  },
+  {
+    type: "Petrol 92 Octane",
+    lastDate: "12/09/2022",
+    left: 890.45,
+    cap: 1000,
+    col: "success",
+  },
+  {
+    type: "Petrol 95 Octane",
+    lastDate: "20/09/2022",
+    left: 69.5,
+    cap: 150,
+    col: "success",
+  },
 ];
 
 const StockComponent = () => {
@@ -98,7 +123,7 @@ const StockComponent = () => {
       </Grid>
       <Grid container spacing={8} justifyContent="center">
         {fuel_types.map((ft) => (
-          <Grid key={ft[0]} item md={5}>
+          <Grid key={ft.type} item md={5}>
             <Card
               variant="outlined"
               sx={{
@@ -118,7 +143,7 @@ const StockComponent = () => {
                   component="div"
                   sx={{ fontWeight: "bold" }}
                 >
-                  {ft[0]}
+                  {ft.type}
                 </Typography>
                 <Typography
                   variant="caption"
@@ -126,14 +151,14 @@ const StockComponent = () => {
                   gutterBottom
                   sx={{ pb: 2 }}
                 >
-                  Last Added Date {ft[1]}
+                  Last Added Date {ft.lastDate}
                 </Typography>
                 <Typography variant="h5">
                   <LinearProgressWithLabel
                     color="info"
                     variant="determinate"
-                    remainder={ft[2].toFixed(2)}
-                    capacity={ft[3]}
+                    remainder={ft.left.toFixed(2)}
+                    capacity={ft.cap}
                     sx={{ height: 15, borderRadius: 3 }}
                   />
                 </Typography>
@@ -146,8 +171,8 @@ const StockComponent = () => {
                 }}
               >
                 <Button
-                  onClick={() => handleClickOpen(ft[0])}
-                  color={ft[4]}
+                  onClick={() => handleClickOpen(ft.type)}
+                  color={ft.col}
                   variant="contained"
                   sx={{ minWidth: "120px" }}
                 >
