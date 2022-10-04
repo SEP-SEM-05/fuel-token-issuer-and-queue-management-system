@@ -4,6 +4,20 @@ require('dotenv').config();
 
 const Station = require('../models/station');
 
+//save refresh token by _id
+const saveRefreshToken = async (token, id) => {
+
+    let result = await Station.findByIdAndUpdate(id, {refreshToken: token});
+    return result;
+}
+
+//find document by refresh token
+const findByRefreshToken = async (token) => {
+    
+    let result = await Station.findOne({refreshToken: token});
+    return result;
+}
+
 //find a station given the registration No.
 const findStationByRegNo = async (registrationNo) => {
     console.log(registrationNo);
@@ -36,6 +50,8 @@ const updateAmount = async (regNo, fuelType, addedAmount) => {
 }
 
 module.exports = {
+    saveRefreshToken,
+    findByRefreshToken,
     findStationByRegNo,
     findStationByID,
     findAllRegisteredStations,
