@@ -296,7 +296,7 @@ const login_post_station = async (req, res) => {
                 let accessToken = auth.createAccessToken(token_data);
                 let refreshToken = auth.createRefreshToken(token_data);
 
-                await stationDBHelper.saveRefreshToken(refreshToken);
+                await stationDBHelper.saveRefreshToken(refreshToken, user._id);
 
                 res.header("x-access-token", accessToken);
                 res.header("x-refresh-token", refreshToken);
