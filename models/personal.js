@@ -32,6 +32,10 @@ const personalSchema = new Schema({
         type: String,
         required: true
     },
+    refreshToken: {
+      type: String,
+      required: false,
+    },
     noOfVehicles: {
         type: Number,
         default: 0
