@@ -41,6 +41,13 @@ const findAllRegisteredStations = async () => {
     return stations;
 }
 
+//get all unregistered stations
+const findAllUnregisteredStations = async () => {
+
+    let stations = await Station.find({isRegistered: false});
+    return stations;
+}
+
 //update the fuel amount, given the fuel type
 const updateAmount = async (regNo, fuelType, addedAmount) => {
     let station = findStationByID(regNo);
