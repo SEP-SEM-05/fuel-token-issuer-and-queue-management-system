@@ -14,14 +14,18 @@ const makeApp = () => {
     // express app
     const app = express();
 
-    app.use(cors());
+    app.use(
+        cors({
+            exposedHeaders: ["x-refresh-token", "x-access-token"],
+        })
+    );
     app.use(express.json());
 
     // middleware & static files
     app.use(express.urlencoded({ extended: true }));
 
     // set static file path for productioin build
-    if (process.env.NODE_ENV === 'production'){
+    if (process.env.NODE_ENV === 'production') {
         app.use(express.static('client/build'));
     }
 

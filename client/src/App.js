@@ -22,6 +22,8 @@ import GetStand from "./Components/auth/GetStand/GetStand";
 import SignIn from "./Components/auth/LogIn/Login";
 import StationGetStand from "./Components/auth/GetStand/StationGetStand";
 import SignUp from "./Components/auth/SignUp/SignUp";
+import PersonalPrivateRoutes from "./PrivateRoutes/PersonalPrivateRoutes";
+import OrgPrivateRoutes from "./PrivateRoutes/OrgPrivateRoutes";
 
 function App() {
   return (
@@ -50,13 +52,13 @@ function App() {
             <Route path="vehicles" element={<VehiclesComponent />} />
           </Route>
 
-          <Route path="userp" element={<PersonalDashboard />}>
+          <Route path="userp" element={<PersonalPrivateRoutes><PersonalDashboard /></PersonalPrivateRoutes>}>
             <Route index element={<PersonalVehicles />} />
             <Route path="home" element={<PersonalVehicles />} />
             <Route path="addvehicle" element={<AddVehicle />} />
           </Route>
 
-          <Route path="usero" element={<OrgDashboard />}>
+          <Route path="usero" element={<OrgPrivateRoutes><OrgDashboard /></OrgPrivateRoutes>}>
             <Route index element={<RequestFuelOrg />} />
             <Route path="home" element={<RequestFuelOrg />} />
             <Route path="vehicles" element={<OrgVehicles />} />
