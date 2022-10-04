@@ -32,6 +32,10 @@ const organizationSchema = new Schema({
         type: Boolean,
         default: false
     },
+    refreshToken: {
+      type: String,
+      required: false,
+    },
     lastFilledDate: {
         type: Map,
         of: Date,
