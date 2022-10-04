@@ -32,6 +32,10 @@ const stationSchema = new Schema({
         required: true,
         unique: true
     },
+    refreshToken: {
+      type: String,
+      required: false,
+    },
     isRegistered: {
         type: Boolean,
         default: false
