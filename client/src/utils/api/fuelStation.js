@@ -11,6 +11,7 @@ const signIn = async (data) => {
     return response.data;
   } catch (err) {
     console.log(err);
+    return err.response.data;
   }
 };
 
