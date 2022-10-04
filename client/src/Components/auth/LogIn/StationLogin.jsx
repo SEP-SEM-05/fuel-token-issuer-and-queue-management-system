@@ -9,10 +9,11 @@ import { createTheme } from "@mui/material/styles";
 import { IconButton, InputAdornment, ThemeProvider } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import axios from "axios";
 import { signIn } from "../../../utils/api/fuelStation";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import useAuth from "../../../utils/providers/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 const darkTheme = createTheme({
   palette: {
@@ -21,6 +22,8 @@ const darkTheme = createTheme({
 });
 
 export default function StationLogin() {
+  const {user, signUser} = useAuth();
+  const navigate = useNavigate();
 
   //Form validation regex
   const passwordRegExp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
@@ -45,7 +48,15 @@ export default function StationLogin() {
       password: data.password,
     });
 
-    console.log(response);
+    if (response.status === "ok") {
+      signUser(response);
+
+      navigate("/fuelstation", { replace: true });
+      
+    } else {
+      //handle error
+    }
+
   };
 
   const [showPass, setShowPass] = React.useState(false);

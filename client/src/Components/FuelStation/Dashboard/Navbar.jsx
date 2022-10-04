@@ -17,6 +17,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { NavLink } from "react-router-dom";
 import FUELIMG from "../../../assets/station.gif";
+import useAuth from "../../../utils/providers/AuthProvider";
 import {
   Grid,
   ListItemIcon,
@@ -33,6 +34,7 @@ const navItems = [
 ]; //nav items list with corresponding navLinks
 
 function DrawerAppBar() {
+  const { user, signUser } = useAuth();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -119,7 +121,7 @@ function DrawerAppBar() {
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography noWrap sx={{ pr: 1 }}>
-                {"Station Name"}
+                {user.data.name}
               </Typography>
               <Tooltip title="Logout">
                 <IconButton onClick={handleOpenUserMenu}>
@@ -142,7 +144,7 @@ function DrawerAppBar() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem disabled>{"1290456N"}</MenuItem>
+                <MenuItem disabled>{user.data.registrationNo}</MenuItem>
                 <Divider />
                 <MenuItem onClick={handleCloseUserMenu}>
                   <ListItemIcon>

@@ -10,6 +10,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import { getDashBoard } from "../../utils/api/fuelStation";
+import useAuth from "../../utils/providers/AuthProvider";
 
 //progress bar styles
 function LinearProgressWithLabel(props) {
@@ -38,40 +40,41 @@ function LinearProgressWithLabel(props) {
   );
 }
 
-const fuel_types = [
-  {
-    type: "Auto Diesel",
-    lastDate: "19/09/2022",
-    left: 500.545,
-    cap: 1000,
-    col: "success",
-  },
-  {
-    type: "Super Diesel",
-    lastDate: "08/09/2022",
-    left: 45.5,
-    cap: 100,
-    col: "success",
-  },
-  {
-    type: "Petrol 92 Octane",
-    lastDate: "12/09/2022",
-    left: 890.45,
-    cap: 1000,
-    col: "success",
-  },
-  {
-    type: "Petrol 95 Octane",
-    lastDate: "20/09/2022",
-    left: 69.5,
-    cap: 150,
-    col: "success",
-  },
-];
 
 const StockComponent = () => {
+  const { user, signUser } = useAuth();
   const [open, setOpen] = React.useState(false);
   const [fuelType, setFuelType] = React.useState(false);
+  const [fuel_types, setFuel_types] = React.useState([]);
+
+  React.useEffect(() => {
+    async function fetchData() {
+      let response = await getDashBoard(user.data.id);
+      //handle errors
+      let userr = response.user;
+
+      let capasities = userr.capasities;
+      let volumes = userr.volumes;
+      let lastFilled = userr.lastFilled;
+
+      let fuel_typess = [];
+      for(let key in capasities){
+        let obj = {}
+        obj['type'] = key;
+        let d = new Date(lastFilled[key])
+        obj['lastDate'] = d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate();
+        obj['left'] = volumes[key];
+        obj['cap'] = capasities[key];
+        obj["col"] = key.includes("Diesel") ? 'success' : 'warning';
+
+        fuel_typess.push(obj);
+      }
+
+      setFuel_types(fuel_typess);
+    }
+
+    fetchData();
+  }, []);
 
   const handleClickOpen = (ft) => {
     setOpen(true);

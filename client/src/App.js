@@ -23,6 +23,7 @@ import SignIn from "./Components/auth/LogIn/Login";
 import SignUp from "./Components/auth/SignUp/SignUp";
 import PersonalPrivateRoutes from "./PrivateRoutes/PersonalPrivateRoutes";
 import OrgPrivateRoutes from "./PrivateRoutes/OrgPrivateRoutes";
+import StationPrivateRoutes from "./PrivateRoutes/StationPrivateRoutes";
 
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
           <Route path="signup" element={<SignUp />} />
           <Route path="fuelstationgetstands" element={<GetStand />} />
 
-          <Route path="fuelstation" element={<DashboardContent />}>
+          <Route path="fuelstation" element={<StationPrivateRoutes><DashboardContent /></StationPrivateRoutes>}>
             <Route index element={<StockComponent />} />
             <Route path="home" element={<StockComponent />} />
             <Route path="fuelqueues" element={<QueuesComponent />} />
@@ -51,13 +52,27 @@ function App() {
             <Route path="vehicles" element={<VehiclesComponent />} />
           </Route>
 
-          <Route path="userp" element={<PersonalPrivateRoutes><PersonalDashboard /></PersonalPrivateRoutes>}>
+          <Route
+            path="userp"
+            element={
+              <PersonalPrivateRoutes>
+                <PersonalDashboard />
+              </PersonalPrivateRoutes>
+            }
+          >
             <Route index element={<PersonalVehicles />} />
             <Route path="home" element={<PersonalVehicles />} />
             <Route path="addvehicle" element={<AddVehicle />} />
           </Route>
 
-          <Route path="usero" element={<OrgPrivateRoutes><OrgDashboard /></OrgPrivateRoutes>}>
+          <Route
+            path="usero"
+            element={
+              <OrgPrivateRoutes>
+                <OrgDashboard />
+              </OrgPrivateRoutes>
+            }
+          >
             <Route index element={<RequestFuelOrg />} />
             <Route path="home" element={<RequestFuelOrg />} />
             <Route path="vehicles" element={<OrgVehicles />} />

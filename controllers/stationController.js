@@ -10,13 +10,16 @@ const encHandler = require("../middleware/encryptionHandler");
 
 //get station dashboard info
 const get_dashboard = async (req, res) => {
-  let id = req.params.registrationNo;
+console.log(req.params.id)
+  let id = req.params.id;
+
   try {
-    let user = await stationDBHelper.findStationByRegNo(id);
+    let user = await stationDBHelper.findStationByID(id);
     if (user !== null) {
       res.json({
         status: "ok",
         user: user,
+       // fuel_types
       });
     } else {
       res.status(400).json({
