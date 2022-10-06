@@ -5,10 +5,13 @@ require('dotenv').config();
 const dbURI = process.env.DB_URI;
 
 const Vehicle = require('../../../models/vehicle');
-const {findVehicleByRegNo, findVehicleByRegNoAndEngNo, findAllByNic, findAllByregistrationNoArray, updateStationsAndRegister, registerAll, getQuotas, addToQueue, saveRequest, findWaitingRequest} = require('../../../services/vehicleDBHelper');
+const Quota = require('../../../models/quota');
+const Request = require('../../../models/request');
+
+const { findVehicleByRegNo, findVehicleByRegNoAndEngNo, findAllByNic, findAllByregistrationNoArray, updateStationsAndRegister, registerAll, getQuotas, addToQueue, saveRequest, findWaitingRequest } = require('../../../services/vehicleDBHelper');
 
 describe("Database access methods for vehicles", () => {
-    
+
     beforeAll(async () => {
         // connect to mongodb and listen
         await mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -18,208 +21,237 @@ describe("Database access methods for vehicles", () => {
         await mongoose.disconnect();
     });
 
-    describe("findVehicleByRegNo - Find a vehicle that matches the given registration No.", () => {
+    // describe("findVehicleByRegNo - Find a vehicle that matches the given registration No.", () => {
 
-        it("should return a null object for non exsisting registrtation No.", async () => {
+    //     it("should return a null object for non exsisting registrtation No.", async () => {
 
-            const vehicle = await findVehicleByRegNo('non-existing-regNo');
+    //         const vehicle = await findVehicleByRegNo('non-existing-regNo');
 
-            expect(vehicle).toEqual(null);
-        });
+    //         expect(vehicle).toEqual(null);
+    //     });
 
-        it("should return a valid vehicle object for an exsisting registration No.", async () => {
+    //     it("should return a valid vehicle object for an exsisting registration No.", async () => {
 
-            const mockVehicle = {};
+    //         const exsistingRegNo = "sampleRegNo01";
+    //         const mockVehicleId = "633ed6babc0b58545e91c3ee"
 
-            const quriedVehicle = await findVehicleByRegNo('AAA-6756');
+    //         const quriedVehicle = await findVehicleByRegNo(exsistingRegNo);
 
-            expect(quriedVehicle).toEqual(mockVehicle);
-        });
-    });
+    //         expect(quriedVehicle._id).toEqual(mongoose.Types.ObjectId(mockVehicleId));
+    //     });
+    // });
 
-    describe("findVehicleByRegNoAndEngNo - find a vehicle given the registration No. and the engine No.", () => {
+    // describe("findVehicleByRegNoAndEngNo - find a vehicle given the registration No. and the engine No.", () => {
 
-        it("should return a null object for non exsisting registrtation No.", async () => {
+    //     it("should return a null object for non exsisting registrtation No.", async () => {
 
-            const vehicle = await findVehicleByRegNo('SP-AAA-7863');
+    //         const mockRegNo = "non-existing-regNo";
+    //         const mockEngNo = "sampleEngNo01";
 
-            expect(vehicle).toEqual(null);
-        });
+    //         const vehicle = await findVehicleByRegNoAndEngNo(mockRegNo, mockEngNo);
 
-        it("should return a valid vehicle object for an exsisting registration No.", async () => {
+    //         expect(vehicle).toEqual(null);
+    //     });
 
-            const mockVehicle = {};
+    //     it("should return a null object for non exsisting engine No.", async () => {
 
-            const quriedVehicle = await findVehicleByRegNo('AAA-6756');
+    //         const mockRegNo = "sampleRegNo01";
+    //         const mockEngNo = "non-existing-engNo";
 
-            expect(quriedVehicle).toEqual(mockVehicle);
-        });
-    });
+    //         const vehicle = await findVehicleByRegNoAndEngNo(mockRegNo, mockEngNo);
 
-    describe("findAllByNic - Find vehicles that registered under a given nic", () => {
+    //         expect(vehicle).toEqual(null);
+    //     });
 
-        //checks whether the database has any vehicles under the given nic
-        //if there are not, should return null
-        it("should return a null object if there are no vehicles under the provided nic", async () => {
+    //     it("should return a valid vehicle object for an exsisting registration No. and engine No.", async () => {
 
-            const vehicle = await findAllByNic('997665667v');
+    //         const mockRegNo = "sampleRegNo01";
+    //         const mockEngNo = "sampleEngNo01";
+    //         const mockVehicleId = "633ed6babc0b58545e91c3ee";
 
-            expect(vehicle).toEqual(null);
-        });
+    //         const vehicle = await findVehicleByRegNoAndEngNo(mockRegNo, mockEngNo);
 
-        //checks whether the database has any vehicles under the given nic which are registered in the system
-        //if there are not, should return null
-        it("should return a null object if there are no vehicles registered in the system under the provided nic", async () => {
+    //         expect(vehicle._id).toEqual(mongoose.Types.ObjectId(mockVehicleId));
+    //     });
+    // });
 
-            const vehicle = await findAllByNic('997676667v');
+    // describe("findAllByNic - Find vehicles that registered under a given nic", () => {
 
-            expect(vehicle).toEqual(null);
-        });
+    //     //checks whether the database has any vehicles under the given nic
+    //     //if there are not, should return null
+    //     it("should return an empty array object if there are no vehicles under the provided nic", async () => {
 
-        it("if there are vehicles registered under the given nic, return them in an array", async () => {
+    //         const mockNic = "non-existing-nic";
 
-            const mockVehicles = [];
+    //         const vehicles = await findAllByNic(mockNic);
 
-            const queriedVehicles = await findAllByNic('990998765v');
+    //         expect(vehicles).toEqual([]);
+    //     });
 
-            expect(queriedVehicles).toEqual(mockVehicles);
-        });
-    });
+    //     //checks whether the database has any vehicles under the given nic which are registered in the system
+    //     //if there are not, should return null
+    //     it("should return an empty array object if there are no vehicles registered in the system under the provided nic", async () => {
 
-    describe("findAllByregistrationNoArray - Find all the vehicles that the registraion No. is in the given array of registration numbers", () => {
+    //         const mockNic = "nicex01unreg";//this has vehicles owened by it. but those are not registered in the system
 
-        it("if the registration No. array is empty, should return a null object", async () => {
+    //         const vehicles = await findAllByNic(mockNic);
 
-            const queriedVehicles = await findAllByregistrationNoArray([]);
+    //         expect(vehicles).toEqual([]);
+    //     });
 
-            expect(queriedVehicles).toEqual(null);
-        });
+    //     it("if there are vehicles registered under the given nic to the system, return them in an array", async () => {
 
-        it("should return an array with single vihicle object, if the regNo array contains only one registration No.", async () => {
+    //         const mockNic = "657637925v";
 
-            const regNos = ["sample regNO"];
+    //         const vehicles = await findAllByNic(mockNic);
 
-            const queriedVehicles = await findAllByregistrationNoArray(regNos);
+    //         expect(vehicles.length > 0).toBeTruthy();
+    //     });
+    // });
 
-            expect(queriedVehicles.length).toEqual(1);
-        });
+    // describe("findAllByregistrationNoArray - Find all the vehicles that the registraion No. is in the given array of registration numbers", () => {
 
-        it("should return a vehicle objects array which has the length similar to the regNo array", async () => {
+    //     it("if the registration No. array is empty, should return a null object", async () => {
 
-            const regNos = ["sample regNO1", "sample regNO2", "sample regNO3", "sample regNO4", ];
+    //         const mockRegNos = [];
 
-            const queriedVehicles = await findAllByregistrationNoArray(regNos);
+    //         const queriedVehicles = await findAllByregistrationNoArray(mockRegNos);
 
-            expect(queriedVehicles.length).toEqual(4);
-        });
-    });
+    //         expect(queriedVehicles).toEqual([]);
+    //     });
 
-    describe("updateStationsAndRegister - Given the a registration No. and an array of stations, update the stations of the vehicle and mark as registered", () => {
+    //     it("should return an array with single vihicle object, if the regNo array contains only one registration No.", async () => {
 
-        // it("check whether the client is successfully saved", async () => {
+    //         const mockRegNos = ["sampleRegNo01"];
 
-        //     const mockClient = {};
-        //     const mockData = {};
+    //         const queriedVehicles = await findAllByregistrationNoArray(mockRegNos);
 
-        //     const err = await saveClient(mockData);
-        //     const quriedClient = await Personal.findOne({nic: mockData.nic});
+    //         expect(queriedVehicles.length).toEqual(1);
+    //     });
 
-        //     expect(quriedClient).toEqual(mockClient);
-        // });
-    });
+    //     it("should return a vehicle objects array which has the length similar to the regNo array", async () => {
 
-    describe("registerAll - register all the vehicles matches a given registration No. array", () => {
+    //         const mockRegNos = ["sampleRegNo01", "sampleRegNo02", "sampleRegNo03", "sampleRegNo04", ];
 
-        it("should return a null object for non exsisting registrtation No.", async () => {
+    //         const queriedVehicles = await findAllByregistrationNoArray(mockRegNos);
 
-            const vehicle = await findVehicleByRegNo('SP-AAA-7863');
+    //         expect(queriedVehicles.length).toEqual(mockRegNos.length);
+    //     });
+    // });
 
-            expect(vehicle).toEqual(null);
-        });
+    // describe("updateStationsAndRegister - Given the a registration No. and an array of stations, update the stations of the vehicle and mark as registered", () => {
 
-        it("should return a valid vehicle object for an exsisting registration No.", async () => {
+    //     // it("check whether the client is successfully saved", async () => {
 
-            const mockVehicle = {};
+    //     //     const mockClient = {};
+    //     //     const mockData = {};
 
-            const quriedVehicle = await findVehicleByRegNo('AAA-6756');
+    //     //     const err = await saveClient(mockData);
+    //     //     const quriedClient = await Personal.findOne({nic: mockData.nic});
 
-            expect(quriedVehicle).toEqual(mockVehicle);
-        });
-    });
+    //     //     expect(quriedClient).toEqual(mockClient);
+    //     // });
+    // });
 
-    describe("getQuotas - get all allowed fuel quotas", () => {
+    // describe("registerAll - register all the vehicles matches a given registration No. array", () => {
 
-        it("should return a null object for non exsisting registrtation No.", async () => {
+    //     it("no document should be updated, given an empty array", async () => {
 
-            const vehicle = await findVehicleByRegNo('SP-AAA-7863');
+    //         const mockRegNos = [];
 
-            expect(vehicle).toEqual(null);
-        });
+    //         const result = await registerAll(mockRegNos);
 
-        it("should return a valid vehicle object for an exsisting registration No.", async () => {
+    //         expect(result.modifiedCount).toEqual(mockRegNos.length);
+    //     });
 
-            const mockVehicle = {};
+    //     it("should update(register) all the vehicles corresponds to the registration numbers provided in the array", async () => {
 
-            const quriedVehicle = await findVehicleByRegNo('AAA-6756');
+    //         const mockRegNos = ['sampleRegNo05', 'sampleRegNo03'];
 
-            expect(quriedVehicle).toEqual(mockVehicle);
-        });
-    });
+    //         const result = await registerAll(mockRegNos);
 
-    describe("addToQueue - add a fuel request to queues of all the station based on fuel type", () => {
+    //         expect(result.modifiedCount).toEqual(mockRegNos.length);
+    //     });
+    // });
 
-        it("should return a null object for non exsisting registrtation No.", async () => {
+    // describe("getQuotas - get all allowed fuel quotas", () => {
 
-            const vehicle = await findVehicleByRegNo('SP-AAA-7863');
+    //     it("should return an array of quota objects", async () => {
 
-            expect(vehicle).toEqual(null);
-        });
+    //         const result01 = await getQuotas();
+    //         const result02 = await Quota.find();
 
-        it("should return a valid vehicle object for an exsisting registration No.", async () => {
+    //         expect(result01.length).toEqual(result02.length);
+    //     });
+    // });
 
-            const mockVehicle = {};
+    // describe("addToQueue - add a fuel request to queues of all the station based on fuel type", () => {
 
-            const quriedVehicle = await findVehicleByRegNo('AAA-6756');
+    //     it("should return a null object for non exsisting registrtation No.", async () => {
 
-            expect(quriedVehicle).toEqual(mockVehicle);
-        });
-    });
+    //         const vehicle = await findVehicleByRegNo('SP-AAA-7863');
 
-    describe("saveRequest - save a fuel request to the database", () => {
+    //         expect(vehicle).toEqual(null);
+    //     });
 
-        it("should return a null object for non exsisting registrtation No.", async () => {
+    //     it("should return a valid vehicle object for an exsisting registration No.", async () => {
 
-            const vehicle = await findVehicleByRegNo('SP-AAA-7863');
+    //         const mockVehicle = {};
 
-            expect(vehicle).toEqual(null);
-        });
+    //         const quriedVehicle = await findVehicleByRegNo('AAA-6756');
 
-        it("should return a valid vehicle object for an exsisting registration No.", async () => {
+    //         expect(quriedVehicle).toEqual(mockVehicle);
+    //     });
+    // });
 
-            const mockVehicle = {};
+    // describe("saveRequest - save a fuel request to the database", () => {
 
-            const quriedVehicle = await findVehicleByRegNo('AAA-6756');
+    //     it("should return no error and a request document should able to be quried if the request has been successfully saved", async () => {
 
-            expect(quriedVehicle).toEqual(mockVehicle);
-        });
-    });
+    //         const mockReq = {
+    //             "userType": "personal",
+    //             "registrationNo": "sampleRegNo01ex",
+    //             "quota": 5,
+    //             "fuelType": "Auto Diesel",
+    //             "requestedStations": [
+    //                 "stationRegNo01",
+    //                 "stationRegNo02",
+    //                 "stationRegNo03"
+    //             ],
+    //         };
+
+    //         const result = await saveRequest(mockReq);
+    //         const quriedRequest = await Request.findById(mongoose.Types.ObjectId(result));
+
+    //         expect(quriedRequest).not.toEqual(result);
+    //     });
+    // });
 
     describe("findWaitingRequest - find any waiting/active requests for a vehicle/organization given the registration No.", () => {
 
-        it("should return a null object for non exsisting registrtation No.", async () => {
+        it("should return null if there are no waiting/active requests for regNo", async () => {
 
-            const vehicle = await findVehicleByRegNo('SP-AAA-7863');
+            const mockRegNo = "sampleRegNo03ex";
+            const mockUserType = "personal";
 
-            expect(vehicle).toEqual(null);
+            const requests = await findWaitingRequest(mockRegNo, mockUserType);
+
+            expect(requests).toEqual(null);
         });
 
-        it("should return a valid vehicle object for an exsisting registration No.", async () => {
+        it("should return a request object if there are any waiting/active requests for regNo", async () => {
 
-            const mockVehicle = {};
+            const mockRegNo = "sampleRegNo01ex";
+            const mockUserType = "personal";
 
-            const quriedVehicle = await findVehicleByRegNo('AAA-6756');
+            const requests = await findWaitingRequest(mockRegNo, mockUserType);
 
-            expect(quriedVehicle).toEqual(mockVehicle);
+            expect(requests).not.toEqual(null);
         });
     });
 });
+
+//remaining
+
+//updateStationsAndRegister
+// addToQueue

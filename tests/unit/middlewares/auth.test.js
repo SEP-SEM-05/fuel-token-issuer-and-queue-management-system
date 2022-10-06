@@ -1,11 +1,11 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const {requireAuth, createToken} = require('../../../middleware/auth');
+const { requireAuth, createToken } = require('../../../middleware/auth');
 
 describe("auth middleware check", () => {
-    
-    beforeAll(async () => {});
+
+    beforeAll(async () => { });
 
     // describe("requireAuth - Verifies that a request header contains a valid token", () => {
 
@@ -47,3 +47,9 @@ describe("auth middleware check", () => {
         });
     });
 });
+
+//remaining
+
+// requireAuth,
+// createAccessToken,
+// createRefreshToken,
