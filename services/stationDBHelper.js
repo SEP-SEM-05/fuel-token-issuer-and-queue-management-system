@@ -11,13 +11,6 @@ const saveRefreshToken = async (token, id) => {
     return result;
 }
 
-//find document by refresh token
-const findByRefreshToken = async (token) => {
-    
-    let result = await Station.findOne({refreshToken: token});
-    return result;
-}
-
 //find a station given the registration No.
 const findStationByRegNo = async (registrationNo) => {
 
@@ -57,7 +50,6 @@ const updateAmount = async (regNo, fuelType, addedAmount) => {
 
 module.exports = {
     saveRefreshToken,
-    findByRefreshToken,
     findStationByRegNo,
     findStationByID,
     findAllRegisteredStations,

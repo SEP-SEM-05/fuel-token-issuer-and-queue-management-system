@@ -29,13 +29,6 @@ const saveRefreshToken = async (token, id) => {
     return result;
 }
 
-//find document by refresh token
-const findByRefreshToken = async (token) => {
-    
-    let result = await Personal.findOne({refreshToken: token});
-    return result;
-}
-
 //find a personal client given the nic
 const findClientByNic = async (nic) => {
 
@@ -52,7 +45,6 @@ const findClientByID = async (id) => {
 
 module.exports = {
     saveClient,
-    findByRefreshToken,
     saveRefreshToken,
     findClientByNic,
     findClientByID,

@@ -16,8 +16,7 @@ let requireAuth = async (req, res, next) => {
 
         let refreshTokenHeader = req.headers["x-refresh-token"];
         let accessTokenHeader = req.headers["x-access-token"];
-        // console.log(refreshTokenHeader);
-        // console.log(accessTokenHeader);
+
         if (refreshTokenHeader === undefined && accessTokenHeader === undefined) {
 
             return res.status(404).json({
@@ -26,15 +25,14 @@ let requireAuth = async (req, res, next) => {
             });
         }
         else {
-            // console.log("tokens defined")
+
             let refreshToken = refreshTokenHeader && refreshTokenHeader.split(" ")[1]; //TODO:check whether bearer is there to split
             let accessToken = accessTokenHeader && accessTokenHeader.split(" ")[1];
-            // console.log(refreshToken)
-            // console.log(accessToken)
+
             if (accessToken) {
-                // console.log(accessToken)
+
                 const accessTokenCheck = accessTokenVerify(accessToken);
-                // console.log(accessTokenCheck)
+
                 if (accessTokenCheck.status === "ok") {
 
                     res.header("x-access-token", accessTokenCheck.newAccessToken);
@@ -93,7 +91,6 @@ const accessTokenVerify = (token) => {
         return { status: "ok", data: value, newAccessToken: newAccessToken };
     }
     catch (error) {
-        // console.log(error)
         return { status: "error", error: "token expired!" };
     }
 };
