@@ -6,7 +6,7 @@ require('dotenv').config();
 const dbURI = process.env.DB_URI;
 
 const Organization = require('../../../models/organization');
-const {saveClient, findClientByRegNo, findClientByID, updateStations} = require('../../../services/orgDBHelper');
+const {saveClient, saveRefreshToken, findClientByRegNo, findClientByID, updateStations} = require('../../../services/orgDBHelper');
 
 describe("Database access methods for organizations", () => {
     
@@ -77,7 +77,7 @@ describe("Database access methods for organizations", () => {
         });
     });
 
-    describe("updateStations - Given the a registration No. and an array of stations, update the stations of the organization", () => {
+    describe("updateStations - Given a registration No. and an array of stations, update the stations of the organization", () => {
 
         it("should fail to update any document for an invalid registration No.", async () => {
 
@@ -100,8 +100,28 @@ describe("Database access methods for organizations", () => {
             expect(quriedClient.stations).toEqual(mockStations);
         });
     });
+
+    describe("saveRefreshToken - Given a token and an id, update the refresh token of a organization", () => {
+
+        it("should fail to update any document for an invalid id", async () => {
+
+            const mockId = "0335c554d94e2a08227ac7b0";
+            const mockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyVHlwZSI6Im9yZ2FuaXphdGlvbiIsImlkIjoiNjMzNThiODQ2OTg4MjZmZjZhYTYxMzYwIiwicmVnaXN0cmF0aW9uTm8iOiI1NjUyMzc2MjczMjMiLCJpYXQiOjE2NjQ4NzUzODksImV4cCI6MTY2NDk2MTc4OX0.F_dM8F_1BtlV0DsA5juWO2rE7KD_gzf2XrNfEsyBU1E";
+
+            let result = await saveRefreshToken(mockToken, mockId);
+
+            expect(result.matchedCount).toEqual(0);
+        });
+
+        it("should update the refresh token for a valid id", async () => {
+
+            const mockId = "63358b84698826ff6aa61360";
+            const mockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyVHlwZSI6Im9yZ2FuaXphdGlvbiIsImlkIjoiNjMzNThiODQ2OTg4MjZmZjZhYTYxMzYwIiwicmVnaXN0cmF0aW9uTm8iOiI1NjUyMzc2MjczMjMiLCJpYXQiOjE2NjQ4NzUzODksImV4cCI6MTY2NDk2MTc4OX0.F_dM8F_1BtlV0DsA5juWO2rE7KD_gzf2XrNfEsyBU1E";
+
+            let result = await saveRefreshToken(mockToken, mockId);
+            let quriedClient = await Organization.findById(mongoose.Types.ObjectId(mockId));
+
+            expect(quriedClient.refreshToken).toEqual(mockToken);
+        });
+    });
 });
-
-//remaining
-
-// saveRefreshToken,

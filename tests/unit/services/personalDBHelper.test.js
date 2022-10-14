@@ -5,7 +5,7 @@ require('dotenv').config();
 const dbURI = process.env.DB_URI;
 
 const Personal = require('../../../models/personal');
-const {saveClient, findClientByNic, findClientByID, } = require('../../../services/personalDBHelper');
+const {saveClient, saveRefreshToken, findClientByNic, findClientByID, } = require('../../../services/personalDBHelper');
 
 describe("Database access methods for personal clients", () => {
     
@@ -119,8 +119,28 @@ describe("Database access methods for personal clients", () => {
             expect(quriedClient.nic).toEqual("990972657v");
         });
     });
+
+    describe("saveRefreshToken - Given a token and an id, update the refresh token of a personal client", () => {
+
+        it("should fail to update any document for an invalid id", async () => {
+
+            const mockId = "0335c554d94e2a08227ac7b0";
+            const mockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyVHlwZSI6InBlcnNvbmFsIiwiaWQiOiI2MzM1N2RjOGNlYWZiNWY2NjQ1MmE3YWMiLCJuaWMiOiI5OTA5NzI2NTd2IiwiaWF0IjoxNjY0ODc1Mjg0LCJleHAiOjE2NjQ5NjE2ODR9.1mISW-4U117RH1SNW7l1geAF2kgFXBy-SNcgLXcYN20";
+
+            let result = await saveRefreshToken(mockToken, mockId);
+
+            expect(result.matchedCount).toEqual(0);
+        });
+
+        it("should update the refresh token for a valid id", async () => {
+
+            const mockId = "63357dc8ceafb5f66452a7ac";
+            const mockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyVHlwZSI6InBlcnNvbmFsIiwiaWQiOiI2MzM1N2RjOGNlYWZiNWY2NjQ1MmE3YWMiLCJuaWMiOiI5OTA5NzI2NTd2IiwiaWF0IjoxNjY0ODc1Mjg0LCJleHAiOjE2NjQ5NjE2ODR9.1mISW-4U117RH1SNW7l1geAF2kgFXBy-SNcgLXcYN20";
+
+            let result = await saveRefreshToken(mockToken, mockId);
+            let quriedClient = await Personal.findById(mongoose.Types.ObjectId(mockId));
+
+            expect(quriedClient.refreshToken).toEqual(mockToken);
+        });
+    });
 });
-
-//remaining
-
-// saveRefreshToken,
