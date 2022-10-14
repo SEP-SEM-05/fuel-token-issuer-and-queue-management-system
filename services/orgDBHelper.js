@@ -15,7 +15,7 @@ const saveClient = async (registrationNo, data) => {
 //save refresh token by _id
 const saveRefreshToken = async (token, id) => {
 
-    let result = await Org.findByIdAndUpdate(id, {refreshToken: token});
+    let result = await Org.updateOne({_id: id}, { $set: {refreshToken: token} });
     return result;
 }
 

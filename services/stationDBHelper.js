@@ -7,7 +7,7 @@ const Station = require('../models/station');
 //save refresh token by _id
 const saveRefreshToken = async (token, id) => {
 
-    let result = await Station.findByIdAndUpdate(id, {refreshToken: token});
+    let result = await Station.updateOne({_id: id}, { $set: {refreshToken: token} });
     return result;
 }
 

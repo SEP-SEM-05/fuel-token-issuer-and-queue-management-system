@@ -6,9 +6,9 @@ const orgDBHelper = require("../services/orgDBHelper");
 const stationDBHelper = require("../services/stationDBHelper");
 
 const ACCESS_TOKEN_SECRET_KEY = process.env.ACCESS_TOKEN_SECRET_KEY;
-const REFRESH_TOKEN_SECRET_KEY = process.env.REFRESH_TOKEN_SECRET_KEY
+const REFRESH_TOKEN_SECRET_KEY = process.env.REFRESH_TOKEN_SECRET_KEY;
 const ACCESS_EXP = process.env.ACCESS_EXP;
-const REFRESH_EXP = process.env.REFRESH_EXP
+const REFRESH_EXP = process.env.REFRESH_EXP;
 
 let requireAuth = async (req, res, next) => {
 
@@ -86,6 +86,10 @@ const accessTokenVerify = (token) => {
     try {
 
         const value = jwt.verify(token, ACCESS_TOKEN_SECRET_KEY);
+
+        delete value.iat;
+        delete value.exp;
+
         const newAccessToken = jwt.sign(value, ACCESS_TOKEN_SECRET_KEY, { expiresIn: ACCESS_EXP });
 
         return { status: "ok", data: value, newAccessToken: newAccessToken };
@@ -140,7 +144,7 @@ const refreshTokenVerify = async (token) => {
         }
     }
     catch (error) {
-        console.log(error)
+        // console.log(error)
         return { status: "error", error: "Invalid/expired token!" };
     }
 };
@@ -159,6 +163,8 @@ const createRefreshToken = (data) => {
 
 module.exports = {
     requireAuth,
+    accessTokenVerify,
+    refreshTokenVerify,
     createAccessToken,
     createRefreshToken,
 };
