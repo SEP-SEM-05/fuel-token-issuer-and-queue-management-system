@@ -10,7 +10,9 @@ const REFRESH_EXP = process.env.REFRESH_EXP;
 
 describe("auth middleware check", () => {
 
-    beforeAll(async () => { });
+    beforeAll(async () => {});
+
+    afterAll(async () => {});
 
     // describe("requireAuth - Verifies that a request header contains a valid token", () => {
 

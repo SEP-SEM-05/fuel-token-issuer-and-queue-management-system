@@ -1,8 +1,12 @@
+process.env.NODE_ENV = 'test';
+
 const mongoose = require('mongoose');
 
 // environmental variables
 require('dotenv').config();
-const dbURI = process.env.DB_URI;
+
+// DB connection to test database
+const conn = require('../../../db_connection');
 
 const Personal = require('../../../models/personal');
 const {saveClient, saveRefreshToken, findClientByNic, findClientByID, } = require('../../../services/personalDBHelper');
@@ -10,12 +14,27 @@ const {saveClient, saveRefreshToken, findClientByNic, findClientByID, } = requir
 describe("Database access methods for personal clients", () => {
     
     beforeAll(async () => {
+
         // connect to mongodb and listen
-        await mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+
+        try {
+            await conn.connect();
+        } 
+        catch (err) {
+            console.log(err);
+        }
     });
 
     afterAll(async () => {
-        await mongoose.disconnect();
+
+        // close DB connection
+
+        try {
+            await conn.close();
+        } 
+        catch (err) {
+            console.log(err);
+        }
     });
 
     describe("saveClient - Save a personal client to the database", () => {

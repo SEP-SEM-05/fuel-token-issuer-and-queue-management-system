@@ -1,26 +1,42 @@
-const mongoose = require("mongoose");
-const Station = require("../../../models/station");
+process.env.NODE_ENV = 'test';
+
+const mongoose = require('mongoose');
 
 // environmental variables
-require("dotenv").config();
-const dbURI = process.env.DB_URI;
+require('dotenv').config();
 
-const Personal = require("../../../models/station");
+// DB connection to test database
+const conn = require('../../../db_connection');
+
+const Station = require("../../../models/station");
 const {
     saveRefreshToken, findStationByRegNo, findStationByID,
 } = require("../../../services/stationDBHelper");
 
 describe("Database access methods for fuel stations", () => {
+
     beforeAll(async () => {
+
         // connect to mongodb and listen
-        await mongoose.connect(dbURI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+
+        try {
+            await conn.connect();
+        } 
+        catch (err) {
+            console.log(err);
+        }
     });
 
     afterAll(async () => {
-        await mongoose.disconnect();
+
+        // close DB connection
+
+        try {
+            await conn.close();
+        } 
+        catch (err) {
+            console.log(err);
+        }
     });
 
     describe("findStationByRegNo - Find a station bt its registration number", () => {

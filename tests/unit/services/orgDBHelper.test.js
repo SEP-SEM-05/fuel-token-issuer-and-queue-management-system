@@ -1,9 +1,12 @@
-const { Timestamp } = require('mongodb');
+process.env.NODE_ENV = 'test';
+
 const mongoose = require('mongoose');
 
 // environmental variables
 require('dotenv').config();
-const dbURI = process.env.DB_URI;
+
+// DB connection to test database
+const conn = require('../../../db_connection');
 
 const Organization = require('../../../models/organization');
 const {saveClient, saveRefreshToken, findClientByRegNo, findClientByID, updateStations} = require('../../../services/orgDBHelper');
@@ -11,12 +14,27 @@ const {saveClient, saveRefreshToken, findClientByRegNo, findClientByID, updateSt
 describe("Database access methods for organizations", () => {
     
     beforeAll(async () => {
+
         // connect to mongodb and listen
-        await mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+
+        try {
+            await conn.connect();
+        } 
+        catch (err) {
+            console.log(err);
+        }
     });
 
     afterAll(async () => {
-        await mongoose.disconnect();
+
+        // close DB connection
+
+        try {
+            await conn.close();
+        } 
+        catch (err) {
+            console.log(err);
+        }
     });
 
     describe("saveClient - Save an organization to the database", () => {

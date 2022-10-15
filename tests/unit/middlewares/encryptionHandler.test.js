@@ -6,6 +6,8 @@ describe("encryption middleware check", () => {
     
     beforeAll(async () => {});
 
+    afterAll(async () => {});
+
     describe("checkEncryptedCredential - Check whether an in text credential matches the encrypted credential", () => {
 
         it("should return false if in text credential does not match", async () => {
