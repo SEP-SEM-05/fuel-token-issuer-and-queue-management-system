@@ -8,7 +8,7 @@ const appMaker = require('../../../app');
 const app = appMaker.makeApp();
 
 // DB connection to test database
-// const conn = require('../../../db/index.js');
+const conn = require('../../../db_connection');
 
 // environmental variables
 require('dotenv').config();
