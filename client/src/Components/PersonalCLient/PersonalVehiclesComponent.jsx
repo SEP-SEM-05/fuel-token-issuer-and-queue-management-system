@@ -61,13 +61,33 @@ export default function PersonalVehicles() {
     const { user, signUser } = useAuth();
 
     useEffect(() => {
-        
+
         async function fetchData() {
 
             let response = await getDashBoard(user.data.id);
-            console.log(response)
+
+            let status = response.status;
+
+            if (status === 'ok') {
+                // setOwnVehicles(vehicles);
+                // setUser(user_data);
+                console.log(response);
+            }
+            else if (status === 'auth-error') {
+
+                // sessionStorage.clear();
+                // localStorage.clear();
+
+                // document.location = '/';
+                console.log(response.error);
+            }
+            else {
+
+                console.log(response.error);
+                document.location = '/';
+            }
         }
-        
+
         fetchData();
         // let status = response.data.status;
         // let user = response.data.user;

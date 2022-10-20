@@ -57,7 +57,7 @@ let requireAuth = async (req, res, next) => {
                 }
             }
             else {
-                console.log("access token invalid")
+                console.log("access token undefined - auth 60")
                 const refreshTokenCheck = await refreshTokenVerify(refreshToken);
 
                 if (refreshTokenCheck.status === "ok") {
@@ -95,7 +95,7 @@ const accessTokenVerify = (token) => {
         return { status: "ok", data: value, newAccessToken: newAccessToken };
     }
     catch (error) {
-        return { status: "error", error: "token expired!" };
+        return { status: "auth-error", error: "token expired!" };
     }
 };
 
@@ -135,17 +135,16 @@ const refreshTokenVerify = async (token) => {
             }
             else {
 
-                return { status: "error", error: "Invalid token!" };
+                return { status: "auth-error", error: "Invalid token!" };
             }
         }
         else {
 
-            return { status: "error", error: "Invalid token!" };
+            return { status: "auth-error", error: "Invalid token!" };
         }
     }
     catch (error) {
-        // console.log(error)
-        return { status: "error", error: "Invalid/expired token!" };
+        return { status: "auth-error", error: "Invalid/expired token!" };
     }
 };
 
