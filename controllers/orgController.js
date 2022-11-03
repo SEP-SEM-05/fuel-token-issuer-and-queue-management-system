@@ -11,7 +11,6 @@ const encHandler = require('../middleware/encryptionHandler');
 
 
 //get organization dashboard info
-//fuel quota - remaining and full
 const get_dashboard = async (req, res) => {
 
     let id = req.params.id;
@@ -32,6 +31,7 @@ const get_dashboard = async (req, res) => {
             let stations = await stationDBHelper.findAllRegisteredStations();
             let quotas = await vehicleDBHelper.getQuotas();
 
+            let fullQuotas = {};
             let fullQuotaDiesel, fullQuotaPetrol;
             // let totalUsedQuotaDiesel, totalUsedQuotaPetrol;
             vehicles.forEach((vehicle) => {
@@ -65,8 +65,8 @@ const get_dashboard = async (req, res) => {
             // let remainingQuotaDiesel = fullQuotaDiesel - totalUsedQuotaDiesel;
             // let remainingQuotaPetrol = fullQuotaPetrol - totalUsedQuotaPetrol
 
-            user['fullDieselQuota'] = fullQuotaDiesel;
-            user['fullPetrolQuota'] = fullQuotaPetrol;
+            // user['fullDieselQuota'] = fullQuotaDiesel;
+            // user['fullPetrolQuota'] = fullQuotaPetrol;
 
             // user['remainingDieselQuota'] = remainingQuotaDiesel;
             // user['remainingPetrolQuota'] = remainingQuotaPetrol;
@@ -77,6 +77,9 @@ const get_dashboard = async (req, res) => {
             // return_user['remainingDieselQuota'] = remainingQuotaDiesel;
             // return_user['remainingPetrolQuota'] = remainingQuotaPetrol;
 
+            fullQuotas['fullDieselQuota'] = fullQuotaDiesel;
+            fullQuotas['fullPetrolQuota'] = fullQuotaPetrol;
+
             //stations array must contain strings with regNo and name concatde with '-'
             let org_stations = [];
             stations.forEach((station) => {
@@ -85,7 +88,7 @@ const get_dashboard = async (req, res) => {
                     org_stations.push(station.registrationNo + '-' + station.name);
                 }
             })
-            user['stations'] = org_stations;
+            // user['stations'] = org_stations;
 
             // return_user['stations'] = org_stations;
             // delete user.stations;
@@ -93,6 +96,7 @@ const get_dashboard = async (req, res) => {
             // for(const key in user){
             //     return_user[key] = user[key];
             // }
+            // return_user['stations'] = org_stations;
 
             //create a string array containing all the stations
             //each string must contain regNo and name concated with '-'
@@ -103,7 +107,8 @@ const get_dashboard = async (req, res) => {
 
             res.json({
                 status: 'ok',
-                user: user,
+                org_regNo: user.registrationNo,
+                org_stations: org_stations,
                 vehicles: vehicles,
                 stations: return_stations
             });

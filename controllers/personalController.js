@@ -174,6 +174,7 @@ const request_fuel = async (req, res) => {
     let fuelType = req.body.fuelType;
     let remainingQuota = req.body.remainingQuota;
     let stations = req.body.stations;
+    let priority = req.body.priority;
     let userType = 'personal';
 
     try {
@@ -189,6 +190,7 @@ const request_fuel = async (req, res) => {
                 quota: remainingQuota,
                 fuelType,
                 requestedStations: stations,
+                priority
             };
     
             //save request, get _id and add to client details
@@ -199,7 +201,8 @@ const request_fuel = async (req, res) => {
                 userType,
                 registrationNo: regNo,
                 quota: remainingQuota,
-                requestID: reqId
+                requestID: reqId,
+                priority
             }
     
             await vehicleDBHelper.addToQueue(stations, fuelType, clientDetails);
