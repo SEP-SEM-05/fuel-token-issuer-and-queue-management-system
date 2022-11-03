@@ -16,6 +16,10 @@ const queueSchema = new Schema(
       type: [String],
       default: [],
     },
+    lastAnnouncedDate: {
+      type: Date,
+      default: null,
+    },
     state: {
       type: String,
       enum: ["waiting", "announced", "active"],
