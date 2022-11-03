@@ -203,7 +203,6 @@ const request_fuel = async (req, res) => {
                 userType,
                 registrationNo: regNo,
                 quota: remainingQuota,
-                requestID: reqId,
                 priority
             }
     

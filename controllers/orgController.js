@@ -23,7 +23,7 @@ const get_dashboard = async (req, res) => {
 
             // return_user = {};
 
-            //calculate the remaining quota and full quota
+            //calculate the full quota
             //send stations of org
             //send all stations
 
@@ -207,6 +207,7 @@ const request_fuel = async (req, res) => {
     let fuelType = req.body.fuelType;
     let quota = req.body.fullQuota; // send either the fullDieselQuota or the fullPetrolQuota based on the fuelType
     let stations = req.body.stations;
+    let priority = req.body.priority;
     let userType = 'organization';
 
     try {
@@ -217,11 +218,13 @@ const request_fuel = async (req, res) => {
         if(!result) {
 
             let reqDetails = {
+                userId: registrationNo,
                 userType: userType,
                 registrationNo,
                 quota: quota,
                 fuelType,
                 requestedStations: stations,
+                priority
             };
     
             //save request, get _id and add to client details
@@ -231,10 +234,9 @@ const request_fuel = async (req, res) => {
                 userType: userType,
                 registrationNo: regNo,
                 quota: quota,
-                requestID: reqId
             }
     
-            await vehicleDBHelper.addToQueue(stations, fuelType, clientDetails);
+            await vehicleDBHelper.addToQueue(stations, fuelType, reqId);
             delete clientDetails.requestID;
     
             res.json({
