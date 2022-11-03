@@ -5,6 +5,7 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import useAuth from "../../utils/providers/AuthProvider";
 import {
   Chip,
   Divider,
@@ -19,6 +20,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import DepartureBoardIcon from "@mui/icons-material/DepartureBoard";
 import DirectionsBusFilledIcon from "@mui/icons-material/DirectionsBusFilled";
+import { getWaitingQueues } from "../../utils/api/fuelStation";
 
 const fuel_types = [
   ["Auto Diesel", "19/09/2022", 503, 567.5, "success"],
@@ -28,10 +30,23 @@ const fuel_types = [
 ];
 
 const QueuesComponent = () => {
+  const { user, signUser } = useAuth();
   const [open, setOpen] = React.useState(false);
   const [fuelType, setFuelType] = React.useState([]);
   const [fuelAmount, setFuelAmount] = React.useState(0);
   const [vehicleCount, setVehicleCount] = React.useState(0);
+
+  React.useEffect(() => {
+    async function fetchData() {
+      let response = await getWaitingQueues(user.data.id);
+      //handle errors
+      
+    }
+    fetchData()
+  }, [])
+
+
+  
 
   const handleSliderChange = (event, newValue) => {
     setFuelAmount(newValue);
