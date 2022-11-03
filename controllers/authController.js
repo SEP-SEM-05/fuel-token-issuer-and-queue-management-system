@@ -18,6 +18,7 @@ const register_post_personal = async (req, res) => {
     let nic = data.nic;
 
     try {
+
         data.password = await encHandler.encryptCredential(password);
 
         await personalDBHelper.saveClient(data);
@@ -37,7 +38,9 @@ const register_post_personal = async (req, res) => {
                 fullName: fullName,
             },
         });
-    } catch (err) {
+    } 
+    catch (err) {
+
         console.log(err);
 
         let errField = err.keyValue.email ? "email" : "nic";
@@ -56,24 +59,32 @@ const register_post_org = async (req, res) => {
     let registrationNo = data.registrationNo;
 
     try {
+
         let orgClient = await orgDBHelper.findClientByRegNo(registrationNo);
 
         if (!orgClient) {
+
             res.status(400).json({
                 status: "error",
                 error: "Invalid Registration No.!",
             });
-        } else if (orgClient.isRegistered) {
+        } 
+        else if (orgClient.isRegistered) {
+
             res.status(400).json({
                 status: "error",
                 error: "Organization is already registered!",
             });
-        } else if (orgClient.email === data.email) {
+        } 
+        else if (orgClient.email === data.email) {
+
             res.status(400).json({
                 status: "error",
                 error: "email already exists!",
             });
-        } else {
+        } 
+        else {
+
             data.isRegistered = true;
             data.password = await encHandler.encryptCredential(password);
 
@@ -94,7 +105,9 @@ const register_post_org = async (req, res) => {
                 },
             });
         }
-    } catch (err) {
+    } 
+    catch (err) {
+
         console.log(err);
         res.status(500).json({
             status: "error",
@@ -113,6 +126,7 @@ const login_post_admin = async (req, res) => {
     const admin_psw = process.env.ADMIN_PASSWORD;
 
     try {
+
         if (username === admin_username && password === admin_psw) {
 
             let token_data = { userType: 'admin', username };
@@ -127,13 +141,17 @@ const login_post_admin = async (req, res) => {
                 status: "ok",
                 userType: "admin",
             });
-        } else {
+        } 
+        else {
+
             res.status(400).json({
                 status: "error",
                 error: "Authentication error!",
             });
         }
-    } catch (err) {
+    } 
+    catch (err) {
+
         console.error(err);
         res.status(500).json({
             status: "error",
@@ -149,9 +167,11 @@ const login_post_personal = async (req, res) => {
     const password = req.body.password;
 
     try {
+
         const user = await personalDBHelper.findClientByNic(nic);
 
         if (user !== null) {
+
             let password_check = await encHandler.checkEncryptedCredential(
                 password,
                 user.password
@@ -184,20 +204,27 @@ const login_post_personal = async (req, res) => {
                         fullName: fullName,
                     },
                 };
+
                 res.json(return_data);
-            } else {
+            } 
+            else {
+
                 res.status(400).json({
                     status: "error",
                     error: "Authentication error!",
                 });
             }
-        } else {
+        } 
+        else {
+
             res.status(400).json({
                 status: "error",
                 error: "Authentication error!",
             });
         }
-    } catch (err) {
+    } 
+    catch (err) {
+
         console.log(err);
         res.status(500).json({
             status: "error",
@@ -213,9 +240,11 @@ const login_post_org = async (req, res) => {
     const password = req.body.password;
 
     try {
+
         const user = await orgDBHelper.findClientByRegNo(registrationNo);
 
         if (user !== null) {
+
             let password_check = await encHandler.checkEncryptedCredential(
                 password,
                 user.password
@@ -249,19 +278,22 @@ const login_post_org = async (req, res) => {
                     },
                 };
                 res.json(return_data);
-            } else {
+            } 
+            else {
                 res.status(400).json({
                     status: "error",
                     error: "Authentication error!",
                 });
             }
-        } else {
+        } 
+        else {
             res.status(400).json({
                 status: "error",
                 error: "Authentication error!",
             });
         }
-    } catch (err) {
+    } 
+    catch (err) {
         console.log(err);
         res.status(500).json({
             status: "error",
@@ -277,9 +309,11 @@ const login_post_station = async (req, res) => {
     const password = req.body.password;
 
     try {
+
         const user = await stationDBHelper.findStationByRegNo(registrationNo);
 
         if (user !== null) {
+            
             let password_check = await encHandler.checkEncryptedCredential(
                 password,
                 user.password
@@ -312,20 +346,27 @@ const login_post_station = async (req, res) => {
                         name: name,
                     },
                 };
+
                 res.json(return_data);
-            } else {
+            } 
+            else {
+
                 res.status(400).json({
                     status: "error",
                     error: "Authentication error!",
                 });
             }
-        } else {
+        } 
+        else {
+            
             res.status(400).json({
                 status: "error",
                 error: "Authentication error!",
             });
         }
-    } catch (err) {
+    } 
+    catch (err) {
+
         console.log(err);
         res.status(500).json({
             status: "error",

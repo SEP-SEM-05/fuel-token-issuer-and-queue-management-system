@@ -25,6 +25,10 @@ const vehicleSchema = new Schema({
         type: String,
         required: true
     },
+    priority: {
+        type: Number,
+        default: 1
+    },
     isRegistered: {
         type: Boolean,
         default: false

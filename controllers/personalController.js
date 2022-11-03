@@ -30,58 +30,52 @@ const get_dashboard = async (req, res) => {
             let return_vehicles = [];
             vehicles.forEach((vehicle) => {
 
-                // let return_vehicle = {};
+                let return_vehicle = {};
 
                 //select the corresponding quota from quotas
                 //add amount as fullQuota
                 //calculate and add remaining quota using vehicle.usedQuota
-
+                
                 let fullQuota;
-                for(const quota in quotas){
+                for(const i in quotas){
+                    
+                    if(quotas[i].vehicleType === vehicle.type && quotas[i].fuelType === vehicle.fuelType){
 
-                    if(quota.vehicleType === vehicle.type && quota.fuelType === vehicle.fuelType){
-
-                        fullQuota = quota.amount;
+                        fullQuota = quotas[i].amount;
                         break;
                     }
                 }
-                vehicle['fullQuota'] = fullQuota;
-                vehicle['remainingQuota'] = fullQuota - vehicle.usedQuota;
 
-                // return_vehicle['fullQuota'] = fullQuota;
-                // return_vehicle['remainingQuota'] = fullQuota - vehicle.usedQuota;
+                return_vehicle['fullQuota'] = fullQuota;
+                return_vehicle['remainingQuota'] = fullQuota - vehicle.usedQuota;
 
                 //stations array must contain strings with regNo and name concatde with '-'
                 let vehicle_stations = [];
                 stations.forEach((station) => {
 
                     if(vehicle.stations.includes(station.registrationNo)){
-                        vehicle_stations.push(station.registrationNo + '-' + station.name);
+                        vehicle_stations.push(station.registrationNo + '-' + station.name + ' ' + station.location);
                     }
                 })
-                vehicle['stations'] = vehicle_stations;
 
-                // return_vehicle['stations'] = vehicle_stations;
-                // delete vehicle.stations;
+                for(const key in vehicle._doc){
+                    return_vehicle[key] = vehicle[key];
+                }
+                return_vehicle['stations'] = vehicle_stations;
 
-                // for(const key in vehicle){
-                //     return_vehicle[key] = vehicle[key];
-                // }
-
-                return_vehicles.push(vehicle);
-                // return_vehicles.push(return_vehicle);
+                return_vehicles.push(return_vehicle);
             })
 
             //create a string array containing all the stations
             //each string must contain regNo and name concated with '-'
             let return_stations = [];
             stations.forEach((station) => {
-                return_stations.push(station.registrationNo + '-' + station.name);
+                return_stations.push(station.registrationNo + '-' + station.name + ' ' + station.location);
             })
 
             res.json({
                 status: 'ok',
-                user: user,
+                nic: user.nic,
                 vehicles: return_vehicles,
                 stations: return_stations
             });

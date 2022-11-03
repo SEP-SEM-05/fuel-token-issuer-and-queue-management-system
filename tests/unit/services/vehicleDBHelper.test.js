@@ -1,8 +1,12 @@
+process.env.NODE_ENV = 'test';
+
 const mongoose = require('mongoose');
 
 // environmental variables
 require('dotenv').config();
-const dbURI = process.env.DB_URI;
+
+// DB connection to test database
+const conn = require('../../../db_connection');
 
 const Vehicle = require('../../../models/vehicle');
 const Quota = require('../../../models/quota');
@@ -13,12 +17,27 @@ const { findVehicleByRegNo, findVehicleByRegNoAndEngNo, findAllByNic, findAllByr
 describe("Database access methods for vehicles", () => {
 
     beforeAll(async () => {
+
         // connect to mongodb and listen
-        await mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+
+        try {
+            await conn.connect();
+        } 
+        catch (err) {
+            console.log(err);
+        }
     });
 
     afterAll(async () => {
-        await mongoose.disconnect();
+
+        // close DB connection
+
+        try {
+            await conn.close();
+        } 
+        catch (err) {
+            console.log(err);
+        }
     });
 
     describe("findVehicleByRegNo - Find a vehicle that matches the given registration No.", () => {

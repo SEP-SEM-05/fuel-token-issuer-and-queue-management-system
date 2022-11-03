@@ -28,6 +28,10 @@ const organizationSchema = new Schema({
         required: true,
         unique: true
     },
+    priority: {
+        type: Number,
+        default: 1
+    },
     isRegistered: {
         type: Boolean,
         default: false

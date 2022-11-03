@@ -8,11 +8,16 @@ const dbURI = process.env.DB_URI;
 const appMaker = require('./app');
 const app = appMaker.makeApp();
 
+// db connection methods
+const db = require('./db_connection');
+
 const port = process.env.PORT || 5000;
 
 // connect to mongodb and listen
-mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-	.then(result => app.listen(port, () => {
-		console.log(`Running on port ${port}`);
-	}))
-	.catch(err => console.log(err));
+
+db.connect()
+    .then(() => {
+        app.listen(port, () => {
+            console.log(`Running on port ${port}`);
+        });
+    });
