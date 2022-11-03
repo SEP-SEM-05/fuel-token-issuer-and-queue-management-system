@@ -49,9 +49,9 @@ const updateAmount = async (regNo, fuelType, addedAmount) => {
 }
 
 module.exports = {
-    saveRefreshToken,
-    findStationByRegNo,
-    findStationByID,
-    findAllRegisteredStations,
-    updateAmount,
-}
+  saveRefreshToken,
+  findStationByRegNo,
+  findStationByID,
+  findAllRegisteredStations,
+  updateAmount,
+};

@@ -8,6 +8,14 @@ const signIn = async (data) => {
       "auth/loginStation",
       data
     );
+            localStorage.setItem(
+              "refreshToken",
+              response.headers["x-refresh-token"]
+            );
+            sessionStorage.setItem(
+              "accessToken",
+              response.headers["x-access-token"]
+            );
     return response.data;
   } catch (err) {
     console.log(err);
@@ -34,4 +42,20 @@ const getDashBoard = async (id) => {
     }
 }
 
-export { signIn, getDashBoard };
+//get waiting queues
+const getWaitingQueues = async (id) => {
+  try {
+    let response = await baseApi.get(`station/fuelqueues/${id}`);
+    console.log(response.data);
+
+    if (response.headers["x-access-token"]) {
+      sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+    }
+
+    return response.data;
+  } catch (err) {
+    return err.response.data;
+  }
+}
+
+export { signIn, getDashBoard, getWaitingQueues };
