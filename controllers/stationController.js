@@ -45,10 +45,15 @@ const update_fuel_amount = async (req, res) => {
 
   try {
     //handle any possible errors
-    let result = await vehicleDBHelper.updateAmount(regNo, fuelType, addedAmount);
+    let result = await stationDBHelper.updateAmount(
+      regNo,
+      fuelType,
+      addedAmount
+    );
     //return necessary data
     res.json({
       status: "ok",
+      newAmount: result.volumes,
     });
   } catch(err){
         console.log(err);
