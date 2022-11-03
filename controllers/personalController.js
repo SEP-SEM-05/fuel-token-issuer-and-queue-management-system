@@ -168,6 +168,7 @@ const change_stations = async (req, res) => {
 
 //request fuel for a vehicle
 const request_fuel = async (req, res) => {
+
     //remaining quota should be more than some value
     let nic = req.body.nic;
     let regNo = req.body.registrationNo;
@@ -185,6 +186,7 @@ const request_fuel = async (req, res) => {
         if(!result) {
 
             let reqDetails = {
+                userId: nic,
                 userType: userType,
                 registrationNo,
                 quota: remainingQuota,
@@ -205,7 +207,7 @@ const request_fuel = async (req, res) => {
                 priority
             }
     
-            await vehicleDBHelper.addToQueue(stations, fuelType, clientDetails);
+            await vehicleDBHelper.addToQueue(stations, fuelType, reqId);
             delete clientDetails.requestID;
     
             res.json({

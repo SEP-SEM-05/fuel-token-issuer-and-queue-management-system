@@ -53,9 +53,9 @@ const getQuotas = async () => {
 }
 
 //add a fuel request to queues of all the station based on fuel type
-const addToQueue = async (stations, fuelType, clientDetails) => {
+const addToQueue = async (stations, fuelType, reqId) => {
 
-    let result = await Queue.updateMany({stationID: {$in: stations}, fuelType}, {$push: { clients: clientDetails }});
+    let result = await Queue.updateMany({stationID: {$in: stations}, fuelType}, {$push: { requests: reqId }});
     return result;
 }
 
