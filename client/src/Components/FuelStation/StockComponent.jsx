@@ -5,12 +5,12 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { Grid, InputAdornment, LinearProgress, TextField } from "@mui/material";
+import { Alert, Grid, InputAdornment, LinearProgress, Snackbar, TextField } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { getDashBoard } from "../../utils/api/fuelStation";
+import { addFuelAmount, getDashBoard } from "../../utils/api/fuelStation";
 import useAuth from "../../utils/providers/AuthProvider";
 
 //progress bar styles
@@ -44,8 +44,12 @@ function LinearProgressWithLabel(props) {
 const StockComponent = () => {
   const { user, signUser } = useAuth();
   const [open, setOpen] = React.useState(false);
-  const [fuelType, setFuelType] = React.useState(false);
+  const [fuelType, setFuelType] = React.useState();
   const [fuel_types, setFuel_types] = React.useState([]);
+  const [openSB, setOpenSB] = React.useState(false);
+  const [addedAmount, setAddedAmount] = React.useState();
+
+  
 
   React.useEffect(() => {
     async function fetchData() {
@@ -81,6 +85,31 @@ const StockComponent = () => {
     fetchData();
   }, []);
 
+  const addNewFuelAmount = async () => {
+    
+    let response = await addFuelAmount({
+      addedAmount: addedAmount,
+      fuelType: fuelType,
+      registrationNo: user.data.registrationNo,
+    });
+    
+    handleClose();
+    handleSBOpen();
+  }
+
+
+  const handleSBOpen = () => {
+    setOpenSB(true);
+  };
+
+  const handleSBClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSB(false);
+  };
+
   const handleClickOpen = (ft) => {
     setOpen(true);
     setFuelType(ft);
@@ -101,6 +130,8 @@ const StockComponent = () => {
             <TextField
               focused
               required
+              value={addedAmount}
+              onChange={(event) => setAddedAmount(event.target.value)}
               color="info"
               label="Fuel Amount"
               type="number"
@@ -117,7 +148,7 @@ const StockComponent = () => {
               size="large"
               variant="contained"
               color="info"
-              onClick={handleClose}
+              onClick={addNewFuelAmount}
               sx={{ pt: "13px", pb: "13px", fontWeight: "bold" }}
             >
               Add
@@ -194,6 +225,15 @@ const StockComponent = () => {
             </Card>
           </Grid>
         ))}
+        <Snackbar open={openSB} autoHideDuration={6000} onClose={handleSBClose}>
+          <Alert
+            onClose={handleSBClose}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Amount Successfully Added!
+          </Alert>
+        </Snackbar>
       </Grid>
     </Box>
   );

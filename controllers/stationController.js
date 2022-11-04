@@ -43,6 +43,7 @@ console.log(req.params.id)
 
 //Increse the fuel amount
 const update_fuel_amount = async (req, res) => {
+  console.log(req.body);
   let regNo = req.body.registrationNo;
   let fuelType = req.body.fuelType;
   let addedAmount = req.body.addedAmount;

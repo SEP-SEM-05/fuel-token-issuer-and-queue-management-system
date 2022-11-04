@@ -42,6 +42,23 @@ const getDashBoard = async (id) => {
     }
 }
 
+// add new fuel amount
+const addFuelAmount = async (data) => {
+  try {
+    // console.log(data)
+    let response = await baseApi.post(`station/updateamount`, data);
+  
+    if (response.headers["x-access-token"]) {
+      sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+    }
+    
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    return err.response.data;
+  }
+}
+
 //get waiting queues
 const getWaitingQueues = async (id) => {
   try {
@@ -58,4 +75,4 @@ const getWaitingQueues = async (id) => {
   }
 }
 
-export { signIn, getDashBoard, getWaitingQueues };
+export { signIn, getDashBoard, getWaitingQueues, addFuelAmount };
