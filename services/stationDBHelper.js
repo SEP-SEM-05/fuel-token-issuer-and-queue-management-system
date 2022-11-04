@@ -53,5 +53,6 @@ module.exports = {
   findStationByRegNo,
   findStationByID,
   findAllRegisteredStations,
+  findAllUnregisteredStations,
   updateAmount,
 };

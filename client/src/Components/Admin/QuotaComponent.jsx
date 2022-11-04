@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect } from 'react';
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -13,32 +13,102 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 
+const axios = require('axios').default;
+
 function createData(vehicleType, liter) {
   return { vehicleType, liter };
 }
 
+
 //Petrol fuel quota details
-const petrolRows = [
-  createData("Motorcycles", "4.000L"),
-  createData("Three-wheelers", "5.000L"),
-  createData("Vans", "20.000L"),
-  createData("Cars", "20.000L"),
-  createData("Land vehicle", "15.000L"),
-  createData("Lorries", "50.000L"),
-];
+// const petrolRows = [
+//   createData("Motorcycles", "4.000L"),
+//   createData("Three-wheelers", "5.000L"),
+//   createData("Vans", "20.000L"),
+//   createData("Cars", "20.000L"),
+//   createData("Land vehicle", "15.000L"),
+//   createData("Lorries", "50.000L"),
+// ];
 
 //Diesel fuel quota details
-const dieselRows = [
-  createData("Buses", "40.000L"),
-  createData("Three-wheelers", "5.000L"),
-  createData("Vans", "20.000L"),
-  createData("Cars", "20.000L"),
-  createData("Land vehicle", "15.000L"),
-  createData("Lorries", "50.000L"),
-];
+// const dieselRows = [
+//   createData("Buses", "40.000L"),
+//   createData("Three-wheelers", "5.000L"),
+//   createData("Vans", "20.000L"),
+//   createData("Cars", "20.000L"),
+//   createData("Land vehicle", "15.000L"),
+//   createData("Lorries", "50.000L"),
+// ];
 
 //main function
 const QuotaComponent = () => {
+
+  const [dieselRows, setDieselRows] = useState([]);
+  const [petrolRows, setPetrolRows] = useState([]);
+
+  useEffect(() => {
+
+    async function fetchData() {
+
+        try {
+
+            //const token = sessionStorage.getItem('admin_token');
+
+            let dieselResponse = await axios.get(`http://localhost:5000/admin/dashboard/Diesel`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    //token: token,
+                    //state: props.state
+                }
+            });
+
+            let dieselQuotaDetails = dieselResponse.data.quota;
+
+            if (dieselResponse.data.status === 'ok') {
+              console.log(dieselQuotaDetails);
+              setDieselRows(
+                dieselQuotaDetails.map((quota) => (
+                  createData(quota.vehicleType, quota.amount)
+                )
+              ))
+            }
+            else {
+                console.log(dieselResponse.data.error);
+            }
+
+
+            let petrolResponse = await axios.get(`http://localhost:5000/admin/dashboard/Petrol`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    //token: token,
+                    //state: props.state
+                }
+            });
+
+            let petrolQuotaDetails = petrolResponse.data.quota;
+
+            if (petrolResponse.data.status === 'ok') {
+              console.log(petrolQuotaDetails);
+              setPetrolRows(
+                petrolQuotaDetails.map((quota) => (
+                  createData(quota.vehicleType, quota.amount)
+                )
+              ))
+            }
+            else {
+                console.log(petrolResponse.data.error);
+            }
+
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    fetchData();
+    
+  }, []);
+
   const [isPetrol, setIsPetrol] = React.useState(true);  // to assign fuel type
   const [rows, setRows] = React.useState(petrolRows);
 
@@ -168,7 +238,7 @@ const QuotaComponent = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {rows && rows.map((row) => (
               <TableRow key={row.name}>
                 <TableCell
                   align="center"
