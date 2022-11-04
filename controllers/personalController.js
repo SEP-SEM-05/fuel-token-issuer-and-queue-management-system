@@ -168,12 +168,14 @@ const change_stations = async (req, res) => {
 
 //request fuel for a vehicle
 const request_fuel = async (req, res) => {
+
     //remaining quota should be more than some value
     let nic = req.body.nic;
     let regNo = req.body.registrationNo;
     let fuelType = req.body.fuelType;
     let remainingQuota = req.body.remainingQuota;
     let stations = req.body.stations;
+    let priority = req.body.priority;
     let userType = 'personal';
 
     try {
@@ -184,11 +186,13 @@ const request_fuel = async (req, res) => {
         if(!result) {
 
             let reqDetails = {
+                userId: nic,
                 userType: userType,
                 registrationNo,
                 quota: remainingQuota,
                 fuelType,
                 requestedStations: stations,
+                priority
             };
     
             //save request, get _id and add to client details
@@ -199,10 +203,10 @@ const request_fuel = async (req, res) => {
                 userType,
                 registrationNo: regNo,
                 quota: remainingQuota,
-                requestID: reqId
+                priority
             }
     
-            await vehicleDBHelper.addToQueue(stations, fuelType, clientDetails);
+            await vehicleDBHelper.addToQueue(stations, fuelType, reqId);
             delete clientDetails.requestID;
     
             res.json({

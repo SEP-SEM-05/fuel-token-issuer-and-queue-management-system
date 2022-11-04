@@ -16,7 +16,7 @@ const encHandler = require('../middleware/encryptionHandler');
 //get admin dashboard info (Quota info)
 const get_dashboard = async (req, res) => {
 
-    let fuelType = req.params.fuelType;
+    let fuelType = req.params.fueltype;
 
     try{
 
@@ -75,7 +75,7 @@ const get_registered_station = async (req, res) => {
 }
 
 //get all unregistered stations info 
-const get_registered_unstation = async (req, res) => {
+const get_unregistered_station = async (req, res) => {
 
 
     try{
@@ -138,6 +138,6 @@ const get_vehicle = async (req, res) => {
 module.exports = {
     get_dashboard,
     get_registered_station,
-    get_registered_unstation,
+    get_unregistered_station,
     get_vehicle,
 }

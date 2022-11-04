@@ -35,6 +35,10 @@ const requestSchema = new Schema(
       type: String,
       default: null,
     },
+    priority: {
+        type: Number,
+        required: true
+    },
     isFilled: {
       type: Boolean,
       default: false,
