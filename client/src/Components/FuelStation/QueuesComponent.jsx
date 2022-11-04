@@ -22,25 +22,51 @@ import DepartureBoardIcon from "@mui/icons-material/DepartureBoard";
 import DirectionsBusFilledIcon from "@mui/icons-material/DirectionsBusFilled";
 import { getWaitingQueues } from "../../utils/api/fuelStation";
 
-const fuel_types = [
-  ["Auto Diesel", "19/09/2022", 503, 567.5, "success"],
-  ["Super Diesel", "10/09/2022", 451, 113.75, "success"],
-  ["Petrol 92 Octane", "01/09/2022", 89, 890.3, "warning"],
-  ["Petrol 95 Octane", "12/09/2022", 54, 145.85, "warning"],
+const types = [
+  "Auto Diesel",
+  "Super Diesel",
+  "Petrol 92 Octane",
+  "Petrol 95 Octane",
 ];
 
 const QueuesComponent = () => {
   const { user, signUser } = useAuth();
   const [open, setOpen] = React.useState(false);
-  const [fuelType, setFuelType] = React.useState([]);
+  const [fuelType, setFuelType] = React.useState("");
   const [fuelAmount, setFuelAmount] = React.useState(0);
   const [vehicleCount, setVehicleCount] = React.useState(0);
+  const [lastDates] = React.useState({});
+  const [fuelQueue, setFuelQueue] = React.useState([]);
+  const [availableAmounts, setAvailableAmounts] = React.useState({});
+  const [queues, setQueues] = React.useState({});
+  const [vehicleCounts, setVehicleCounts] = React.useState({});
 
   React.useEffect(() => {
     async function fetchData() {
       let response = await getWaitingQueues(user.data.id);
       //handle errors
       
+      setAvailableAmounts(response.availableAmounts);
+      setQueues(response.queues);
+      setVehicleCounts(response.vehicleCounts);
+
+
+      types.map((key) => {
+        if (!response.lastDates[key]) {
+          lastDates[key] = "N/A"
+        } else {
+          let d = new Date(response.lastDates[key]);
+          lastDates[key] =
+            d.getFullYear() +
+            "/" +
+            (d.getMonth() + 1).toString().padStart(2, "0") +
+            "/" +
+            d.getDate().toString().padStart(2, "0");
+        }
+        
+      })
+
+      console.log(lastDates);
     }
     fetchData()
   }, [])
@@ -60,8 +86,8 @@ const QueuesComponent = () => {
   const handleBlur = () => {
     if (fuelAmount < 0) {
       setFuelAmount(0);
-    } else if (fuelAmount > fuelType[3]) {
-      setFuelAmount(fuelType[3]);
+    } else if (fuelAmount > availableAmounts[fuelType]) {
+      setFuelAmount(availableAmounts[fuelType]);
     }
   };
 
@@ -69,7 +95,7 @@ const QueuesComponent = () => {
     setOpen(true);
     setFuelAmount(0);
     setFuelType(ft);
-    setVehicleCount(99);
+    setVehicleCount(0);
   };
 
   const handleClose = () => {
@@ -87,8 +113,8 @@ const QueuesComponent = () => {
           <Typography variant="button" sx={{ fontWeight: "bold" }}>
             <Chip
               icon={<OpacityIcon />}
-              label={fuelType[0]}
-              color={fuelType[4]}
+              label={fuelType}
+              color={fuelType.includes("Diesel") ? "success" : "warning"}
             />
           </Typography>
           <Divider sx={{ pt: 2 }} />
@@ -110,7 +136,7 @@ const QueuesComponent = () => {
                   value={typeof fuelAmount === "number" ? fuelAmount : 0}
                   onChange={handleSliderChange}
                   aria-labelledby="input-slider"
-                  max={fuelType[3]}
+                  max={availableAmounts[fuelType]}
                 />
                 <Grid item>
                   <TextField
@@ -125,7 +151,7 @@ const QueuesComponent = () => {
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          / {fuelType[3]}
+                          / {availableAmounts[fuelType]}
                         </InputAdornment>
                       ),
                     }}
@@ -137,7 +163,7 @@ const QueuesComponent = () => {
                 <Box sx={{ alignItems: "center", display: "flex" }}>
                   <DirectionsBusFilledIcon sx={{ pr: "5px" }} />
                   <Typography variant="h6">
-                    <strong>{vehicleCount}</strong> from {fuelType[2]}
+                    <strong>{vehicleCount}</strong> from {vehicleCounts[fuelType]}
                   </Typography>
                 </Box>
                 <Divider sx={{ pt: 2 }} />
@@ -194,8 +220,8 @@ const QueuesComponent = () => {
         <h1>Fuel Waiting Queues</h1>
       </Grid>
       <Grid container spacing={8} justifyContent="center">
-        {fuel_types.map((ft) => (
-          <Grid key={ft[0]} item md={5}>
+        {types.map((ft) => (
+          <Grid key={ft} item md={5}>
             <Card
               variant="outlined"
               sx={{
@@ -215,7 +241,7 @@ const QueuesComponent = () => {
                   component="div"
                   sx={{ fontWeight: "bold" }}
                 >
-                  {ft[0]}
+                  {ft}
                 </Typography>
                 <Typography
                   variant="caption"
@@ -223,10 +249,11 @@ const QueuesComponent = () => {
                   gutterBottom
                   sx={{ pb: 4 }}
                 >
-                  Last Announcement : {ft[1]}
+                  Last Announcement : {lastDates[ft]}
                 </Typography>
                 <Typography variant="h6" display="block" gutterBottom>
-                  <DepartureBoardIcon /> <strong>{ft[2]}</strong> vehicles
+                  <DepartureBoardIcon /> <strong>{vehicleCounts[ft]}</strong>{" "}
+                  vehicles
                 </Typography>
               </CardContent>
               <CardActions
@@ -238,7 +265,7 @@ const QueuesComponent = () => {
               >
                 <Button
                   onClick={() => handleClickOpen(ft)}
-                  color={ft[4]}
+                  color={ft.includes("Diesel") ? "success" : "warning"}
                   variant="contained"
                 >
                   <Typography variant="h6" sx={{ fontWeight: "bold" }}>

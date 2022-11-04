@@ -14,7 +14,7 @@ const saveRefreshToken = async (token, id) => {
 //find a station given the registration No.
 const findStationByRegNo = async (registrationNo) => {
 
-    let station = await Station.findOne({registrationNo, isRegistered: true});
+    let station = await Station.findOne({ registrationNo, isRegistered: true,});
     
     return station;
 }

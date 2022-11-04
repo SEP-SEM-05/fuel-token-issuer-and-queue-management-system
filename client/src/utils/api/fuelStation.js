@@ -46,7 +46,7 @@ const getDashBoard = async (id) => {
 const getWaitingQueues = async (id) => {
   try {
     let response = await baseApi.get(`station/fuelqueues/${id}`);
-    console.log(response.data);
+    //console.log(response.data);
 
     if (response.headers["x-access-token"]) {
       sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
