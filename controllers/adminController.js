@@ -74,6 +74,37 @@ const get_registered_station = async (req, res) => {
     }
 }
 
+//get count of registered stations
+const get_count_registered_station = async (req, res) => {
+
+    let stationType = req.params.stationType;
+
+    try{
+
+        let stationCount = await stationDBHelper.countRegisteredStations(stationType);
+        console.log(stationCount)
+        if(stationCount !== null){
+            res.json({
+                status: 'ok',
+                stationCount: stationCount,
+            });
+        }
+        else{
+            res.status(400).json({
+                status: 'error',
+                error: 'Invalid Output!'
+            });
+        }  
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
+}
+
 //get all unregistered stations info 
 const get_unregistered_station = async (req, res) => {
 
@@ -140,4 +171,5 @@ module.exports = {
     get_registered_station,
     get_unregistered_station,
     get_vehicle,
+    get_count_registered_station,
 }

@@ -16,7 +16,8 @@ router.get('/registered', adminController.get_registered_station);
 //get unregistered station info
 router.get('/unregistered', adminController.get_unregistered_station);
 
-
+//get count of registered stations
+router.get('/count/:stationType', adminController.get_count_registered_station);
 
 
 module.exports = router;
