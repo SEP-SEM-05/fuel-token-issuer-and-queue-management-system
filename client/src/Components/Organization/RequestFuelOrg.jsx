@@ -51,7 +51,6 @@ const RequestFuelOrg = () => {
         async function fetchData() {
 
             let response = await getDashBoard(user.data.id);
-            console.log(response)
 
             let status = response.status;
 
