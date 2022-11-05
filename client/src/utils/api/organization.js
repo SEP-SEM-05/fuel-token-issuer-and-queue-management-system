@@ -54,4 +54,34 @@ const getDashBoard = async (id) => {
     }
 }
 
-export { signInOrg, getDashBoard };
+const getVehicles = async (id) => {
+
+    try {
+        
+        const refreshToken = localStorage.getItem("refreshToken");
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        let api = axios.create({
+            baseURL: url,
+            headers: {
+                "x-refresh-token": refreshToken ? "Bearer " + refreshToken : undefined,
+                "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+            },
+        });
+
+        let response = await api.get(
+            `org/getVehicles/${id}`
+        )
+
+        if(response.headers["x-access-token"]){
+            sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+        }
+        return response.data;
+    } 
+    catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+}
+
+export { signInOrg, getDashBoard, getVehicles };

@@ -134,22 +134,37 @@ const get_vehicles = async (req, res) => {
             let vehicles = await vehicleDBHelper.findAllByregistrationNoArray(user.vehicles);
             let quotas = await vehicleDBHelper.getQuotas();
 
+            let return_vehicles = []
+
             vehicles.forEach((vehicle) => {
 
-                for(const quota in quotas){
+                let return_vehicle = {};
 
-                    if(quota.vehicleType === vehicle.type && quota.fuelType === vehicle.fuelType){
+                for(const i in quotas){
+
+                    if(quotas[i].vehicleType === vehicle.type && quotas[i].fuelType === vehicle.fuelType){
                         
-                        vehicle['weeklyQuota'] = quota.amount;
+                        return_vehicle['weeklyQuota'] = quotas[i].amount;
                         break;
                     }
                 }
+
+                return_vehicle['registrationNo'] = vehicle.registrationNo;
+                return_vehicle['type'] = vehicle.type;
+                return_vehicle['fuelType'] = vehicle.fuelType;
+
+                let lastFilledDateObj = user.lastFilledDate.toJSON();
+                let lastFilledDate = vehicle.type === "Petrol" ? new Date(lastFilledDateObj.Petrol) : new Date(lastFilledDateObj.Diesel);
+                let return_lfd = String(lastFilledDate.getFullYear()) + " - " + String(lastFilledDate.getMonth() + 1).padStart(2, '0') + " - " + String(lastFilledDate.getDate()).padStart(2, '0');
+                
+                return_vehicle['lastFilledDate'] = return_lfd;
+
+                return_vehicles.push(return_vehicle);
             })
 
             res.json({
                 status: 'ok',
-                user: user,
-                vehicles: vehicles,
+                vehicles: return_vehicles,
             });
         }
         else{
