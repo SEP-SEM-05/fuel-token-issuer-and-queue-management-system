@@ -7,11 +7,13 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import useAuth from "../../utils/providers/AuthProvider";
 import {
+  Alert,
   Chip,
   Divider,
   Grid,
   InputAdornment,
   Slider,
+  Snackbar,
   TextField,
 } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
@@ -20,7 +22,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import DepartureBoardIcon from "@mui/icons-material/DepartureBoard";
 import DirectionsBusFilledIcon from "@mui/icons-material/DirectionsBusFilled";
-import { getWaitingQueues } from "../../utils/api/fuelStation";
+import { announceFuelQueue, getWaitingQueues } from "../../utils/api/fuelStation";
 
 const types = [
   "Auto Diesel",
@@ -29,31 +31,40 @@ const types = [
   "Petrol 95 Octane",
 ];
 
+function addMinutes(numOfMinutes, date) {
+  date.setMinutes(parseInt(date.getMinutes()) + parseInt(numOfMinutes));
+  return date;
+}
+
+
 const QueuesComponent = () => {
   const { user, signUser } = useAuth();
   const [open, setOpen] = React.useState(false);
+  const [openSB, setOpenSB] = React.useState(false);
   const [fuelType, setFuelType] = React.useState("");
   const [fuelAmount, setFuelAmount] = React.useState(0);
-  const [vehicleCount, setVehicleCount] = React.useState(0);
   const [lastDates] = React.useState({});
-  const [fuelQueue, setFuelQueue] = React.useState([]);
   const [availableAmounts, setAvailableAmounts] = React.useState({});
   const [queues, setQueues] = React.useState({});
   const [vehicleCounts, setVehicleCounts] = React.useState({});
+  const [maxCount, setMaxCount] = React.useState(0);
+  const [fuelQueueToGo, setFuelQueueToGo] = React.useState([]);
+  const [startTime, setStartTime] = React.useState("");
+  const [avgTime, setAvgTime] = React.useState("");
+  const [estEndTime, setEstEndTime] = React.useState("");
 
   React.useEffect(() => {
     async function fetchData() {
-      let response = await getWaitingQueues(user.data.id);
+      let response = await getWaitingQueues(user.data.registrationNo);
       //handle errors
-      
+  
       setAvailableAmounts(response.availableAmounts);
       setQueues(response.queues);
       setVehicleCounts(response.vehicleCounts);
 
-
       types.map((key) => {
         if (!response.lastDates[key]) {
-          lastDates[key] = "N/A"
+          lastDates[key] = "N/A";
         } else {
           let d = new Date(response.lastDates[key]);
           lastDates[key] =
@@ -63,24 +74,78 @@ const QueuesComponent = () => {
             "/" +
             d.getDate().toString().padStart(2, "0");
         }
-        
-      })
-
-      console.log(lastDates);
+      });
     }
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
+  const announceQueue = async (event) => {
+    event.preventDefault()
+    
+    let response = await announceFuelQueue({
+      regNo: user.data.registrationNo,
+      fuelType: fuelType,
+      vehicles: fuelQueueToGo,
+      announcedTime: new Date().toString().split("GMT")[0],
+      estQueueEndTime: estEndTime,
+      startTime: startTime,
+    });
 
-  
+    if (response.status == "ok") {
+      // he he
+    } else {
+      console.log("error");
+    }
+
+    handleClose();
+    handleSBOpen();
+
+  }
 
   const handleSliderChange = (event, newValue) => {
     setFuelAmount(newValue);
-    //console.log(event.target.value);
+  };
+
+  // calculate the optimal vehicle count recursively
+  const getMaxVehicleCount = (vehicles, amount, count, sel_v) => {
+    if (vehicles.length == 0 || amount == 0) {
+      return [sel_v, count]
+    }
+    let cap = amount;
+    let c = count;
+    let sel = sel_v;
+    for (let i = 0; i < vehicles.length; i++) {
+      cap -= vehicles[i].quota;
+      if (cap < 0) {
+        return getMaxVehicleCount(vehicles.slice(i+1), cap + vehicles[i].quota, c, sel);
+      }
+      c++;
+      sel.push(vehicles[i]);
+    }
+    return [sel, c]
+  };
+
+  const handleSliderChangeCommited = (event, newValue) => {
+    let arr = getMaxVehicleCount(queues[fuelType], newValue, 0, []);
+    setMaxCount(arr[1]);
+    setFuelQueueToGo(arr[0]);
   };
 
   const handleInputChange = (event) => {
     setFuelAmount(event.target.value === "" ? "" : Number(event.target.value));
+  };
+
+  const calculateEstEnd = (avg) => {
+    setAvgTime(avg);
+    let st = new Date(startTime);
+    let et = st;
+
+    for (let i = 0; i < fuelQueueToGo.length; i++) {
+      addMinutes(avg, et);
+      fuelQueueToGo[i]["estTime"] = et.toString();
+      
+    }
+    setEstEndTime((et.toString()).split("GMT")[0]);
   };
 
   const handleBlur = () => {
@@ -89,17 +154,29 @@ const QueuesComponent = () => {
     } else if (fuelAmount > availableAmounts[fuelType]) {
       setFuelAmount(availableAmounts[fuelType]);
     }
+    handleSliderChangeCommited(0, fuelAmount);
   };
 
   const handleClickOpen = (ft) => {
     setOpen(true);
     setFuelAmount(0);
     setFuelType(ft);
-    setVehicleCount(0);
   };
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleSBOpen = () => {
+    setOpenSB(true);
+  };
+
+  const handleSBClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSB(false);
   };
 
   return (
@@ -118,7 +195,7 @@ const QueuesComponent = () => {
             />
           </Typography>
           <Divider sx={{ pt: 2 }} />
-          <form>
+          <form onSubmit={announceQueue}>
             <Grid container spacing={2} sx={{ pt: 2, pb: 2 }}>
               <Grid
                 item
@@ -135,6 +212,7 @@ const QueuesComponent = () => {
                   sx={{ maxWidth: { xs: "80%", md: "300px" }, height: "10px" }}
                   value={typeof fuelAmount === "number" ? fuelAmount : 0}
                   onChange={handleSliderChange}
+                  onChangeCommitted={handleSliderChangeCommited}
                   aria-labelledby="input-slider"
                   max={availableAmounts[fuelType]}
                 />
@@ -162,8 +240,8 @@ const QueuesComponent = () => {
               <Grid item xs={12} sx={{ pt: 0 }}>
                 <Box sx={{ alignItems: "center", display: "flex" }}>
                   <DirectionsBusFilledIcon sx={{ pr: "5px" }} />
-                  <Typography variant="h6">
-                    <strong>{vehicleCount}</strong> from {vehicleCounts[fuelType]}
+                  <Typography variant="h6" sx={{ pr: "10px" }}>
+                    <strong>{maxCount}</strong> from {vehicleCounts[fuelType]}
                   </Typography>
                 </Box>
                 <Divider sx={{ pt: 2 }} />
@@ -175,6 +253,8 @@ const QueuesComponent = () => {
                   required
                   color="info"
                   label="Start Date and Time"
+                  value={startTime}
+                  onChange={(event) => setStartTime(event.target.value)}
                   type="datetime-local"
                   sx={{ width: "80%" }}
                 />
@@ -185,6 +265,8 @@ const QueuesComponent = () => {
                   required
                   color="info"
                   label="Avg. time for a vehicle"
+                  value={avgTime}
+                  onChange={(event) => calculateEstEnd(event.target.value)}
                   type="number"
                   InputProps={{
                     endAdornment: (
@@ -195,10 +277,14 @@ const QueuesComponent = () => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  disabled
-                  label="Estimated End Date and Time"
-                  sx={{ width: "80%" }}
+                <Chip
+                  variant="outlined"
+                  label={
+                    estEndTime === "Invalid Date" || !estEndTime
+                      ? "Estimated End Time"
+                      : "Estimated End Time: " + estEndTime
+                  }
+                  color={fuelType.includes("Diesel") ? "success" : "warning"}
                 />
               </Grid>
               <Grid item>
@@ -279,6 +365,15 @@ const QueuesComponent = () => {
           </Grid>
         ))}
       </Grid>
+      <Snackbar open={openSB} autoHideDuration={6000} onClose={handleSBClose}>
+        <Alert
+          onClose={handleSBClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Queue successfully Announced!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

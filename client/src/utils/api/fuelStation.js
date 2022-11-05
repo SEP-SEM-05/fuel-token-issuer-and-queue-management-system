@@ -72,9 +72,9 @@ const addFuelAmount = async (data) => {
 }
 
 //get waiting queues
-const getWaitingQueues = async (id) => {
+const getWaitingQueues = async (regNo) => {
   try {
-    let response = await baseApi.get(`station/fuelqueues/${id}`);
+    let response = await baseApi.get(`station/fuelqueues/${regNo}`);
     //console.log(response.data);
 
     if (response.headers["x-access-token"]) {
@@ -87,4 +87,22 @@ const getWaitingQueues = async (id) => {
   }
 }
 
-export { signIn, getDashBoard, getWaitingQueues, addFuelAmount };
+// Announce a fuel queue
+const announceFuelQueue = async (data) => {
+  // console.log(data);
+  try {
+    let response = await baseApi.post(`station/announcequeue`, data);
+
+    if (response.headers["x-access-token"]) {
+      sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+    }
+
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    return err.response.data;
+  }
+
+}
+
+export { signIn, getDashBoard, getWaitingQueues, addFuelAmount, announceFuelQueue };

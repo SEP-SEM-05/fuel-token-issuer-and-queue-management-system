@@ -70,13 +70,13 @@ const update_fuel_amount = async (req, res) => {
 
 // Waiting queues generate
 const get_waiting_queues = async (req, res) => {
-  let id = req.params.id;
+  let regNo = req.params.regNo;
 
   try {
     //handle any possible errors
-    let station = await stationDBHelper.findStationByID(id);
+    let station = await stationDBHelper.findStationByRegNo(regNo);
 
-    let result = await queueDBHelper.findQueuesByStRegNo(id, 'waiting');
+    let result = await queueDBHelper.findQueuesByStRegNo(regNo, 'waiting');
     vehicle_counts = {
       "Auto Diesel": 0,
       "Super Diesel": 0,
@@ -92,11 +92,12 @@ const get_waiting_queues = async (req, res) => {
 
     for (let i = 0; i < result.length; i++ ) {
       let queue = result[i]
-      let req_arr = await requestDBHelper.getAllReqByIds(queue.requests);
+      let req_arr = await requestDBHelper.getAllReqByIds(queue.requests); 
 
       const req_priority_queue = new MaxPriorityQueue((re) => re.priority);
       req_arr.forEach((reqest) => {
         let temp = {
+          reqId:reqest._id.toString(),
           registrationNo: reqest.registrationNo,
           quota: reqest.quota,
           priority: reqest.priority,
@@ -125,9 +126,57 @@ const get_waiting_queues = async (req, res) => {
   }
 }
 
+// announce a queue 
+const announce_fuel_queue = async (req, res) => {
+  //console.log(req.body);
+  regNo = req.body.regNo;
+  ftype = req.body.fuelType;
+  lastAnnounced = req.body.announcedTime;
+  vehicles = req.body.vehicles;
+  stime = req.body.startTime;
+  etime = req.body.estQueueEndTime;
+
+  try {
+
+    let result1 = await stationDBHelper.updateLastAnnounced(regNo, ftype, lastAnnounced);   // update last announced date
+    // console.log(result1);
+
+    let reqs = [];
+    let etimes = {};
+
+    vehicles.forEach(veh => {
+      reqs.push(veh.reqId);
+      etimes[veh.registrationNo] = new Date(veh.estTime);
+    });
+
+    let result2 = await queueDBHelper.addNewAnnouncedQueue(regNo, ftype, reqs, stime, etime); // start a new announced queue
+    // console.log(result2);
+
+    let result3 = await queueDBHelper.removeReqsFromWaitingQueue(regNo, ftype, reqs);
+    // console.log(result3);
+
+    // etimes.forEach((ve) => {
+      
+    // });
+    
+    
+    //return necessary data
+    res.json({
+      status: "ok"
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "error",
+      error: "Internal server error!",
+    });
+  }
+}
+
 
   module.exports = {
     get_dashboard,
     update_fuel_amount,
     get_waiting_queues,
+    announce_fuel_queue,
   };

@@ -56,6 +56,21 @@ const updateAmount = async (regNo, fuelType, addedAmount) => {
     return result.volumes.toJSON();
 }
 
+// update last announced time
+const updateLastAnnounced = async (regNo, ftype ,time) => {
+    let station = await findStationByRegNo(regNo);
+    let la = station.lastAnnounced.toJSON();
+    la[ftype] = new Date(time);
+
+    let result = await Station.findOneAndUpdate(
+      { registrationNo: regNo },
+      { lastAnnounced: la },
+      { new: true }
+    );
+    return result.lastAnnounced.toJSON();
+
+}
+
 module.exports = {
   saveRefreshToken,
   findStationByRegNo,
@@ -64,4 +79,5 @@ module.exports = {
   findAllUnregisteredStations,
   updateAmount,
   countRegisteredStations,
+  updateLastAnnounced,
 };

@@ -11,6 +11,9 @@ router.get('/dashboard/:id', auth.requireAuth, stationController.get_dashboard);
 router.post("/updateamount", auth.requireAuth, stationController.update_fuel_amount);
 
 // get fuel waiting queues
-router.get("/fuelqueues/:id",auth.requireAuth, stationController.get_waiting_queues); 
+router.get("/fuelqueues/:regNo",auth.requireAuth, stationController.get_waiting_queues); 
+
+// announce a fuel queue
+router.post("/announcequeue", auth.requireAuth, stationController.announce_fuel_queue);
 
 module.exports = router;
