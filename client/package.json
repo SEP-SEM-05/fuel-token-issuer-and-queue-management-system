@@ -12,6 +12,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.27.2",
     "cypress": "^10.11.0",
+    "cypress-slow-down": "^1.2.1",
     "formik": "^2.2.9",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.0",

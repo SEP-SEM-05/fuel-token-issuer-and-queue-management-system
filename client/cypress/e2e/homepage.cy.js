@@ -1,3 +1,7 @@
+import { slowCypressDown } from 'cypress-slow-down'
+
+slowCypressDown();
+
 describe("renders the home page", () => {
     beforeEach(() => {
         // load the home page
@@ -12,6 +16,8 @@ describe("renders the home page", () => {
 
     let test_username = "6345263462";
     let test_password = "Abcd@1234";
+    let test_wrong_fuel_amount = -12;
+    let test_fuel_amount = 10;
 
     // login as a fuel station
     cy.get(".MuiTypography-alignRight > .MuiTypography-root").click();
@@ -22,6 +28,18 @@ describe("renders the home page", () => {
 
     // click login button
     cy.get(".MuiButton-root").click();
+
+    cy.get(':nth-child(3) > .MuiPaper-root > .MuiCardActions-root > .MuiButtonBase-root').click();
+
+    cy.get("#amount").type(test_wrong_fuel_amount).should("have.value", test_wrong_fuel_amount);
+
+    cy.get(".MuiDialogActions-root > .MuiButtonBase-root").click();
+
+    cy.get("#amount").clear();
+
+    cy.get("#amount").type(test_fuel_amount).should("have.value", test_fuel_amount);
+
+    cy.get(".MuiDialogActions-root > .MuiButtonBase-root").click();
 
 
 
