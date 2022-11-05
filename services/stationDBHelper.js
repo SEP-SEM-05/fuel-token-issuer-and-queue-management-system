@@ -14,7 +14,7 @@ const saveRefreshToken = async (token, id) => {
 //find a station given the registration No.
 const findStationByRegNo = async (registrationNo) => {
 
-    let station = await Station.findOne({registrationNo, isRegistered: true});
+    let station = await Station.findOne({ registrationNo, isRegistered: true,});
     
     return station;
 }
@@ -40,6 +40,13 @@ const findAllUnregisteredStations = async () => {
     return stations;
 }
 
+//get count of each type of registered stations
+const countRegisteredStations = async (stationType) => {
+
+    let stationCount = await Station.count({company: stationType, isRegistered: true});
+    return stationCount;
+}
+
 //update the fuel amount, given the fuel type
 const updateAmount = async (regNo, fuelType, addedAmount) => {
     let station = findStationByID(regNo);
@@ -53,5 +60,7 @@ module.exports = {
   findStationByRegNo,
   findStationByID,
   findAllRegisteredStations,
+  findAllUnregisteredStations,
   updateAmount,
+  countRegisteredStations,
 };

@@ -74,6 +74,16 @@ const stationSchema = new Schema(
         "Petrol 95 Octane": null,
       },
     },
+    lastAnnounced: {
+      type: Map,
+      of: Date,
+      default: {
+        "Auto Diesel": null,
+        "Super Diesel": null,
+        "Petrol 92 Octane": null,
+        "Petrol 95 Octane": null,
+      },
+    },
   },
   { timestamps: true }
 );

@@ -71,13 +71,24 @@ const update_fuel_amount = async (req, res) => {
 // Waiting queues generate
 const get_waiting_queues = async (req, res) => {
   let id = req.params.id;
-  
 
   try {
     //handle any possible errors
+    let station = await stationDBHelper.findStationByID(id);
+
     let result = await queueDBHelper.findQueuesByStRegNo(id, 'waiting');
-    vehicle_counts = {};
-    p_queues = [];
+    vehicle_counts = {
+      "Auto Diesel": 0,
+      "Super Diesel": 0,
+      "Petrol 92 Octane": 0,
+      "Petrol 95 Octane": 0,
+    };
+    p_queues = {
+      "Auto Diesel": [],
+      "Super Diesel": [],
+      "Petrol 92 Octane": [],
+      "Petrol 95 Octane": [],
+    };
 
     for (let i = 0; i < result.length; i++ ) {
       let queue = result[i]
@@ -93,7 +104,7 @@ const get_waiting_queues = async (req, res) => {
         req_priority_queue.enqueue(temp);
       });
 
-      p_queues.push(req_priority_queue.toArray());
+      p_queues[queue.fuelType] = req_priority_queue.toArray();
       vehicle_counts[queue.fuelType] = req_priority_queue.size();
     }
 
@@ -102,6 +113,8 @@ const get_waiting_queues = async (req, res) => {
       status: "ok",
       vehicleCounts: vehicle_counts,
       queues: p_queues,
+      lastDates: station.lastAnnounced,
+      availableAmounts: station.volumes
     });
   } catch (err) {
     console.log(err);

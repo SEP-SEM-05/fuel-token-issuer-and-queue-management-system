@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect } from 'react';
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -12,23 +12,63 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 
-function createData(station) {
-  return { station };
-}
-
-const rows = [
-  createData("Unregistered station 01"),
-  createData("Unregistered station 02"),
-  createData("Unregistered station 03"),
-  createData("Unregistered station 04"),
-  createData("Unregistered station 05"),
-];
+const axios = require('axios').default;
 
 //main function
 const UnregisteredComponent = () => {
-  const [open, setOpen] = React.useState(false);
-  const handleClickOpen = () => {
+
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+
+    async function fetchData() {
+
+        try {
+
+            //const token = sessionStorage.getItem('admin_token');
+
+            let response = await axios.get(`http://localhost:5000/admin/unregistered`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    //token: token,
+                    //state: props.state
+                }
+            });
+            let stationDetails = response.data.station;
+
+            if (response.data.status === 'ok') {
+              console.log(stationDetails);
+              setRows(
+                stationDetails
+              )
+              
+            }
+            else {
+                console.log(response.data.error);
+            }
+
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    fetchData();
+    
+  }, []);
+
+  const [open, setOpen] = useState(false);
+  const [regNo, setRegNo] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [contactNo, setContactNo] = useState(null);
+  const [address, setAddress] = useState(null);
+
+  const handleClickOpen = (row) => {
     setOpen(true);
+    setRegNo(row.registrationNo);
+    setEmail(row.email);
+    setContactNo(row.contactNo);
+    setAddress(row.location);
   };
   const handleClose = () => {
     setOpen(false);
@@ -58,13 +98,13 @@ const UnregisteredComponent = () => {
                     component="th"
                     scope="row"
                   >
-                    {row.station}
+                    {row.name}
                   </TableCell>
                   <TableCell align="center">
                     <Button
                       variant="contained"
                       color="info"
-                      onClick={handleClickOpen}
+                      onClick={() => handleClickOpen(row)}
                       sx={{
                         borderRadius: 10,
                       }}
@@ -102,7 +142,7 @@ const UnregisteredComponent = () => {
           {/* field values will come from database */}
           <TextField
             label="Registration No"
-            defaultValue="xxxxxxxxxxxx"
+            defaultValue={regNo}
             InputProps={{
               readOnly: true,
             }}
@@ -112,7 +152,7 @@ const UnregisteredComponent = () => {
           <br />
           <TextField
             label="Email"
-            defaultValue="xxxxxxxxxxxxxxxxx"
+            defaultValue={email}
             InputProps={{
               readOnly: true,
             }}
@@ -122,7 +162,7 @@ const UnregisteredComponent = () => {
           <br />
           <TextField
             label="Contact No"
-            defaultValue="xxxxxxxxxx"
+            defaultValue={contactNo}
             InputProps={{
               readOnly: true,
             }}
@@ -132,7 +172,7 @@ const UnregisteredComponent = () => {
           <br />
           <TextField
             label="Address"
-            defaultValue="xxxxxxxxxxxx xxxxxxxxxx xxxxxxxxxxx"
+            defaultValue={address}
             InputProps={{
               readOnly: true,
             }}
