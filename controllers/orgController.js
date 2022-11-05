@@ -21,64 +21,53 @@ const get_dashboard = async (req, res) => {
 
         if(user !== null){
 
-            // return_user = {};
-
-            //calculate the full quota
-            //send stations of org
-            //send all stations
-
             let vehicles = await vehicleDBHelper.findAllByregistrationNoArray(user.vehicles);
             let stations = await stationDBHelper.findAllRegisteredStations();
             let quotas = await vehicleDBHelper.getQuotas();
 
             let fullQuotas = {};
-            let fullQuotaDiesel, fullQuotaPetrol;
-            // let totalUsedQuotaDiesel, totalUsedQuotaPetrol;
+            let fullQuotaDiesel = 0;
+            let fullQuotaPetrol = 0;
             vehicles.forEach((vehicle) => {
 
                 //select the corresponding quota from quotas
                 //add amount to the fullQuota
                 //calculate and add total used quota using vehicle.usedQuota
 
-                for(const quota in quotas){
+                for(const i in quotas){
+                    
+                    if(quotas[i].vehicleType === vehicle.type && quotas[i].fuelType === vehicle.fuelType){
 
-                    if(quota.vehicleType === vehicle.type && quota.fuelType === vehicle.fuelType){
-
-                        if(quota.fuelType === 'Diesel'){
-                            fullQuotaDiesel += quota.amount;
+                        if(quotas[i].fuelType === 'Diesel'){
+                            fullQuotaDiesel += quotas[i].amount;
                         }
                         else{
-                            fullQuotaPetrol += quota.amount;
+                            fullQuotaPetrol += quotas[i].amount;
                         }
                         break;
                     }
                 }
-
-                // if(vehicle.fuelType === 'Diesel'){
-                //     totalUsedQuotaDiesel += vehicle.usedQuota;
-                // }
-                // else{
-                //     totalUsedQuotaPetrol += vehicle.usedQuota;
-                // }
-            })
-
-            // let remainingQuotaDiesel = fullQuotaDiesel - totalUsedQuotaDiesel;
-            // let remainingQuotaPetrol = fullQuotaPetrol - totalUsedQuotaPetrol
-
-            // user['fullDieselQuota'] = fullQuotaDiesel;
-            // user['fullPetrolQuota'] = fullQuotaPetrol;
-
-            // user['remainingDieselQuota'] = remainingQuotaDiesel;
-            // user['remainingPetrolQuota'] = remainingQuotaPetrol;
-
-            // return_user['fullDieselQuota'] = fullQuotaDiesel;
-            // return_user['fullPetrolQuota'] = fullQuotaPetrol;
-
-            // return_user['remainingDieselQuota'] = remainingQuotaDiesel;
-            // return_user['remainingPetrolQuota'] = remainingQuotaPetrol;
+            });
 
             fullQuotas['fullDieselQuota'] = fullQuotaDiesel;
             fullQuotas['fullPetrolQuota'] = fullQuotaPetrol;
+
+            //if the quotas have changed update them in the org collection
+            if(user.fullQuotas[0] !== fullQuotaDiesel || user.fullQuotas[1] !== fullQuotaPetrol){
+
+                try {
+
+                    let update_result = await orgDBHelper.updateFullQuotas(user.registrationNo, [fullQuotaDiesel, fullQuotaPetrol]);
+                    console.log("Full quotas updated");
+                } 
+                catch (err) {
+                    console.log(err);
+                    res.status(500).json({
+                        status: 'error',
+                        error: 'Internal server error!'
+                    });
+                }
+            }
 
             //stations array must contain strings with regNo and name concatde with '-'
             let org_stations = [];
@@ -87,16 +76,7 @@ const get_dashboard = async (req, res) => {
                 if(user.stations.includes(station.registrationNo)){
                     org_stations.push(station.registrationNo + '-' + station.name);
                 }
-            })
-            // user['stations'] = org_stations;
-
-            // return_user['stations'] = org_stations;
-            // delete user.stations;
-
-            // for(const key in user){
-            //     return_user[key] = user[key];
-            // }
-            // return_user['stations'] = org_stations;
+            });
 
             //create a string array containing all the stations
             //each string must contain regNo and name concated with '-'
@@ -105,12 +85,23 @@ const get_dashboard = async (req, res) => {
                 return_stations.push(station.registrationNo + '-' + station.name);
             })
 
+            let lastFilledDateObj = user.lastFilledDate.toJSON();
+
+            let petrol_lfd = new Date(lastFilledDateObj.Petrol);
+            let diesel_lfd = new Date(lastFilledDateObj.Diesel);
+
+            let lastFilledDate = (petrol_lfd > diesel_lfd ? petrol_lfd : diesel_lfd);
+            let return_lfd = String(lastFilledDate.getFullYear()) + " - " + String(lastFilledDate.getMonth() + 1).padStart(2, '0') + " - " + String(lastFilledDate.getDate()).padStart(2, '0');
+
             res.json({
                 status: 'ok',
                 org_regNo: user.registrationNo,
-                org_stations: org_stations,
-                vehicles: vehicles,
-                stations: return_stations
+                orgStations: org_stations,
+                vehicleCount: vehicles.length,
+                fullQuotas: fullQuotas,
+                lastFilledDate: return_lfd,
+                remainingQuotas: user.remainingQuotas,
+                stations: return_stations,
             });
         }
         else{

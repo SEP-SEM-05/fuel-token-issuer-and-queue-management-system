@@ -40,6 +40,14 @@ const organizationSchema = new Schema({
       type: String,
       required: false,
     },
+    fullQuotas: {
+        type: [Number],
+        default: [0, 0] // 0 - diesel, 1 - petrol
+    },
+    remainingQuotas: {
+        type: [Number],
+        default: [0, 0] // 0 - diesel, 1 - petrol
+    },
     lastFilledDate: {
         type: Map,
         of: Date,

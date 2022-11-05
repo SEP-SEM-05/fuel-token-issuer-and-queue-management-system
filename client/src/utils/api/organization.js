@@ -49,7 +49,7 @@ const getDashBoard = async (id) => {
         return response.data;
     } 
     catch (err) {
-        // console.log(err);
+        console.log(err);
         return err.response.data;
     }
 }

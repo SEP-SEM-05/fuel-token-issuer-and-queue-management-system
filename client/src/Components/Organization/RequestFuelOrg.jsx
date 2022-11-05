@@ -29,14 +29,6 @@ import QRIMG from "../../assets/QR.svg";
 import { getDashBoard } from "../../utils/api/organization";
 import useAuth from "../../utils/providers/AuthProvider";
 
-import axios from "axios";
-
-const stationNameandCity = [
-    "station 01",
-    "station 02",
-    "station 03",
-    "station 04",
-];
 
 const RequestFuelOrg = () => {
 
@@ -46,12 +38,13 @@ const RequestFuelOrg = () => {
     const [openSt, setOpenSt] = React.useState(false);
     const [fuelType, setFuelType] = React.useState("");
     const [value, setValue] = React.useState();
-    const [dieselQuota] = useState([99, 99]);
-    const [petrolQuota] = useState([89, 70]);
-    const [lastDate] = useState("29/09/2022");
-    const [vehicleCount] = useState(12);
-    const [stations] = useState(["station 01", "station 02", "station 03"]);
+    const [dieselQuota, setDieselQuota] = useState([99, 99]);
+    const [petrolQuota, setPetrolQuota] = useState([89, 70]);
+    const [lastDate, setLastDate] = useState("29/09/2022");
+    const [vehicleCount, setVehicleCount] = useState(12);
+    const [stations, setStations] = useState(["station 01", "station 02", "station 03"]);
     const [openQR, setOpenQR] = React.useState(false);
+    const [stationNameandCity, setStationNameandCity] = useState([]);
 
     useEffect(() => {
 
@@ -64,8 +57,14 @@ const RequestFuelOrg = () => {
 
             if (status === 'ok') {
 
-                // setVehicles(response.vehicles);
-                // setStationNameandCity(response.stations);
+                setStationNameandCity(response.stations);
+
+                setDieselQuota([response.fullQuotas.fullDieselQuota, response.remainingQuotas[0]]);
+                setPetrolQuota([response.fullQuotas.fullPetrolQuota, response.remainingQuotas[1]]);
+
+                setLastDate(response.lastFilledDate);
+                setVehicleCount(response.vehicleCount);
+                setStations(response.orgStations);
             }
             else if (status === 'auth-error') {
 
@@ -73,12 +72,12 @@ const RequestFuelOrg = () => {
                 // localStorage.clear();
 
                 console.log(response.error);
-                // document.location = '/';
+                document.location = '/';
             }
             else {
 
                 console.log(response.error);
-                document.location = '/';
+                // document.location = '/';
             }
         }
 

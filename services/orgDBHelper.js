@@ -39,10 +39,17 @@ const updateStations = async (regNo, stations) => {
     return result;
 }
 
+//update the full fuel quotas, given the registrationNo.
+const updateFullQuotas = async (regNo, fullQuotas) => {
+    let result = await Org.updateOne({registrationNo: regNo}, {fullQuotas: fullQuotas});
+    return result;
+}
+
 module.exports = {
     saveClient,
     saveRefreshToken,
     findClientByRegNo,
     findClientByID,
     updateStations,
+    updateFullQuotas,
 }
