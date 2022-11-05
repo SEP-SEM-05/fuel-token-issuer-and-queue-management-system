@@ -45,7 +45,7 @@ const getDashBoard = async (id) => {
 // add new fuel amount
 const addFuelAmount = async (data) => {
   try {
-    // console.log(data)
+    console.log(data)
     let response = await baseApi.post(`station/updateamount`, data);
   
     if (response.headers["x-access-token"]) {

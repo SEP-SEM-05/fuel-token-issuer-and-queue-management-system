@@ -47,8 +47,8 @@ const StockComponent = () => {
   const [fuelType, setFuelType] = React.useState();
   const [fuel_types, setFuel_types] = React.useState([]);
   const [openSB, setOpenSB] = React.useState(false);
-  const [addedAmount, setAddedAmount] = React.useState();
-
+  const [addedAmount, setAddedAmount] = React.useState(0);
+  const [newAmount, setNewAmount] = React.useState();
   
 
   React.useEffect(() => {
@@ -62,19 +62,19 @@ const StockComponent = () => {
       let lastFilled = userr.lastFilled;
 
       let fuel_typess = [];
-      for(let key in capasities){
-        let obj = {}
-        obj['type'] = key;
-        let d = new Date(lastFilled[key])
+      for (let key in capasities) {
+        let obj = {};
+        obj["type"] = key;
+        let d = new Date(lastFilled[key]);
         obj["lastDate"] =
           d.getFullYear() +
           "/" +
           (d.getMonth() + 1).toString().padStart(2, "0") +
           "/" +
           d.getDate().toString().padStart(2, "0");
-        obj['left'] = volumes[key];
-        obj['cap'] = capasities[key];
-        obj["col"] = key.includes("Diesel") ? 'success' : 'warning';
+        obj["left"] = volumes[key];
+        obj["cap"] = capasities[key];
+        obj["col"] = key.includes("Diesel") ? "success" : "warning";
 
         fuel_typess.push(obj);
       }
@@ -83,15 +83,23 @@ const StockComponent = () => {
     }
 
     fetchData();
-  }, []);
+  }, [newAmount]);
 
-  const addNewFuelAmount = async () => {
-    
+  const addNewFuelAmount = async (event) => {
+    event.preventDefault()
+    console.log(addedAmount);
     let response = await addFuelAmount({
       addedAmount: addedAmount,
       fuelType: fuelType,
       registrationNo: user.data.registrationNo,
     });
+
+    if (response.status == "ok") {
+      setNewAmount(response.newAmounts);
+    } else {
+      console.log("error");
+    }
+    
     
     handleClose();
     handleSBOpen();
@@ -125,36 +133,39 @@ const StockComponent = () => {
         <DialogTitle sx={{ fontWeight: "bold" }} textAlign={"center"}>
           {fuelType}
         </DialogTitle>
-        <Box sx={{ display: "flex", pr: 2, pb: 2, pl: 2 }}>
-          <DialogContent sx={{ pr: 1 }}>
-            <TextField
-              focused
-              required
-              value={addedAmount}
-              onChange={(event) => setAddedAmount(event.target.value)}
-              color="info"
-              label="Fuel Amount"
-              type="number"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">Liters</InputAdornment>
-                ),
-              }}
-              sx={{ width: "80%" }}
-            />
-          </DialogContent>
-          <DialogActions sx={{ mr: 2, display: "flex" }}>
-            <Button
-              size="large"
-              variant="contained"
-              color="info"
-              onClick={addNewFuelAmount}
-              sx={{ pt: "13px", pb: "13px", fontWeight: "bold" }}
-            >
-              Add
-            </Button>
-          </DialogActions>
-        </Box>
+        <form onSubmit={addNewFuelAmount}>
+          <Box sx={{ display: "flex", pr: 2, pb: 2, pl: 2 }}>
+            <DialogContent sx={{ pr: 1 }}>
+              <TextField
+                focused
+                required
+                color="info"
+                label="Fuel Amount"
+                onChange={(event) =>
+                  setAddedAmount(event.target.value)
+                }
+                type="number"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">Liters</InputAdornment>
+                  )
+                }}
+                sx={{ width: "80%" }}
+              />
+            </DialogContent>
+            <DialogActions sx={{ mr: 2, display: "flex" }}>
+              <Button
+                type="submit"
+                size="large"
+                variant="contained"
+                color="info"
+                sx={{ pt: "13px", pb: "13px", fontWeight: "bold" }}
+              >
+                Add
+              </Button>
+            </DialogActions>
+          </Box>
+        </form>
       </Dialog>
 
       <Grid item xs={12} sx={{ pl: { xs: "unset", lg: 3 }, my: -3 }}>

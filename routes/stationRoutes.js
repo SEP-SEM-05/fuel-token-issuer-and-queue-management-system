@@ -8,9 +8,9 @@ const router = express.Router();
 router.get('/dashboard/:id', auth.requireAuth, stationController.get_dashboard);
 
 //update fuel amount
-router.get("/updateamount", auth.requireAuth, stationController.update_fuel_amount);
+router.post("/updateamount", auth.requireAuth, stationController.update_fuel_amount);
 
 // get fuel waiting queues
-router.get("/fuelqueues/:id",auth.requireAuth, stationController.get_waiting_queues);
+router.get("/fuelqueues/:id",auth.requireAuth, stationController.get_waiting_queues); 
 
 module.exports = router;
