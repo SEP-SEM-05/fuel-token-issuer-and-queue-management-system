@@ -1,4 +1,6 @@
 import baseApi from "./@baseURL";
+import url from "./urlString";
+import axios from "axios";
 
 //fuel station login
 const signInPersonal = async (data) => {
@@ -16,7 +18,7 @@ const signInPersonal = async (data) => {
         return response.data;
     } 
     catch (err) {
-        // console.log(err);
+        console.log(err);
         return err.response.data;
     }
 };
@@ -25,8 +27,19 @@ const signInPersonal = async (data) => {
 const getDashBoard = async (id) => {
 
     try {
-        
-        let response = await baseApi.get(
+
+        const refreshToken = localStorage.getItem("refreshToken");
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        let api = axios.create({
+            baseURL: url,
+            headers: {
+                "x-refresh-token": refreshToken ? "Bearer " + refreshToken : undefined,
+                "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+            },
+        });
+
+        let response = await api.get(
             `personal/dashboard/${id}`
         )
 

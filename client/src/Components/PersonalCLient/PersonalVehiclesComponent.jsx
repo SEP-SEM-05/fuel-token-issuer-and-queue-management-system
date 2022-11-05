@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
@@ -27,34 +27,6 @@ import QRIMG from "../../assets/QR.svg";
 import { getDashBoard } from "../../utils/api/personal";
 import useAuth from "../../utils/providers/AuthProvider";
 
-const stationNameandCity = [
-    "station 01",
-    "station 02",
-    "station 03",
-    "station 04",
-];
-
-// const vehicles = [
-//     [
-//         "ABC 1234",
-//         "Diesel",
-//         "19/09/2022",
-//         "Mortor Car",
-//         34,
-//         40,
-//         ["station 01", "station 02", "station 04"],
-//     ],
-//     ["ABD 4234", "Petrol", "17/08/2022", "Mortor Bike", 4, 5, ["station 01"]],
-//     [
-//         "ADT 4569",
-//         "Petrol",
-//         "12/07/2022",
-//         "Van",
-//         30,
-//         30,
-//         ["station 01", "station 02"],
-//     ],
-// ];
 
 export default function PersonalVehicles() {
 
@@ -87,9 +59,12 @@ export default function PersonalVehicles() {
                 // localStorage.clear();
 
                 console.log(response.error);
-                // document.location = '/';
+                document.location = '/';
             }
             else {
+
+                // sessionStorage.clear();
+                // localStorage.clear();
 
                 console.log(response.error);
                 document.location = '/';
@@ -97,7 +72,7 @@ export default function PersonalVehicles() {
         }
 
         fetchData();
-    }, [])
+    }, []);
 
     const handleClickOpen = (vehicle) => {
         setOpen(true);

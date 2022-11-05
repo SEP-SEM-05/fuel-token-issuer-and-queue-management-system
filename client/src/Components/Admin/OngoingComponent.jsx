@@ -1,10 +1,72 @@
-import * as React from "react";
+import React, { useState, useEffect } from 'react';
 import { Grid, Typography } from "@mui/material";
 import Container from "@mui/material/Container";
 import Chart from "react-apexcharts";
 
+const axios = require('axios').default;
+
 //main function
 const OngoingComponent = () => {
+
+  const [ceypetcCount, setCeypetcCount] = useState();
+  const [iocCount, setIocCount] = useState();
+
+  useEffect(() => {
+
+    async function fetchData() {
+
+        try {
+
+            //const token = sessionStorage.getItem('admin_token');
+
+            let ceypetcResponse = await axios.get(`http://localhost:5000/admin/count/ceypetc`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    //token: token,
+                    //state: props.state
+                }
+            });
+
+            let ceypetcCount = ceypetcResponse.data.stationCount;
+
+            if (ceypetcResponse.data.status === 'ok') {
+              console.log(ceypetcCount);
+              setCeypetcCount(ceypetcCount)
+            }
+            else {
+                console.log(ceypetcResponse.data.error);
+            }
+
+
+            let iocResponse = await axios.get(`http://localhost:5000/admin/count/ioc`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    //token: token,
+                    //state: props.state
+                }
+            });
+
+            let iocCount = iocResponse.data.stationCount;
+
+            if (iocResponse.data.status === 'ok') {
+              console.log(iocCount);
+              setIocCount(iocCount)
+            }
+            else {
+                console.log(iocResponse.data.error);
+            }
+
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    fetchData();
+    
+  }, []);
+
+
   //data for pie chart
   const options1 = {
     labels: ["CEYPETC", "IOC"],
@@ -24,7 +86,7 @@ const OngoingComponent = () => {
       },
     },
   };
-  const series1 = [453, 132];
+  const series1 = [ceypetcCount, iocCount];
 
   return (
     <Container>

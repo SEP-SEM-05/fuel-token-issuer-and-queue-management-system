@@ -46,6 +46,10 @@ const QuotaComponent = () => {
   const [dieselRows, setDieselRows] = useState([]);
   const [petrolRows, setPetrolRows] = useState([]);
 
+  const [isPetrol, setIsPetrol] = React.useState(true);  // to assign fuel type
+  const [rows, setRows] = React.useState([]);
+
+
   useEffect(() => {
 
     async function fetchData() {
@@ -93,7 +97,12 @@ const QuotaComponent = () => {
                 petrolQuotaDetails.map((quota) => (
                   createData(quota.vehicleType, quota.amount)
                 )
-              ))
+              ));
+              setRows(
+                petrolQuotaDetails.map((quota) => (
+                  createData(quota.vehicleType, quota.amount)
+                )
+              ));
             }
             else {
                 console.log(petrolResponse.data.error);
@@ -109,8 +118,6 @@ const QuotaComponent = () => {
     
   }, []);
 
-  const [isPetrol, setIsPetrol] = React.useState(true);  // to assign fuel type
-  const [rows, setRows] = React.useState(petrolRows);
 
   const [open, setOpen] = React.useState(false);    // to open the dialog box
   const [vehicleType, setVehicleType] = React.useState(null);
