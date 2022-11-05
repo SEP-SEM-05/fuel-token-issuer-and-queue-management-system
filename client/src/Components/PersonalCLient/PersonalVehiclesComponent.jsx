@@ -67,7 +67,7 @@ export default function PersonalVehicles() {
                 // localStorage.clear();
 
                 console.log(response.error);
-                document.location = '/';
+                // document.location = '/';
             }
         }
 

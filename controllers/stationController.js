@@ -14,7 +14,7 @@ const encHandler = require("../middleware/encryptionHandler");
 
 //get station dashboard info
 const get_dashboard = async (req, res) => {
-console.log(req.params.id)
+
   let id = req.params.id;
 
   try {
