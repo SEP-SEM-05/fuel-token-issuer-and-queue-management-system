@@ -12,6 +12,9 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { addFuelAmount, getDashBoard } from "../../utils/api/fuelStation";
 import useAuth from "../../utils/providers/AuthProvider";
+import * as yup from "yup";
+import { useFormik } from "formik";
+import { setLocale } from 'yup';
 
 //progress bar styles
 function LinearProgressWithLabel(props) {
@@ -40,6 +43,12 @@ function LinearProgressWithLabel(props) {
   );
 }
 
+setLocale({
+  number: {
+    max: "Amount must be less than the capacity (max amount can be added: ${max}L)",
+  },
+});
+
 
 const StockComponent = () => {
   const { user, signUser } = useAuth();
@@ -47,9 +56,9 @@ const StockComponent = () => {
   const [fuelType, setFuelType] = React.useState();
   const [fuel_types, setFuel_types] = React.useState([]);
   const [openSB, setOpenSB] = React.useState(false);
-  const [addedAmount, setAddedAmount] = React.useState(0);
   const [newAmount, setNewAmount] = React.useState();
-  
+  const [val, setVal] = React.useState(0);
+
 
   React.useEffect(() => {
     async function fetchData() {
@@ -85,11 +94,27 @@ const StockComponent = () => {
     fetchData();
   }, [newAmount]);
 
-  const addNewFuelAmount = async (event) => {
-    event.preventDefault()
-    console.log(addedAmount);
+  const validationSchema = yup.object({
+    amount: yup
+      .number()
+      .required("Amount is required")
+      .positive("Amount should be positive")
+      .max(val),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      amount: ""
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      addNewFuelAmount(values.amount);
+    },
+  });
+  
+  const addNewFuelAmount = async (amount) => {
     let response = await addFuelAmount({
-      addedAmount: addedAmount,
+      addedAmount: amount,
       fuelType: fuelType,
       registrationNo: user.data.registrationNo,
     });
@@ -118,9 +143,10 @@ const StockComponent = () => {
     setOpenSB(false);
   };
 
-  const handleClickOpen = (ft) => {
+  const handleClickOpen = (ft, cap, left) => {
     setOpen(true);
     setFuelType(ft);
+    setVal((cap - left).toFixed(2));
   };
 
   const handleClose = () => {
@@ -133,7 +159,7 @@ const StockComponent = () => {
         <DialogTitle sx={{ fontWeight: "bold" }} textAlign={"center"}>
           {fuelType}
         </DialogTitle>
-        <form onSubmit={addNewFuelAmount}>
+        <form onSubmit={formik.handleSubmit}>
           <Box sx={{ display: "flex", pr: 2, pb: 2, pl: 2 }}>
             <DialogContent sx={{ pr: 1 }}>
               <TextField
@@ -141,14 +167,15 @@ const StockComponent = () => {
                 required
                 color="info"
                 label="Fuel Amount"
-                onChange={(event) =>
-                  setAddedAmount(event.target.value)
-                }
-                type="number"
+                name="amount"
+                id="amount"
+                onChange={formik.handleChange}
+                error={formik.touched.amount && Boolean(formik.errors.amount)}
+                helperText={formik.touched.amount && formik.errors.amount}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">Liters</InputAdornment>
-                  )
+                  ),
                 }}
                 sx={{ width: "80%" }}
               />
@@ -221,7 +248,9 @@ const StockComponent = () => {
                 }}
               >
                 <Button
-                  onClick={() => handleClickOpen(ft.type)}
+                  onClick={() =>
+                    handleClickOpen(ft.type, ft.cap, ft.left.toFixed(2))
+                  }
                   color={ft.col}
                   variant="contained"
                   sx={{ minWidth: "120px" }}
