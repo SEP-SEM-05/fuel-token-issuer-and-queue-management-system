@@ -58,7 +58,21 @@ const getDashBoard = async (id) => {
 // add new fuel amount
 const addFuelAmount = async (data) => {
     try {
-        let response = await baseApi.post(`station/updateamount`, data);
+
+        const refreshToken = localStorage.getItem("refreshToken");
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        let api = axios.create({
+          baseURL: url,
+          headers: {
+            "x-refresh-token": refreshToken
+              ? "Bearer " + refreshToken
+              : undefined,
+            "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+          },
+        });
+
+        let response = await api.post(`station/updateamount`, data);
 
         if (response.headers["x-access-token"]) {
             sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
@@ -74,8 +88,21 @@ const addFuelAmount = async (data) => {
 //get waiting queues
 const getWaitingQueues = async (regNo) => {
   try {
-    let response = await baseApi.get(`station/fuelqueues/${regNo}`);
-    //console.log(response.data);
+      const refreshToken = localStorage.getItem("refreshToken");
+      const accessToken = sessionStorage.getItem("accessToken");
+
+      let api = axios.create({
+        baseURL: url,
+        headers: {
+          "x-refresh-token": refreshToken
+            ? "Bearer " + refreshToken
+            : undefined,
+          "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+        },
+      });
+
+      let response = await api.get(`station/fuelqueues/${regNo}`);
+      //console.log(response.data);
 
 
         if (response.headers["x-access-token"]) {
@@ -92,7 +119,19 @@ const getWaitingQueues = async (regNo) => {
 const announceFuelQueue = async (data) => {
   // console.log(data);
   try {
-    let response = await baseApi.post(`station/announcequeue`, data);
+    const refreshToken = localStorage.getItem("refreshToken");
+    const accessToken = sessionStorage.getItem("accessToken");
+
+    let api = axios.create({
+      baseURL: url,
+      headers: {
+        "x-refresh-token": refreshToken ? "Bearer " + refreshToken : undefined,
+        "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+      },
+    });
+
+
+    let response = await api.post(`station/announcequeue`, data);
 
     if (response.headers["x-access-token"]) {
       sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
