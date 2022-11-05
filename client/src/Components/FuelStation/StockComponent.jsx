@@ -5,13 +5,16 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { Grid, InputAdornment, LinearProgress, TextField } from "@mui/material";
+import { Alert, Grid, InputAdornment, LinearProgress, Snackbar, TextField } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { getDashBoard } from "../../utils/api/fuelStation";
+import { addFuelAmount, getDashBoard } from "../../utils/api/fuelStation";
 import useAuth from "../../utils/providers/AuthProvider";
+import * as yup from "yup";
+import { useFormik } from "formik";
+import { setLocale } from 'yup';
 
 //progress bar styles
 function LinearProgressWithLabel(props) {
@@ -40,12 +43,22 @@ function LinearProgressWithLabel(props) {
   );
 }
 
+setLocale({
+  number: {
+    max: "Amount must be less than the capacity (max amount can be added: ${max}L)",
+  },
+});
+
 
 const StockComponent = () => {
   const { user, signUser } = useAuth();
   const [open, setOpen] = React.useState(false);
-  const [fuelType, setFuelType] = React.useState(false);
+  const [fuelType, setFuelType] = React.useState();
   const [fuel_types, setFuel_types] = React.useState([]);
+  const [openSB, setOpenSB] = React.useState(false);
+  const [newAmount, setNewAmount] = React.useState();
+  const [val, setVal] = React.useState(0);
+
 
   React.useEffect(() => {
     async function fetchData() {
@@ -58,19 +71,19 @@ const StockComponent = () => {
       let lastFilled = userr.lastFilled;
 
       let fuel_typess = [];
-      for(let key in capasities){
-        let obj = {}
-        obj['type'] = key;
-        let d = new Date(lastFilled[key])
+      for (let key in capasities) {
+        let obj = {};
+        obj["type"] = key;
+        let d = new Date(lastFilled[key]);
         obj["lastDate"] =
           d.getFullYear() +
           "/" +
           (d.getMonth() + 1).toString().padStart(2, "0") +
           "/" +
           d.getDate().toString().padStart(2, "0");
-        obj['left'] = volumes[key];
-        obj['cap'] = capasities[key];
-        obj["col"] = key.includes("Diesel") ? 'success' : 'warning';
+        obj["left"] = volumes[key];
+        obj["cap"] = capasities[key];
+        obj["col"] = key.includes("Diesel") ? "success" : "warning";
 
         fuel_typess.push(obj);
       }
@@ -79,11 +92,61 @@ const StockComponent = () => {
     }
 
     fetchData();
-  }, []);
+  }, [newAmount]);
 
-  const handleClickOpen = (ft) => {
+  const validationSchema = yup.object({
+    amount: yup
+      .number()
+      .required("Amount is required")
+      .positive("Amount should be positive")
+      .max(val),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      amount: ""
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      addNewFuelAmount(values.amount);
+    },
+  });
+  
+  const addNewFuelAmount = async (amount) => {
+    let response = await addFuelAmount({
+      addedAmount: amount,
+      fuelType: fuelType,
+      registrationNo: user.data.registrationNo,
+    });
+
+    if (response.status == "ok") {
+      setNewAmount(response.newAmounts);
+    } else {
+      console.log("error");
+    }
+    
+    
+    handleClose();
+    handleSBOpen();
+  }
+
+
+  const handleSBOpen = () => {
+    setOpenSB(true);
+  };
+
+  const handleSBClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSB(false);
+  };
+
+  const handleClickOpen = (ft, cap, left) => {
     setOpen(true);
     setFuelType(ft);
+    setVal((cap - left).toFixed(2));
   };
 
   const handleClose = () => {
@@ -96,34 +159,40 @@ const StockComponent = () => {
         <DialogTitle sx={{ fontWeight: "bold" }} textAlign={"center"}>
           {fuelType}
         </DialogTitle>
-        <Box sx={{ display: "flex", pr: 2, pb: 2, pl: 2 }}>
-          <DialogContent sx={{ pr: 1 }}>
-            <TextField
-              focused
-              required
-              color="info"
-              label="Fuel Amount"
-              type="number"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">Liters</InputAdornment>
-                ),
-              }}
-              sx={{ width: "80%" }}
-            />
-          </DialogContent>
-          <DialogActions sx={{ mr: 2, display: "flex" }}>
-            <Button
-              size="large"
-              variant="contained"
-              color="info"
-              onClick={handleClose}
-              sx={{ pt: "13px", pb: "13px", fontWeight: "bold" }}
-            >
-              Add
-            </Button>
-          </DialogActions>
-        </Box>
+        <form onSubmit={formik.handleSubmit}>
+          <Box sx={{ display: "flex", pr: 2, pb: 2, pl: 2 }}>
+            <DialogContent sx={{ pr: 1 }}>
+              <TextField
+                focused
+                required
+                color="info"
+                label="Fuel Amount"
+                name="amount"
+                id="amount"
+                onChange={formik.handleChange}
+                error={formik.touched.amount && Boolean(formik.errors.amount)}
+                helperText={formik.touched.amount && formik.errors.amount}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">Liters</InputAdornment>
+                  ),
+                }}
+                sx={{ width: "80%" }}
+              />
+            </DialogContent>
+            <DialogActions sx={{ mr: 2, display: "flex" }}>
+              <Button
+                type="submit"
+                size="large"
+                variant="contained"
+                color="info"
+                sx={{ pt: "13px", pb: "13px", fontWeight: "bold" }}
+              >
+                Add
+              </Button>
+            </DialogActions>
+          </Box>
+        </form>
       </Dialog>
 
       <Grid item xs={12} sx={{ pl: { xs: "unset", lg: 3 }, my: -3 }}>
@@ -179,7 +248,9 @@ const StockComponent = () => {
                 }}
               >
                 <Button
-                  onClick={() => handleClickOpen(ft.type)}
+                  onClick={() =>
+                    handleClickOpen(ft.type, ft.cap, ft.left.toFixed(2))
+                  }
                   color={ft.col}
                   variant="contained"
                   sx={{ minWidth: "120px" }}
@@ -194,6 +265,15 @@ const StockComponent = () => {
             </Card>
           </Grid>
         ))}
+        <Snackbar open={openSB} autoHideDuration={6000} onClose={handleSBClose}>
+          <Alert
+            onClose={handleSBClose}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Amount Successfully Added!
+          </Alert>
+        </Snackbar>
       </Grid>
     </Box>
   );

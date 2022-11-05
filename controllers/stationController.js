@@ -45,7 +45,7 @@ console.log(req.params.id)
 const update_fuel_amount = async (req, res) => {
   let regNo = req.body.registrationNo;
   let fuelType = req.body.fuelType;
-  let addedAmount = req.body.addedAmount;
+  let addedAmount = parseFloat(req.body.addedAmount); 
 
   try {
     //handle any possible errors
@@ -57,7 +57,7 @@ const update_fuel_amount = async (req, res) => {
     //return necessary data
     res.json({
       status: "ok",
-      newAmount: result.volumes,
+      newAmounts: result,
     });
   } catch(err){
         console.log(err);

@@ -49,10 +49,11 @@ const countRegisteredStations = async (stationType) => {
 
 //update the fuel amount, given the fuel type
 const updateAmount = async (regNo, fuelType, addedAmount) => {
-    let station = findStationByID(regNo);
-    station.volumes[fuelType] += addedAmount;
-    let result = await Station.updateOne({ registrationNo: regNo }, { volumes: station.volumes });
-    return result;
+    let station = await findStationByRegNo(regNo);
+    let vol = station.volumes.toJSON();
+    vol[fuelType] += addedAmount;
+    let result = await Station.findOneAndUpdate({ registrationNo: regNo }, { volumes: vol }, { new: true});
+    return result.volumes.toJSON();
 }
 
 module.exports = {
