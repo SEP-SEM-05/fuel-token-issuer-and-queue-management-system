@@ -220,6 +220,7 @@ const QueuesComponent = () => {
                   <TextField
                     focused
                     required
+                    id="fuelAmount"
                     color="info"
                     label="Amount"
                     onChange={handleInputChange}
@@ -251,6 +252,7 @@ const QueuesComponent = () => {
                 <TextField
                   focused
                   required
+                  id="startDateTime"
                   color="info"
                   label="Start Date and Time"
                   value={startTime}
@@ -263,6 +265,7 @@ const QueuesComponent = () => {
                 <TextField
                   focused
                   required
+                  id="avgTime"
                   color="info"
                   label="Avg. time for a vehicle"
                   value={avgTime}
@@ -278,6 +281,7 @@ const QueuesComponent = () => {
               </Grid>
               <Grid item xs={12}>
                 <Chip
+                  id="estEndTime"
                   variant="outlined"
                   label={
                     estEndTime === "Invalid Date" || !estEndTime

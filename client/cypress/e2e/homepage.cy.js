@@ -1,48 +1,65 @@
 import { slowCypressDown } from 'cypress-slow-down'
 
-slowCypressDown();
+// slow down the testing process
+//slowCypressDown();
 
 describe("renders the home page", () => {
-    beforeEach(() => {
-        // load the home page
-        cy.visit("/");
-    });
+  beforeEach(() => {
+    // load the home page
+    cy.visit("/");
+  });
 
+  // after(() => {
+  //   cy.visit("/");
+  // })
+
+  // login as a fuel station
   it("renders correctly", () => {
-    
-
     //check if the given text included in this page
     cy.contains("Fast Fueler");
 
     let test_username = "6345263462";
     let test_password = "Abcd@1234";
-    let test_wrong_fuel_amount = -12;
-    let test_fuel_amount = 10;
 
-    // login as a fuel station
     cy.get(".MuiTypography-alignRight > .MuiTypography-root").click();
-    
+
     // enter username and password
     cy.get("#regNo").type(test_username).should("have.value", test_username);
     cy.get("#password").type(test_password).should("have.value", test_password);
 
     // click login button
     cy.get(".MuiButton-root").click();
+  });
 
-    cy.get(':nth-child(3) > .MuiPaper-root > .MuiCardActions-root > .MuiButtonBase-root').click();
+  // login as a personal client
+  it("renders correctly", () => {
+    //check if the given text included in this page
+    cy.contains("Fast Fueler");
 
-    cy.get("#amount").type(test_wrong_fuel_amount).should("have.value", test_wrong_fuel_amount);
+    let test_username = "990972657v";
+    let test_password = "Abcd@1234";
 
-    cy.get(".MuiDialogActions-root > .MuiButtonBase-root").click();
+    // enter username and password
+    cy.get('#userid').type(test_username).should("have.value", test_username);
+    cy.get("#password").type(test_password).should("have.value", test_password);
 
-    cy.get("#amount").clear();
+    // click login button
+    cy.get(".MuiButton-root").click();
+  });
 
-    cy.get("#amount").type(test_fuel_amount).should("have.value", test_fuel_amount);
+  // login as an organization
+  it("renders correctly", () => {
+    //check if the given text included in this page
+    cy.contains("Fast Fueler");
 
-    cy.get(".MuiDialogActions-root > .MuiButtonBase-root").click();
+    let test_username = "org-565237627323";
+    let test_password = "Abcd@1234";
 
+    // enter username and password
+    cy.get('#userid').type(test_username).should("have.value", test_username);
+    cy.get("#password").type(test_password).should("have.value", test_password);
 
-
-
+    // click login button
+    cy.get(".MuiButton-root").click();
   });
 });
