@@ -43,7 +43,7 @@ export default function ClientLogin() {
             type = 'organization';
 
             response = await signInOrg({
-                registrationNo: userID_arr[1].trim().toLowerCase(),
+                registrationNo: userID_arr[1].trim(),
                 password: data.password
             });
         }
