@@ -223,28 +223,28 @@ describe("Database access methods for vehicles", () => {
     //     });
     // });
 
-    describe("saveRequest - save a fuel request to the database", () => {
+    // describe("saveRequest - save a fuel request to the database", () => {
 
-        it("should return no error and a request document should able to be quried if the request has been successfully saved", async () => {
+    //     it("should return no error and a request document should able to be quried if the request has been successfully saved", async () => {
 
-            const mockReq = {
-                "userType": "personal",
-                "registrationNo": "sampleRegNo01ex",
-                "quota": 5,
-                "fuelType": "Auto Diesel",
-                "requestedStations": [
-                    "stationRegNo01",
-                    "stationRegNo02",
-                    "stationRegNo03"
-                ],
-            };
+    //         const mockReq = {
+    //             "userType": "personal",
+    //             "registrationNo": "sampleRegNo01ex",
+    //             "quota": 5,
+    //             "fuelType": "Auto Diesel",
+    //             "requestedStations": [
+    //                 "stationRegNo01",
+    //                 "stationRegNo02",
+    //                 "stationRegNo03"
+    //             ],
+    //         };
 
-            const result = await saveRequest(mockReq);
-            const quriedRequest = await Request.findById(mongoose.Types.ObjectId(result));
+    //         const result = await saveRequest(mockReq);
+    //         const quriedRequest = await Request.findById(mongoose.Types.ObjectId(result));
 
-            expect(quriedRequest).not.toEqual(result);
-        });
-    });
+    //         expect(quriedRequest).not.toEqual(result);
+    //     });
+    // });
 
     describe("findWaitingRequest - find any waiting/active requests for a vehicle/organization given the registration No.", () => {
 

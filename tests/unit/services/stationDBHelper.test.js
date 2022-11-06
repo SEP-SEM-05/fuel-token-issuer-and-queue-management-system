@@ -47,11 +47,9 @@ describe("Database access methods for fuel stations", () => {
         });
 
         it("should return a valid station object for an exsisting reg.no", async () => {
-            const quriedStation = await findStationByRegNo("station1");
+            const quriedStation = await findStationByRegNo("6345263462");
 
-            expect(quriedStation._id).toEqual(
-                mongoose.Types.ObjectId("633ab4f95d62f03a23b978c5")
-            );
+            expect(quriedStation.registrationNo).toEqual("6345263462");
         });
     });
 
@@ -63,9 +61,9 @@ describe("Database access methods for fuel stations", () => {
         });
 
         it("should return a valid station object for an exsisting id", async () => {
-            const quriedClient = await findStationByID("633ab4f95d62f03a23b978c5");
+            const quriedClient = await findStationByRegNo("6345263462");
 
-            expect(quriedClient.registrationNo).toEqual("station1");
+            expect(quriedClient.registrationNo).toEqual("6345263462");
         });
     });
 
@@ -79,7 +77,7 @@ describe("Database access methods for fuel stations", () => {
         it("should return a valid station object for an exsisting id", async () => {
             const quriedClient = await findStationByID("633ab4f95d62f03a23b978c5");
 
-            expect(quriedClient.registrationNo).toEqual("station1");
+            expect(quriedClient.registrationNo).toEqual("6345263462");
         });
     });
 

@@ -58,7 +58,21 @@ const getDashBoard = async (id) => {
 // add new fuel amount
 const addFuelAmount = async (data) => {
     try {
-        let response = await baseApi.post(`station/updateamount`, data);
+
+        const refreshToken = localStorage.getItem("refreshToken");
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        let api = axios.create({
+          baseURL: url,
+          headers: {
+            "x-refresh-token": refreshToken
+              ? "Bearer " + refreshToken
+              : undefined,
+            "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+          },
+        });
+
+        let response = await api.post(`station/updateamount`, data);
 
         if (response.headers["x-access-token"]) {
             sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
@@ -72,10 +86,24 @@ const addFuelAmount = async (data) => {
 }
 
 //get waiting queues
-const getWaitingQueues = async (id) => {
-    try {
-        let response = await baseApi.get(`station/fuelqueues/${id}`);
-        //console.log(response.data);
+const getWaitingQueues = async (regNo) => {
+  try {
+      const refreshToken = localStorage.getItem("refreshToken");
+      const accessToken = sessionStorage.getItem("accessToken");
+
+      let api = axios.create({
+        baseURL: url,
+        headers: {
+          "x-refresh-token": refreshToken
+            ? "Bearer " + refreshToken
+            : undefined,
+          "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+        },
+      });
+
+      let response = await api.get(`station/fuelqueues/${regNo}`);
+      //console.log(response.data);
+
 
         if (response.headers["x-access-token"]) {
             sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
@@ -87,4 +115,34 @@ const getWaitingQueues = async (id) => {
     }
 }
 
-export { signIn, getDashBoard, getWaitingQueues, addFuelAmount };
+// Announce a fuel queue
+const announceFuelQueue = async (data) => {
+  // console.log(data);
+  try {
+    const refreshToken = localStorage.getItem("refreshToken");
+    const accessToken = sessionStorage.getItem("accessToken");
+
+    let api = axios.create({
+      baseURL: url,
+      headers: {
+        "x-refresh-token": refreshToken ? "Bearer " + refreshToken : undefined,
+        "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+      },
+    });
+
+
+    let response = await api.post(`station/announcequeue`, data);
+
+    if (response.headers["x-access-token"]) {
+      sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+    }
+
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    return err.response.data;
+  }
+
+}
+
+export { signIn, getDashBoard, getWaitingQueues, addFuelAmount, announceFuelQueue };

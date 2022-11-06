@@ -45,7 +45,7 @@ describe("auth middleware check", () => {
 
             const result = accessTokenVerify(invalid_token);
 
-            expect(result.status).toEqual("error");
+            expect(result.status).toEqual("auth-error");
         });
 
         it("should return a 'ok' status and a new access token for a valid token", async () => {
@@ -68,7 +68,7 @@ describe("auth middleware check", () => {
 
             const result = await refreshTokenVerify(invalid_token);
 
-            expect(result.status).toEqual("error");
+            expect(result.status).toEqual("auth-error");
             expect(result.error).toEqual("Invalid/expired token!");
         });
 
@@ -82,7 +82,7 @@ describe("auth middleware check", () => {
 
             const result = await refreshTokenVerify(valid_token);
 
-            expect(result.status).toEqual("error");
+            expect(result.status).toEqual("auth-error");
             expect(result.error).toEqual("Invalid token!");
         });
 
@@ -109,7 +109,7 @@ describe("auth middleware check", () => {
 
             const result = await refreshTokenVerify(valid_token);
 
-            expect(result.status).toEqual("error");
+            expect(result.status).toEqual("auth-error");
             expect(result.error).toEqual("Invalid token!");
         });
 
