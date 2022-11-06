@@ -5,9 +5,9 @@ mongoose.Promise = global.Promise;
 require("dotenv").config();
 
 const stationDBHelper = require("../services/stationDBHelper");
-const vehicleDBHelper = require("../services/vehicleDBHelper");
 const queueDBHelper = require("../services/queueDBHelper");
 const requestDBHelper = require("../services/requestDBHelper");
+const notificationDBHelper = require("../services/notificationDBHelper");
 
 const auth = require("../middleware/auth");
 const encHandler = require("../middleware/encryptionHandler");
@@ -97,7 +97,8 @@ const get_waiting_queues = async (req, res) => {
       const req_priority_queue = new MaxPriorityQueue((re) => re.priority);
       req_arr.forEach((reqest) => {
         let temp = {
-          reqId:reqest._id.toString(),
+          reqId: reqest._id.toString(),
+          userID: reqest.userID,
           registrationNo: reqest.registrationNo,
           quota: reqest.quota,
           priority: reqest.priority,
@@ -128,7 +129,7 @@ const get_waiting_queues = async (req, res) => {
 
 // announce a queue 
 const announce_fuel_queue = async (req, res) => {
-  //console.log(req.body);
+  console.log(req.body);
   regNo = req.body.regNo;
   ftype = req.body.fuelType;
   lastAnnounced = req.body.announcedTime;
@@ -142,27 +143,26 @@ const announce_fuel_queue = async (req, res) => {
     // console.log(result1);
 
     let reqs = [];
-    let etimes = {};
+    let dataArr = [];
 
     vehicles.forEach(veh => {
       reqs.push(veh.reqId);
-      etimes[veh.registrationNo] = new Date(veh.estTime);
+      dataArr.push({regNo: veh.userID, msg:`${result1.registrationNo} ${result1.name} - ${result1.location} will start fuel distribution on ${stime} and you will be able to take your ${veh.quota} Liters of fuel quota around ${veh.estTime}`});
     });
 
     let result2 = await queueDBHelper.addNewAnnouncedQueue(regNo, ftype, reqs, stime, etime); // start a new announced queue
     // console.log(result2);
 
-    let result3 = await queueDBHelper.removeReqsFromWaitingQueue(regNo, ftype, reqs);
+    let result3 = await notificationDBHelper.addNewNotifications(dataArr);
     // console.log(result3);
 
-    // etimes.forEach((ve) => {
-      
-    // });
-    
+     let result4 = await queueDBHelper.removeReqsFromWaitingQueue(regNo, ftype, reqs);
+    // console.log(result4);
     
     //return necessary data
     res.json({
-      status: "ok"
+      status: "ok",
+      reqs: result4,
     });
   } catch (err) {
     console.log(err);
