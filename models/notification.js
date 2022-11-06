@@ -11,10 +11,6 @@ const notificationSchema = new Schema(
       type: String,
       required: true,
     },
-    estEndTime: {
-      type: Date,
-      default: null,
-    },
   },
   { timestamps: true }
 );

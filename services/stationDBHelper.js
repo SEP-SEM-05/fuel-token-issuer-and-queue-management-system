@@ -67,7 +67,7 @@ const updateLastAnnounced = async (regNo, ftype ,time) => {
       { lastAnnounced: la },
       { new: true }
     );
-    return result.lastAnnounced.toJSON();
+    return result;
 
 }
 

@@ -52,6 +52,7 @@ const QueuesComponent = () => {
   const [startTime, setStartTime] = React.useState("");
   const [avgTime, setAvgTime] = React.useState("");
   const [estEndTime, setEstEndTime] = React.useState("");
+  const [reloadData, setReloadData] = React.useState();
 
   React.useEffect(() => {
     async function fetchData() {
@@ -66,18 +67,12 @@ const QueuesComponent = () => {
         if (!response.lastDates[key]) {
           lastDates[key] = "N/A";
         } else {
-          let d = new Date(response.lastDates[key]);
-          lastDates[key] =
-            d.getFullYear() +
-            "/" +
-            (d.getMonth() + 1).toString().padStart(2, "0") +
-            "/" +
-            d.getDate().toString().padStart(2, "0");
+          lastDates[key] = new Date(response.lastDates[key]).toString().split("GMT")[0];
         }
       });
     }
     fetchData();
-  }, []);
+  }, [reloadData]);
 
   const announceQueue = async (event) => {
     event.preventDefault()
@@ -88,11 +83,11 @@ const QueuesComponent = () => {
       vehicles: fuelQueueToGo,
       announcedTime: new Date().toString().split("GMT")[0],
       estQueueEndTime: estEndTime,
-      startTime: startTime,
+      startTime: new Date(startTime).toString().split("GMT")[0],
     });
 
     if (response.status == "ok") {
-      // he he
+      setReloadData(response.reqs);
     } else {
       console.log("error");
     }
@@ -142,7 +137,7 @@ const QueuesComponent = () => {
 
     for (let i = 0; i < fuelQueueToGo.length; i++) {
       addMinutes(avg, et);
-      fuelQueueToGo[i]["estTime"] = et.toString();
+      fuelQueueToGo[i]["estTime"] = et.toString().split("GMT")[0];
       
     }
     setEstEndTime((et.toString()).split("GMT")[0]);
