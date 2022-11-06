@@ -55,6 +55,7 @@ export default function StationLogin() {
       
     } else {
       //handle error
+    //   clear browser storages
     }
 
   };

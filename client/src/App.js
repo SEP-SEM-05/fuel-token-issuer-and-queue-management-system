@@ -24,6 +24,7 @@ import SignUp from "./Components/auth/SignUp/SignUp";
 import PersonalPrivateRoutes from "./PrivateRoutes/PersonalPrivateRoutes";
 import OrgPrivateRoutes from "./PrivateRoutes/OrgPrivateRoutes";
 import StationPrivateRoutes from "./PrivateRoutes/StationPrivateRoutes";
+import AdminPrivateRoutes from "./PrivateRoutes/AdminPrivateRoutes";
 
 function App() {
   return (
@@ -44,7 +45,7 @@ function App() {
             />
           </Route>
 
-          <Route path="admin" element={<AdminDashboard />}>
+          <Route path="admin" element={<AdminPrivateRoutes><AdminDashboard /></AdminPrivateRoutes>}>
             <Route index element={<QuotaComponent />} />
             <Route path="home" element={<QuotaComponent />} />
             <Route path="registered" element={<RegisteredComponent />} />
