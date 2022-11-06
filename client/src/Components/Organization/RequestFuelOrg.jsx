@@ -21,12 +21,14 @@ import {
     TextField,
     Tooltip,
     Typography,
+    Snackbar,
+    Alert,
 } from "@mui/material";
 import EventRepeatIcon from "@mui/icons-material/EventRepeat";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import QrCode2Icon from "@mui/icons-material/QrCode2";
 import QRIMG from "../../assets/QR.svg";
-import { getDashBoard } from "../../utils/api/organization";
+import { getDashBoard, changeStations } from "../../utils/api/organization";
 import useAuth from "../../utils/providers/AuthProvider";
 
 
@@ -38,13 +40,15 @@ const RequestFuelOrg = () => {
     const [openSt, setOpenSt] = React.useState(false);
     const [fuelType, setFuelType] = React.useState("");
     const [value, setValue] = React.useState();
-    const [dieselQuota, setDieselQuota] = useState([99, 99]);
-    const [petrolQuota, setPetrolQuota] = useState([89, 70]);
-    const [lastDate, setLastDate] = useState("29/09/2022");
-    const [vehicleCount, setVehicleCount] = useState(12);
-    const [stations, setStations] = useState(["station 01", "station 02", "station 03"]);
+    const [dieselQuota, setDieselQuota] = useState([]);
+    const [petrolQuota, setPetrolQuota] = useState([]);
+    const [lastDate, setLastDate] = useState("");
+    const [vehicleCount, setVehicleCount] = useState();
+    const [stations, setStations] = useState([]);
     const [openQR, setOpenQR] = React.useState(false);
+    const [openSB, setOpenSB] = React.useState(false);
     const [stationNameandCity, setStationNameandCity] = useState([]);
+    const [changedStations, setChangedStations] = useState([]);
 
     useEffect(() => {
 
@@ -81,7 +85,7 @@ const RequestFuelOrg = () => {
         }
 
         fetchData();
-    }, [])
+    }, [changedStations])
 
     const handleChange = (event) => {
         setFuelType(event.target.value);
@@ -110,6 +114,51 @@ const RequestFuelOrg = () => {
 
     const handleCloseQR = () => {
         setOpenQR(false);
+    };
+
+    const handleSBOpen = () => {
+        setOpenSB(true);
+    };
+
+    const handleSBClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        setOpenSB(false);
+    };
+
+    const saveChangedStations = async () => {
+
+        let data = {
+            registrationNo: user.data.registrationNo,
+            stations: value
+        }
+
+        let response = await changeStations(data);
+
+        let status = response.status;
+
+        if (status === 'ok') {
+
+            setChangedStations(value);
+            
+            handleCloseSt();
+            handleSBOpen();
+        }
+        else if (status === 'auth-error') {
+
+            // sessionStorage.clear();
+            // localStorage.clear();
+
+            console.log(response.error);
+            document.location = '/';
+        }
+        else {
+
+            console.log(response.error);
+            // document.location = '/';
+        }
     };
 
     return (
@@ -185,7 +234,7 @@ const RequestFuelOrg = () => {
                     />
                 </DialogContent>
                 <DialogActions sx={{ p: 3 }}>
-                    <Button variant="outlined" color={"success"} sx={{ width: "100%" }}>
+                    <Button variant="outlined" onClick={saveChangedStations} color={"success"} sx={{ width: "100%" }}>
                         Save Changes
                     </Button>
                 </DialogActions>
@@ -262,8 +311,8 @@ const RequestFuelOrg = () => {
                                         <Chip
                                             color="success"
                                             label={`DIESEL ${dieselQuota[0] === dieselQuota[1]
-                                                    ? ""
-                                                    : `${dieselQuota[1]} /`
+                                                ? ""
+                                                : `${dieselQuota[1]} /`
                                                 } ${dieselQuota[0]} L REMAINING`}
                                         />
                                     </Typography>
@@ -275,8 +324,8 @@ const RequestFuelOrg = () => {
                                         <Chip
                                             color="warning"
                                             label={`PETROL ${petrolQuota[0] === petrolQuota[1]
-                                                    ? ""
-                                                    : `${petrolQuota[1]} /`
+                                                ? ""
+                                                : `${petrolQuota[1]} /`
                                                 } ${petrolQuota[0]} L REMAINING`}
                                         />
                                     </Typography>
@@ -335,6 +384,15 @@ const RequestFuelOrg = () => {
                         </Card>
                     </form>
                 </Grid>
+                <Snackbar open={openSB} autoHideDuration={6000} onClose={handleSBClose}>
+                    <Alert
+                        onClose={handleSBClose}
+                        severity="success"
+                        sx={{ width: "100%" }}
+                    >
+                        Stations Changed Successfully!
+                    </Alert>
+                </Snackbar>
             </Grid>
         </Box>
     );

@@ -187,23 +187,57 @@ const get_vehicles = async (req, res) => {
 const change_stations = async (req, res) => {
 
     let regNo = req.body.registrationNo;
-    let stations = req.body.stations;
+    let req_stations = req.body.stations;
 
-    try {
-        //handle any possible errors
-        let result = await orgDBHelper.updateStations(regNo, stations);
-        //return necessary data
-        res.json({
-            status: 'ok',
-        });
-    } 
-    catch (error) {
-        console.log(error);
+    try{
+
+        let user = await orgDBHelper.findClientByRegNo(regNo);
+
+        if(user !== null){
+
+            let stations = [];
+
+            for(let i = 0; i < req_stations.length; i++){
+                let station_regNo = req_stations[i].split('-')[0].trim();
+                stations.push(station_regNo);
+            }
+
+            let result = await orgDBHelper.updateStations(regNo, stations);
+            
+            res.json({
+                status: 'ok'
+            });
+        }
+        else{
+            res.status(400).json({
+                status: 'error',
+                error: 'Invalid User!'
+            });
+        }  
+    }
+    catch(err){
+        console.log(err);
         res.status(500).json({
             status: 'error',
             error: 'Internal server error!'
         });
     }
+
+    // try {
+    //     //handle any possible errors
+    //     let result = await orgDBHelper.updateStations(regNo, stations);
+    //     //return necessary data
+    //     res.json({
+    //         status: 'ok',
+    //     });
+    // } 
+    // catch (error) {
+    //     console.log(error);
+    //     res.status(500).json({
+    //         status: 'error',
+    //         error: 'Internal server error!'
+    //     });
+    // }
 }
 
 //request fuel for an organization

@@ -13,8 +13,8 @@ router.get('/getVehicles/:id', auth.requireAuth, orgController.get_vehicles);
 // router.get('/getVehicles/:id', orgController.get_vehicles);
 
 //change stations
-router.post('/changeStatioins', auth.requireAuth, orgController.change_stations);
-// router.post('/changeStatioins', orgController.change_stations);
+router.post('/changeStations', auth.requireAuth, orgController.change_stations);
+// router.post('/changeStations', orgController.change_stations);
 
 //request fuel for an organization
 router.post('/requestFuel', auth.requireAuth, orgController.request_fuel);
