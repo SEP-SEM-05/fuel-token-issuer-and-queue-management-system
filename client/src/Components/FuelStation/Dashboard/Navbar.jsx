@@ -19,200 +19,246 @@ import { NavLink } from "react-router-dom";
 import FUELIMG from "../../../assets/station.gif";
 import useAuth from "../../../utils/providers/AuthProvider";
 import {
-  Grid,
-  ListItemIcon,
-  Menu,
-  MenuItem,
-  Tooltip,
+    Grid,
+    ListItemIcon,
+    Menu,
+    MenuItem,
+    Tooltip,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
 } from "@mui/material";
 
 const drawerWidth = 240;
 const navItems = [
-  "Home-home",
-  "Queues-fuelqueues",
-  "Distribution-fueldistribution",
+    "Home-home",
+    "Queues-fuelqueues",
+    "Distribution-fueldistribution",
 ]; //nav items list with corresponding navLinks
 
 function DrawerAppBar() {
-  const { user, signUser } = useAuth();
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
+    const { user, signUser } = useAuth();
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+    const [openConfirmLogout, setOpenConfirmLogout] = React.useState(false);
+    const [mobileOpen, setMobileOpen] = React.useState(false);
+    const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+    const handleOpenUserMenu = (event) => {
+        setAnchorElUser(event.currentTarget);
+    };
 
-  const drawer = (
-    <Box
-      onClick={handleDrawerToggle}
-      sx={{
-        textAlign: "center",
-        color: "white",
-        backgroundColor: "#0f0f22",
-        height: "100%",
-      }}
-    >
-      <Typography variant="h6" sx={{ my: 2 }}>
-        Fast Fueler
-      </Typography>
-      <Divider sx={{ backgroundColor: "white" }} />
-      <List>
-        {navItems.map((item) => (
-          <ListItem key={item} disablePadding>
-            <ListItemButton
-              className="nav-link"
-              component={NavLink}
-              to={item.split("-")[1]}
-              sx={{ textAlign: "center" }}
-            >
-              <ListItemText primary={item.split("-")[0]} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
+    };
 
-  return (
-    <Box>
-      <Box sx={{ display: "flex" }}>
-        <AppBar component="nav" sx={{ backgroundColor: "#000000" }}>
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { sm: "none" } }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Box sx={{ flexGrow: { xs: 1, sm: "unset" } }}>
-              <LocalGasStationIcon fontSize="large" sx={{ pr: 1 }} />
-            </Box>
-            <Typography
-              variant="h6"
-              component="div"
-              noWrap
-              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
-            >
-              Fast Fueler
-            </Typography>
-            <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}>
-              {navItems.map((item) => (
-                <Button
-                  className="nav-link"
-                  component={NavLink}
-                  to={item.split("-")[1]}
-                  key={item}
-                  sx={{ color: "#fff" }}
-                >
-                  {item.split("-")[0]}
-                </Button>
-              ))}
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography noWrap sx={{ pr: 1 }}>
-                {user.data.name}
-              </Typography>
-              <Tooltip title="Logout">
-                <IconButton onClick={handleOpenUserMenu}>
-                  <MoreVertIcon sx={{ color: "white" }} />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "40px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                <MenuItem disabled>{user.data.registrationNo}</MenuItem>
-                <Divider />
-                <MenuItem onClick={handleCloseUserMenu}>
-                  <ListItemIcon>
-                    <LogoutIcon fontSize="small" />
-                  </ListItemIcon>
-                  Logout
-                </MenuItem>
-              </Menu>
-            </Box>
-          </Toolbar>
-        </AppBar>
-        <Box component="nav">
-          <Drawer
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
-            }}
+    const handleDrawerToggle = () => {
+        setMobileOpen(!mobileOpen);
+    };
+
+    const handleClickOpenConfirmLogout = () => {
+        setOpenConfirmLogout(true);
+    };
+
+    const handleCloseConfirmLogout = () => {
+        setOpenConfirmLogout(false);
+        handleCloseUserMenu();
+    };
+
+    const handleLogoutConfirm = () => {
+
+        setOpenConfirmLogout(false);
+        signUser({});
+        sessionStorage.clear();
+        localStorage.clear();
+        document.location = '/';
+    }
+
+    const drawer = (
+        <Box
+            onClick={handleDrawerToggle}
             sx={{
-              display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: drawerWidth,
-              },
+                textAlign: "center",
+                color: "white",
+                backgroundColor: "#0f0f22",
+                height: "100%",
             }}
-          >
-            {drawer}
-          </Drawer>
-        </Box>
-      </Box>
-      <Toolbar />
-      <Box sx={{ display: "flex" }}>
-        <Grid
-          container
-          boxShadow={2}
-          sx={{
-            width: "100%",
-            minHeight: 150,
-            pl: 5,
-            pt: 2,
-            pr: 10,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
         >
-          <Grid item xs={12} md={7}>
-            <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-              Fuel Distribution and Queue Management system
+            <Typography variant="h6" sx={{ my: 2 }}>
+                Fast Fueler
             </Typography>
-            <Grid item>
-              <Typography variant="subtitle1" sx={{}}>
-                We will provide you with a optimal solution to get your fuel
-                needs. No waiting in queues.
-              </Typography>
-              <Typography variant="button" sx={{}}>
-                Come Refill Go.
-              </Typography>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <img width="310px" alt="station" src={FUELIMG} />
-          </Grid>
-        </Grid>
-      </Box>
-    </Box>
-  );
+            <Divider sx={{ backgroundColor: "white" }} />
+            <List>
+                {navItems.map((item) => (
+                    <ListItem key={item} disablePadding>
+                        <ListItemButton
+                            className="nav-link"
+                            component={NavLink}
+                            to={item.split("-")[1]}
+                            sx={{ textAlign: "center" }}
+                        >
+                            <ListItemText primary={item.split("-")[0]} />
+                        </ListItemButton>
+                    </ListItem>
+                ))}
+            </List>
+        </Box>
+    );
+
+    return (
+        <Box>
+            <Box sx={{ display: "flex" }}>
+                <AppBar component="nav" sx={{ backgroundColor: "#000000" }}>
+                    <Toolbar>
+                        <IconButton
+                            color="inherit"
+                            aria-label="open drawer"
+                            edge="start"
+                            onClick={handleDrawerToggle}
+                            sx={{ mr: 2, display: { sm: "none" } }}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Box sx={{ flexGrow: { xs: 1, sm: "unset" } }}>
+                            <LocalGasStationIcon fontSize="large" sx={{ pr: 1 }} />
+                        </Box>
+                        <Typography
+                            variant="h6"
+                            component="div"
+                            noWrap
+                            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+                        >
+                            Fast Fueler
+                        </Typography>
+                        <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}>
+                            {navItems.map((item) => (
+                                <Button
+                                    className="nav-link"
+                                    component={NavLink}
+                                    to={item.split("-")[1]}
+                                    key={item}
+                                    sx={{ color: "#fff" }}
+                                >
+                                    {item.split("-")[0]}
+                                </Button>
+                            ))}
+                        </Box>
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                            <Typography noWrap sx={{ pr: 1 }}>
+                                {user.data.name}
+                            </Typography>
+                            <Tooltip title="Logout">
+                                <IconButton onClick={handleOpenUserMenu}>
+                                    <MoreVertIcon sx={{ color: "white" }} />
+                                </IconButton>
+                            </Tooltip>
+                            <Menu
+                                sx={{ mt: "40px" }}
+                                id="menu-appbar"
+                                anchorEl={anchorElUser}
+                                anchorOrigin={{
+                                    vertical: "top",
+                                    horizontal: "right",
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: "top",
+                                    horizontal: "right",
+                                }}
+                                open={Boolean(anchorElUser)}
+                                onClose={handleCloseUserMenu}
+                            >
+                                <MenuItem disabled>{user.data.registrationNo}</MenuItem>
+                                <Divider />
+                                <MenuItem onClick={handleClickOpenConfirmLogout}>
+                                    <ListItemIcon>
+                                        <LogoutIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    Logout
+                                </MenuItem>
+                            </Menu>
+
+                            <Dialog open={openConfirmLogout} onClose={handleCloseConfirmLogout}>
+                                <DialogTitle sx={{ fontWeight: "bold", pb: 1 }}>
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        Sure you want to logout?
+                                    </Box>
+                                </DialogTitle>
+                                <Divider />
+                                <DialogActions sx={{ p: 2 }}>
+                                    <Button variant="outlined" onClick={handleLogoutConfirm} color={"error"} sx={{ width: "100%" }}>
+                                        Confirm
+                                    </Button>
+                                </DialogActions>
+                                <DialogActions sx={{ p: 3 }}>
+                                    <Button variant="outlined" onClick={handleCloseConfirmLogout} color={"success"} sx={{ width: "100%" }}>
+                                        Cancel
+                                    </Button>
+                                </DialogActions>
+                            </Dialog>
+
+
+                        </Box>
+                    </Toolbar>
+                </AppBar>
+                <Box component="nav">
+                    <Drawer
+                        variant="temporary"
+                        open={mobileOpen}
+                        onClose={handleDrawerToggle}
+                        ModalProps={{
+                            keepMounted: true, // Better open performance on mobile.
+                        }}
+                        sx={{
+                            display: { xs: "block", sm: "none" },
+                            "& .MuiDrawer-paper": {
+                                boxSizing: "border-box",
+                                width: drawerWidth,
+                            },
+                        }}
+                    >
+                        {drawer}
+                    </Drawer>
+                </Box>
+            </Box>
+            <Toolbar />
+            <Box sx={{ display: "flex" }}>
+                <Grid
+                    container
+                    boxShadow={2}
+                    sx={{
+                        width: "100%",
+                        minHeight: 150,
+                        pl: 5,
+                        pt: 2,
+                        pr: 10,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <Grid item xs={12} md={7}>
+                        <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                            Fuel Distribution and Queue Management system
+                        </Typography>
+                        <Grid item>
+                            <Typography variant="subtitle1" sx={{}}>
+                                We will provide you with a optimal solution to get your fuel
+                                needs. No waiting in queues.
+                            </Typography>
+                            <Typography variant="button" sx={{}}>
+                                Come Refill Go.
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                    <Grid item>
+                        <img width="310px" alt="station" src={FUELIMG} />
+                    </Grid>
+                </Grid>
+            </Box>
+        </Box>
+    );
 }
 
 export default DrawerAppBar;

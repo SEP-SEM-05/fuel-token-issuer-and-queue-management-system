@@ -26,6 +26,10 @@ import {
     Menu,
     MenuItem,
     Tooltip,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
 } from "@mui/material";
 
 const drawerWidth = 240;
@@ -35,6 +39,7 @@ function DrawerAppBar() {
 
     const { user, signUser } = useAuth();
 
+    const [openConfirmLogout, setOpenConfirmLogout] = React.useState(false);
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
     const [anchorElNotf, setAnchorElNotf] = React.useState(null);
@@ -88,6 +93,24 @@ function DrawerAppBar() {
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
+
+    const handleClickOpenConfirmLogout = () => {
+        setOpenConfirmLogout(true);
+    };
+
+    const handleCloseConfirmLogout = () => {
+        setOpenConfirmLogout(false);
+        handleCloseUserMenu();
+    };
+
+    const handleLogoutConfirm = () => {
+
+        setOpenConfirmLogout(false);
+        signUser({});
+        sessionStorage.clear();
+        localStorage.clear();
+        document.location = '/';
+    }
 
     const drawer = (
         <Box
@@ -249,13 +272,33 @@ function DrawerAppBar() {
                             >
                                 <MenuItem disabled>{user.data.registrationNo}</MenuItem>
                                 <Divider />
-                                <MenuItem onClick={handleCloseUserMenu}>
+                                <MenuItem onClick={handleClickOpenConfirmLogout}>
                                     <ListItemIcon>
                                         <LogoutIcon fontSize="small" />
                                     </ListItemIcon>
                                     Logout
                                 </MenuItem>
                             </Menu>
+
+                            <Dialog open={openConfirmLogout} onClose={handleCloseConfirmLogout}>
+                                <DialogTitle sx={{ fontWeight: "bold", pb: 1 }}>
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        Sure you want to logout?
+                                    </Box>
+                                </DialogTitle>
+                                <Divider />
+                                <DialogActions sx={{ p: 2 }}>
+                                    <Button variant="outlined" onClick={handleLogoutConfirm} color={"error"} sx={{ width: "100%" }}>
+                                        Confirm
+                                    </Button>
+                                </DialogActions>
+                                <DialogActions sx={{ p: 3 }}>
+                                    <Button variant="outlined" onClick={handleCloseConfirmLogout} color={"success"} sx={{ width: "100%" }}>
+                                        Cancel
+                                    </Button>
+                                </DialogActions>
+                            </Dialog>
+
                         </Box>
                     </Toolbar>
                 </AppBar>
