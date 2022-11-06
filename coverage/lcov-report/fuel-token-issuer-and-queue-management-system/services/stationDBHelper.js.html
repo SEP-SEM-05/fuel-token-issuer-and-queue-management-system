@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">62.06% </span>
+                <span class="strong">54.28% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>18/29</span>
+                <span class='fraction'>19/35</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">42.85% </span>
+                <span class="strong">37.5% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/7</span>
+                <span class='fraction'>3/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">62.06% </span>
+                <span class="strong">54.28% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>18/29</span>
+                <span class='fraction'>19/35</span>
             </div>
         
             
@@ -129,7 +129,23 @@
 <a name='L64'></a><a href='#L64'>64</a>
 <a name='L65'></a><a href='#L65'>65</a>
 <a name='L66'></a><a href='#L66'>66</a>
-<a name='L67'></a><a href='#L67'>67</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">7x</span>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -187,7 +203,23 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -253,6 +285,21 @@ const updateAmount = <span class="fstat-no" title="function not covered" >as</sp
 <span class="cstat-no" title="statement not covered" >    return result.volumes.toJSON();</span>
 }
 &nbsp;
+// update last announced time
+const updateLastAnnounced = <span class="fstat-no" title="function not covered" >as</span>ync (regNo, ftype ,time) =&gt; {
+    let station = <span class="cstat-no" title="statement not covered" >await findStationByRegNo(regNo);</span>
+    let la = <span class="cstat-no" title="statement not covered" >station.lastAnnounced.toJSON();</span>
+<span class="cstat-no" title="statement not covered" >    la[ftype] = new Date(time);</span>
+&nbsp;
+    let result = <span class="cstat-no" title="statement not covered" >await Station.findOneAndUpdate(</span>
+      { registrationNo: regNo },
+      { lastAnnounced: la },
+      { new: true }
+    );
+<span class="cstat-no" title="statement not covered" >    return result.lastAnnounced.toJSON();</span>
+&nbsp;
+}
+&nbsp;
 module.exports = {
   saveRefreshToken,
   findStationByRegNo,
@@ -261,6 +308,7 @@ module.exports = {
   findAllUnregisteredStations,
   updateAmount,
   countRegisteredStations,
+  updateLastAnnounced,
 };</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -268,7 +316,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2022-11-05T17:22:46.760Z
+                at 2022-11-06T14:59:38.041Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
