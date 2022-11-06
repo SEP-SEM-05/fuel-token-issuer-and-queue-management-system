@@ -44,7 +44,7 @@ export default function StationLogin() {
     let response;
 
     response = await signIn({
-      registrationNo: data.regNo.trim().toLowerCase(),
+      registrationNo: data.regNo.trim(),
       password: data.password,
     });
 
@@ -55,6 +55,7 @@ export default function StationLogin() {
       
     } else {
       //handle error
+    //   clear browser storages
     }
 
   };

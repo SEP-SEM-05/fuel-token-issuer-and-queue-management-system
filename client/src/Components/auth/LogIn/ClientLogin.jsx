@@ -11,6 +11,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useForm } from "react-hook-form";
 import { signInPersonal } from "../../../utils/api/personal";
 import { signInOrg } from "../../../utils/api/organization";
+import { signInAdmin } from "../../../utils/api/admin";
 import useAuth from "../../../utils/providers/AuthProvider";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -43,7 +44,16 @@ export default function ClientLogin() {
             type = 'organization';
 
             response = await signInOrg({
-                registrationNo: userID_arr[1].trim().toLowerCase(),
+                registrationNo: userID_arr[1].trim(),
+                password: data.password
+            });
+        }
+        else if (userID_arr[0].trim().toLowerCase() === 'admin') {
+
+            type = 'admin';
+
+            response = await signInAdmin({
+                username: userID_arr[1].trim(),
                 password: data.password
             });
         }
@@ -64,12 +74,16 @@ export default function ClientLogin() {
             if (type === 'personal') {
                 navigate('/userp', { replace: true });
             }
+            else if (type === 'admin') {
+                navigate('/admin', { replace: true });
+            }
             else {
                 navigate('/usero', { replace: true });
             }
         }
         else {
             //handle error
+            // clear browser storages
         }
     }
 

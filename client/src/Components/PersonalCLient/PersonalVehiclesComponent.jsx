@@ -19,12 +19,14 @@ import {
     Switch,
     TextField,
     Tooltip,
+    Snackbar,
+    Alert,
 } from "@mui/material";
 import OpacityIcon from "@mui/icons-material/Opacity";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import QrCode2Icon from "@mui/icons-material/QrCode2";
 import QRIMG from "../../assets/QR.svg";
-import { getDashBoard } from "../../utils/api/personal";
+import { getDashBoard, changeStations } from "../../utils/api/personal";
 import useAuth from "../../utils/providers/AuthProvider";
 
 
@@ -35,10 +37,13 @@ export default function PersonalVehicles() {
     const [open, setOpen] = React.useState(false);
     const [openSt, setOpenSt] = React.useState(false);
     const [openQR, setOpenQR] = React.useState(false);
+    const [openSB, setOpenSB] = React.useState(false);
     const [vehicle, setVehicle] = React.useState([]);
     const [value, setValue] = React.useState();
     const [stationNameandCity, setStationNameandCity] = React.useState([]);
     const [vehicles, setVehicles] = React.useState([]);
+    const [selectedVehicle, setSelectedVehicle] = useState({});
+    const [changedStations, setChangedStations] = useState([]);
 
     useEffect(() => {
 
@@ -72,7 +77,7 @@ export default function PersonalVehicles() {
         }
 
         fetchData();
-    }, []);
+    }, [changedStations]);
 
     const handleClickOpen = (vehicle) => {
         setOpen(true);
@@ -86,6 +91,7 @@ export default function PersonalVehicles() {
     const handleClickOpenSt = (vehicle) => {
         setOpenSt(true);
         setValue(vehicle.stations);
+        setSelectedVehicle(vehicle);
     };
 
     const handleCloseSt = () => {
@@ -99,6 +105,52 @@ export default function PersonalVehicles() {
 
     const handleCloseQR = () => {
         setOpenQR(false);
+    };
+
+    const handleSBOpen = () => {
+        setOpenSB(true);
+    };
+
+    const handleSBClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        setOpenSB(false);
+    };
+
+    const saveChangedStations = async () => {
+
+        let data = {
+            nic: user.data.nic,
+            registrationNo: selectedVehicle.registrationNo,
+            stations: value
+        }
+
+        let response = await changeStations(data);
+
+        let status = response.status;
+
+        if (status === 'ok') {
+
+            setChangedStations(value);
+            
+            handleCloseSt();
+            handleSBOpen();
+        }
+        else if (status === 'auth-error') {
+
+            // sessionStorage.clear();
+            // localStorage.clear();
+
+            console.log(response.error);
+            document.location = '/';
+        }
+        else {
+
+            console.log(response.error);
+            // document.location = '/';
+        }
     };
 
     return (
@@ -191,7 +243,7 @@ export default function PersonalVehicles() {
                     />
                 </DialogContent>
                 <DialogActions sx={{ p: 3 }}>
-                    <Button variant="outlined" color={"success"} sx={{ width: "100%" }}>
+                    <Button variant="outlined" onClick={saveChangedStations} color={"success"} sx={{ width: "100%" }}>
                         Save Changes
                     </Button>
                 </DialogActions>
@@ -303,6 +355,15 @@ export default function PersonalVehicles() {
                         </Card>
                     </Grid>
                 ))}
+                <Snackbar open={openSB} autoHideDuration={6000} onClose={handleSBClose}>
+                    <Alert
+                        onClose={handleSBClose}
+                        severity="success"
+                        sx={{ width: "100%" }}
+                    >
+                        Stations Changed Successfully!
+                    </Alert>
+                </Snackbar>
             </Grid>
         </Box>
     );

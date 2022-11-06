@@ -17,11 +17,11 @@ const get_dashboard = async (req, res) => {
 
     let id = req.params.id;
 
-    try{
+    try {
 
         let user = await personalDBHelper.findClientByID(id);
 
-        if(user !== null){
+        if (user !== null) {
 
             let vehicles = await vehicleDBHelper.findAllByNic(user.nic);
             let stations = await stationDBHelper.findAllRegisteredStations();
@@ -35,11 +35,11 @@ const get_dashboard = async (req, res) => {
                 //select the corresponding quota from quotas
                 //add amount as fullQuota
                 //calculate and add remaining quota using vehicle.usedQuota
-                
+
                 let fullQuota;
-                for(const i in quotas){
-                    
-                    if(quotas[i].vehicleType === vehicle.type && quotas[i].fuelType === vehicle.fuelType){
+                for (const i in quotas) {
+
+                    if (quotas[i].vehicleType === vehicle.type && quotas[i].fuelType === vehicle.fuelType) {
 
                         fullQuota = quotas[i].amount;
                         break;
@@ -53,12 +53,12 @@ const get_dashboard = async (req, res) => {
                 let vehicle_stations = [];
                 stations.forEach((station) => {
 
-                    if(vehicle.stations.includes(station.registrationNo)){
+                    if (vehicle.stations.includes(station.registrationNo)) {
                         vehicle_stations.push(station.registrationNo + '-' + station.name + ' ' + station.location);
                     }
                 })
 
-                for(const key in vehicle._doc){
+                for (const key in vehicle._doc) {
                     return_vehicle[key] = vehicle[key];
                 }
                 return_vehicle['stations'] = vehicle_stations;
@@ -80,14 +80,14 @@ const get_dashboard = async (req, res) => {
                 stations: return_stations
             });
         }
-        else{
+        else {
             res.status(400).json({
                 status: 'error',
                 error: 'Invalid User!'
             });
-        }  
+        }
     }
-    catch(err){
+    catch (err) {
         console.log(err);
         res.status(500).json({
             status: 'error',
@@ -108,32 +108,32 @@ const add_vehicle = async (req, res) => {
 
         let vehicle = await vehicleDBHelper.findVehicleByRegNoAndEngNo(regNo, engineNo);
 
-        if(!vehicle){
+        if (!vehicle) {
             res.status(400).json({
                 status: 'error',
                 error: 'Invalid registration No. or engine No.!'
             });
         }
-        else if(nic !== vehicle.ownerNIC){
+        else if (nic !== vehicle.ownerNIC) {
             res.status(400).json({
                 status: 'error',
                 error: 'Invalid Owner!'
             });
         }
-        else if(vehicle.isRegistered){
+        else if (vehicle.isRegistered) {
             res.status(400).json({
                 status: 'error',
                 error: 'Vehicle has already registered!'
             });
         }
-        else{
+        else {
 
             let result = await vehicleDBHelper.updateStationsAndRegister(regNo, stations);
             res.json({
                 status: 'ok',
             });
         }
-    } 
+    }
     catch (err) {
         console.log(err);
         res.status(500).json({
@@ -146,17 +146,36 @@ const add_vehicle = async (req, res) => {
 //add change stations of a registered vehicle
 const change_stations = async (req, res) => {
 
+    let nic = req.body.nic;
     let regNo = req.body.registrationNo;
-    let stations = req.body.stations;
+    let req_stations = req.body.stations;
 
     try {
 
-        let result = await vehicleDBHelper.updateStationsAndRegister(regNo, stations);
+        let user = await personalDBHelper.findClientByNic(nic);
 
-        res.json({
-            status: 'ok',
-        });
-    } 
+        if (user !== null) {
+
+            let stations = [];
+
+            for(let i = 0; i < req_stations.length; i++){
+                let station_regNo = req_stations[i].split('-')[0].trim();
+                stations.push(station_regNo);
+            }
+
+            let result = await vehicleDBHelper.updateStationsAndRegister(regNo, stations);
+
+            res.json({
+                status: 'ok',
+            });
+        }
+        else {
+            res.status(400).json({
+                status: 'error',
+                error: 'Invalid User!'
+            });
+        }
+    }
     catch (error) {
         console.log(error);
         res.status(500).json({
@@ -183,7 +202,7 @@ const request_fuel = async (req, res) => {
         //find any opened requests - if any, error
         let result = await vehicleDBHelper.findWaitingRequest(regNo, userType);
 
-        if(!result) {
+        if (!result) {
 
             let reqDetails = {
                 userId: nic,
@@ -194,10 +213,10 @@ const request_fuel = async (req, res) => {
                 requestedStations: stations,
                 priority
             };
-    
+
             //save request, get _id and add to client details
             let reqId = await vehicleDBHelper.saveRequest(reqDetails);
-    
+
             let clientDetails = {
                 nic,
                 userType,
@@ -205,16 +224,16 @@ const request_fuel = async (req, res) => {
                 quota: remainingQuota,
                 priority
             }
-    
+
             await vehicleDBHelper.addToQueue(stations, fuelType, reqId);
             delete clientDetails.requestID;
-    
+
             res.json({
                 status: 'ok',
                 data: clientDetails
             });
-        } 
-        else{
+        }
+        else {
             res.status(400).json({
                 status: 'error',
                 error: 'Multiple requests are not allowed!'

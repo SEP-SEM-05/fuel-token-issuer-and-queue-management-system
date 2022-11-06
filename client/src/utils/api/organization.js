@@ -54,6 +54,7 @@ const getDashBoard = async (id) => {
     }
 }
 
+// get organization vehicles
 const getVehicles = async (id) => {
 
     try {
@@ -84,4 +85,37 @@ const getVehicles = async (id) => {
     }
 }
 
-export { signInOrg, getDashBoard, getVehicles };
+
+// change organization stations
+const changeStations = async (data) => {
+
+    try {
+        
+        const refreshToken = localStorage.getItem("refreshToken");
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        let api = axios.create({
+            baseURL: url,
+            headers: {
+                "x-refresh-token": refreshToken ? "Bearer " + refreshToken : undefined,
+                "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+            },
+        });
+
+        let response = await api.post(
+            `org/changeStations`,
+            data
+        )
+
+        if(response.headers["x-access-token"]){
+            sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+        }
+        return response.data;
+    } 
+    catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+}
+
+export { signInOrg, getDashBoard, getVehicles, changeStations };
