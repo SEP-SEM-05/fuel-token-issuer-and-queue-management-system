@@ -12,8 +12,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import { getDashBoard } from "../../utils/api/admin";
 
-const axios = require('axios').default;
 
 function createData(vehicleType, liter) {
   return { vehicleType, liter };
@@ -56,19 +56,11 @@ const QuotaComponent = () => {
 
         try {
 
-            //const token = sessionStorage.getItem('admin_token');
+            let dieselResponse = await getDashBoard("Diesel");
 
-            let dieselResponse = await axios.get(`http://localhost:5000/admin/dashboard/Diesel`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    //token: token,
-                    //state: props.state
-                }
-            });
+            let dieselQuotaDetails = dieselResponse.quota;
 
-            let dieselQuotaDetails = dieselResponse.data.quota;
-
-            if (dieselResponse.data.status === 'ok') {
+            if (dieselResponse.status === 'ok') {
               console.log(dieselQuotaDetails);
               setDieselRows(
                 dieselQuotaDetails.map((quota) => (
@@ -77,21 +69,14 @@ const QuotaComponent = () => {
               ))
             }
             else {
-                console.log(dieselResponse.data.error);
+                console.log(dieselResponse.error);
             }
 
+            let petrolResponse = await getDashBoard("Petrol");
 
-            let petrolResponse = await axios.get(`http://localhost:5000/admin/dashboard/Petrol`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    //token: token,
-                    //state: props.state
-                }
-            });
+            let petrolQuotaDetails = petrolResponse.quota;
 
-            let petrolQuotaDetails = petrolResponse.data.quota;
-
-            if (petrolResponse.data.status === 'ok') {
+            if (petrolResponse.status === 'ok') {
               console.log(petrolQuotaDetails);
               setPetrolRows(
                 petrolQuotaDetails.map((quota) => (
@@ -105,7 +90,7 @@ const QuotaComponent = () => {
               ));
             }
             else {
-                console.log(petrolResponse.data.error);
+                console.log(petrolResponse.error);
             }
 
         }
