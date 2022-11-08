@@ -76,7 +76,7 @@ const get_waiting_queues = async (req, res) => {
     //handle any possible errors
     let station = await stationDBHelper.findStationByRegNo(regNo);
 
-    let result = await queueDBHelper.findQueuesByStRegNo(regNo, 'waiting');
+    let result = await queueDBHelper.findQueuesByStRegNo(regNo, ['waiting']);
     vehicle_counts = {
       "Auto Diesel": 0,
       "Super Diesel": 0,
@@ -164,7 +164,7 @@ const announce_fuel_queue = async (req, res) => {
       }
     });
 
-    let result2 = await queueDBHelper.addNewAnnouncedQueue(regNo, ftype, reqs, stime, etime); // start a new announced queue
+    let result2 = await queueDBHelper.addNewAnnouncedQueue(regNo, ftype, reqs, stime, etime, vehicles.length); // start a new announced queue
     // console.log(result2);
 
     let result3 = await notificationDBHelper.addNewNotifications(dataArr);
@@ -189,10 +189,32 @@ const announce_fuel_queue = async (req, res) => {
   }
 }
 
+// get announced queues
+const get_announced_queues = async (req, res) => {
+  let regNo = req.params.regNo;
+  
+  try{
+    let queues = await queueDBHelper.findQueuesByStRegNo(regNo, ["announced", "active"]); 
+    
+    res.json({
+      status: "ok",
+      fuelQueues: queues,
+    })
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "error",
+      error: "Internal server error!",
+    });
+  }
+}
+
 
   module.exports = {
     get_dashboard,
     update_fuel_amount,
     get_waiting_queues,
     announce_fuel_queue,
+    get_announced_queues,
   };

@@ -9,11 +9,15 @@ const queueSchema = new Schema(
     },
     stationID: {
       type: String,
-      required: true, 
+      required: true,
     },
     requests: {
       type: [String],
       default: [],
+    },
+    vehicleCount: {
+      type: String,
+      default: "0",
     },
     queueStartTime: {
       type: Date,
@@ -25,7 +29,7 @@ const queueSchema = new Schema(
     },
     state: {
       type: String,
-      enum: ["waiting", "announced", "active"],
+      enum: ["waiting", "announced", "active", "ended"],
       default: "waiting",
     },
   },

@@ -6,13 +6,13 @@ require("dotenv").config();
 const Queue = require("../models/queue");
 
 // get all the 4 queues of a given station
-const findQueuesByStRegNo = async (stId, stat) => {
-    let queues = await Queue.find({ stationID: stId, state: stat });
+const findQueuesByStRegNo = async (stId, states) => {
+    let queues = await Queue.find({ stationID: stId, state: { $in: states } });
     return queues;
 }
 
 // add new announced queue
-const addNewAnnouncedQueue = (regNo, ftype, requests, stime, etime) => {
+const addNewAnnouncedQueue = (regNo, ftype, requests, stime, etime, vcount) => {
   
   return new Promise(async (resolve, reject) => { 
     let data = {
@@ -22,6 +22,7 @@ const addNewAnnouncedQueue = (regNo, ftype, requests, stime, etime) => {
       queueStartTime: stime,
       estimatedEndTime: etime,
       state: "announced",
+      vehicleCount: vcount,
     };
 
     let queue = new Queue(data);
