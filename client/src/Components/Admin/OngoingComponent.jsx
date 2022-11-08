@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Typography } from "@mui/material";
 import Container from "@mui/material/Container";
 import Chart from "react-apexcharts";
+import { getRegisteredStationCount } from "../../utils/api/admin";
 
-const axios = require('axios').default;
 
 //main function
 const OngoingComponent = () => {
@@ -17,43 +17,28 @@ const OngoingComponent = () => {
 
         try {
 
-            //const token = sessionStorage.getItem('admin_token');
+            let ceypetcResponse = await getRegisteredStationCount("ceypetc");
 
-            let ceypetcResponse = await axios.get(`http://localhost:5000/admin/count/ceypetc`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    //token: token,
-                    //state: props.state
-                }
-            });
+            let ceypetcCount = ceypetcResponse.stationCount;
 
-            let ceypetcCount = ceypetcResponse.data.stationCount;
-
-            if (ceypetcResponse.data.status === 'ok') {
+            if (ceypetcResponse.status === 'ok') {
               console.log(ceypetcCount);
               setCeypetcCount(ceypetcCount)
             }
             else {
-                console.log(ceypetcResponse.data.error);
+                console.log(ceypetcResponse.error);
             }
 
+            let iocResponse = await getRegisteredStationCount("ioc");
 
-            let iocResponse = await axios.get(`http://localhost:5000/admin/count/ioc`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    //token: token,
-                    //state: props.state
-                }
-            });
+            let iocCount = iocResponse.stationCount;
 
-            let iocCount = iocResponse.data.stationCount;
-
-            if (iocResponse.data.status === 'ok') {
+            if (iocResponse.status === 'ok') {
               console.log(iocCount);
               setIocCount(iocCount)
             }
             else {
-                console.log(iocResponse.data.error);
+                console.log(iocResponse.error);
             }
 
         }
