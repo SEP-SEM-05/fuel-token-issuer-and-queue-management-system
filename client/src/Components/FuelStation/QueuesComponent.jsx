@@ -88,6 +88,11 @@ const QueuesComponent = () => {
 
     if (response.status == "ok") {
       setReloadData(response.noti);
+      setMaxCount(0);
+      setFuelQueueToGo([]);
+      setStartTime("");
+      setAvgTime("");
+      setEstEndTime("");
     } else {
       console.log("error");
     }
