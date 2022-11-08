@@ -1,3 +1,4 @@
+const res = require("express/lib/response");
 let mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 require("dotenv").config();
@@ -36,7 +37,7 @@ const addNewAnnouncedQueue = (regNo, ftype, requests, stime, etime) => {
 }
 
 // remove announced requests from waiting queue
-const removeReqsFromWaitingQueue = async (regNo, ftype, reqs) => { 
+const removeReqsFromWaitingQueue = async (regNo, ftype, reqs) => {
   let wq = await Queue.findOne({ 
     stationID: regNo,
     state: "waiting",
@@ -58,9 +59,20 @@ const removeReqsFromWaitingQueue = async (regNo, ftype, reqs) => {
   return result.requests;
 }
 
+// find all Queues by regNo array
+const findAllQueuesAndUpdateByRegNos = async (regNoArr, ftype, reqId) => {
+  let r;
+  for (let i = 0; i < regNoArr.length; i++) {
+    let re = await removeReqsFromWaitingQueue(regNoArr[i], ftype, [reqId]);
+    r = re;
+  }
+  return r;
+}
+
 
 module.exports = {
   findQueuesByStRegNo,
   addNewAnnouncedQueue,
-  removeReqsFromWaitingQueue
+  removeReqsFromWaitingQueue,
+  findAllQueuesAndUpdateByRegNos,
 };

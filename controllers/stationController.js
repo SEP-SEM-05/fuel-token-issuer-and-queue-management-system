@@ -99,10 +99,12 @@ const get_waiting_queues = async (req, res) => {
         let temp = {
           reqId: reqest._id.toString(),
           userID: reqest.userID,
-          registrationNo: reqest.registrationNo,
           quota: reqest.quota,
           priority: reqest.priority,
         };
+        if(reqest.registrationNo){ 
+          temp['registrationNo'] = reqest.registrationNo;
+        }
         req_priority_queue.enqueue(temp);
       });
 
@@ -129,7 +131,7 @@ const get_waiting_queues = async (req, res) => {
 
 // announce a queue 
 const announce_fuel_queue = async (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
   regNo = req.body.regNo;
   ftype = req.body.fuelType;
   lastAnnounced = req.body.announcedTime;
@@ -147,7 +149,19 @@ const announce_fuel_queue = async (req, res) => {
 
     vehicles.forEach(veh => {
       reqs.push(veh.reqId);
-      dataArr.push({regNo: veh.userID, msg:`${result1.registrationNo} ${result1.name} - ${result1.location} will start fuel distribution on ${stime} and you will be able to take your ${veh.quota} Liters of fuel quota around ${veh.estTime}`});
+      if(veh.registrationNo){
+        dataArr.push({
+          regNo: veh.userID,
+          userType: "personal",
+          msg: `${result1.registrationNo} ${result1.name} - ${result1.location} will start fuel distribution on ${stime} and you will be able to take your ${veh.quota} Liters of ${ftype} quota around ${veh.estTime} to your ${veh.registrationNo} vehicle`,
+        });
+      }else{
+        dataArr.push({
+          regNo: veh.userID,
+          userType: "organization",
+          msg: `${result1.registrationNo} ${result1.name} - ${result1.location} will start fuel distribution on ${stime} and you will be able to take your ${veh.quota} Liters of ${ftype} quota around ${veh.estTime} to your Organization`,
+        });
+      }
     });
 
     let result2 = await queueDBHelper.addNewAnnouncedQueue(regNo, ftype, reqs, stime, etime); // start a new announced queue
@@ -156,13 +170,15 @@ const announce_fuel_queue = async (req, res) => {
     let result3 = await notificationDBHelper.addNewNotifications(dataArr);
     // console.log(result3);
 
-     let result4 = await queueDBHelper.removeReqsFromWaitingQueue(regNo, ftype, reqs);
-    // console.log(result4);
+    for (let i = 0; i < reqs.length; i++) {
+      let sts = await requestDBHelper.getStationsOfReq(reqs[i]);
+      let result4 = await queueDBHelper.findAllQueuesAndUpdateByRegNos(sts, ftype, reqs[i]);
+    }
     
     //return necessary data
     res.json({
       status: "ok",
-      reqs: result4,
+      noti: result3,
     });
   } catch (err) {
     console.log(err);
