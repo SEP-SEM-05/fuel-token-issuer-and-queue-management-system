@@ -10,6 +10,10 @@ const router = express.Router();
 router.get('/dashboard/:fueltype', auth.requireAuth, adminController.get_dashboard);
 //router.get('/dashboard/:fueltype', adminController.get_dashboard);
 
+//update fuel quota
+//router.post("/updatequota", auth.requireAuth, adminController.update_fuel_quota);
+router.post("/updatequota", adminController.update_fuel_quota);
+
 //get registered station info
 router.get('/registered', auth.requireAuth, adminController.get_registered_station);
 

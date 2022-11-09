@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { Box, Button, Chip, Divider, Grid, Typography } from "@mui/material";
+import { Alert, Box, Button, Chip, Divider, Grid, Snackbar, Typography } from "@mui/material";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { getDashBoard } from "../../utils/api/admin";
+import { getDashBoard, updateFuelQuota } from "../../utils/api/admin";
 
 
 function createData(vehicleType, liter) {
@@ -43,69 +43,14 @@ function createData(vehicleType, liter) {
 //main function
 const QuotaComponent = () => {
 
-  const [dieselRows, setDieselRows] = useState([]);
-  const [petrolRows, setPetrolRows] = useState([]);
-
   const [isPetrol, setIsPetrol] = React.useState(true);  // to assign fuel type
   const [rows, setRows] = React.useState([]);
-
-
-  useEffect(() => {
-
-    async function fetchData() {
-
-        try {
-
-            let dieselResponse = await getDashBoard("Diesel");
-
-            let dieselQuotaDetails = dieselResponse.quota;
-
-            if (dieselResponse.status === 'ok') {
-              console.log(dieselQuotaDetails);
-              setDieselRows(
-                dieselQuotaDetails.map((quota) => (
-                  createData(quota.vehicleType, quota.amount)
-                )
-              ))
-            }
-            else {
-                console.log(dieselResponse.error);
-            }
-
-            let petrolResponse = await getDashBoard("Petrol");
-
-            let petrolQuotaDetails = petrolResponse.quota;
-
-            if (petrolResponse.status === 'ok') {
-              console.log(petrolQuotaDetails);
-              setPetrolRows(
-                petrolQuotaDetails.map((quota) => (
-                  createData(quota.vehicleType, quota.amount)
-                )
-              ));
-              setRows(
-                petrolQuotaDetails.map((quota) => (
-                  createData(quota.vehicleType, quota.amount)
-                )
-              ));
-            }
-            else {
-                console.log(petrolResponse.error);
-            }
-
-        }
-        catch (err) {
-            console.log(err)
-        }
-    }
-
-    fetchData();
-    
-  }, []);
-
-
+  const [newAmount, setNewAmount] = React.useState();
+  const [value, setValue] = React.useState();
   const [open, setOpen] = React.useState(false);    // to open the dialog box
   const [vehicleType, setVehicleType] = React.useState(null);
+  const [fuelType, setFuelType] = React.useState("Petrol");
+  const [openSB, setOpenSB] = React.useState(false);
 
   //function to popup the dialog box
   const handleClickOpen = (vehicleType) => {
@@ -119,11 +64,71 @@ const QuotaComponent = () => {
   // functions to change fuel type
   const handlePetrol = () => {
     setIsPetrol(true);
-    setRows(petrolRows);
+    setFuelType("Petrol");
   };
   const handleDiesel = () => {
     setIsPetrol(false);
-    setRows(dieselRows);
+    setFuelType("Diesel");
+  };
+
+  useEffect(() => {
+
+    async function fetchData() {
+
+      try {
+
+        let response = await getDashBoard(fuelType);
+
+        let quotaDetails = response.quota;
+
+        if (response.status === 'ok') {
+          setRows(
+            quotaDetails.map((quota) => (
+              createData(quota.vehicleType, quota.amount)
+            )
+            ));
+        }
+        else {
+          console.log(response.error);
+        }
+
+      }
+      catch (err) {
+        console.log(err)
+      }
+    }
+
+    fetchData();
+
+  }, [newAmount, fuelType]);
+
+  const updateNewFuelQuota = async () => {
+
+    let response = await updateFuelQuota({
+      newAmount: value,
+      fuelType: fuelType,
+      vehicleType: vehicleType,
+    });
+
+    if (response.status == "ok") {
+      setNewAmount(value);
+    } else {
+      console.log("error");
+    }
+
+    handleClose();
+    handleSBOpen();
+  }
+
+  const handleSBOpen = () => {
+    setOpenSB(true);
+  };
+
+  const handleSBClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSB(false);
   };
 
   return (
@@ -289,10 +294,14 @@ const QuotaComponent = () => {
             color="info"
             focused
             autoComplete="off"
+            onChange={(e) => {
+              setValue(e.target.value);
+            }}
           />
         </DialogContent>
         <DialogActions sx={{ pr: 3, pl: 3, pb: 3 }}>
           <Button
+            onClick={updateNewFuelQuota}
             variant="outlined"
             color={isPetrol ? "warning" : "success"}
             sx={{ width: "100%" }}
@@ -301,6 +310,16 @@ const QuotaComponent = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar open={openSB} autoHideDuration={4000} onClose={handleSBClose}>
+        <Alert
+          onClose={handleSBClose}
+          severity="success"
+          color={isPetrol ? "warning" : "success"}
+          sx={{ width: "100%" }}
+        >
+          Stations Changed Successfully!
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

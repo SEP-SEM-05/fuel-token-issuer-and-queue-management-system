@@ -54,6 +54,36 @@ const getDashBoard = async (fueltype) => {
     }
 }
 
+// update fuel quota
+const updateFuelQuota = async (data) => {
+    try {
+
+        const refreshToken = localStorage.getItem("refreshToken");
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        let api = axios.create({
+          baseURL: url,
+          headers: {
+            "x-refresh-token": refreshToken
+              ? "Bearer " + refreshToken
+              : undefined,
+            "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+          },
+        });
+
+        let response = await api.post(`admin/updatequota`, data);
+
+        if (response.headers["x-access-token"]) {
+            sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+        }
+
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+}
+
 //get unregistered station info
 const getUnregisteredStation = async () => {
 
@@ -116,4 +146,4 @@ const getRegisteredStationCount = async (stationType) => {
     }
 }
 
-export { signInAdmin, getDashBoard, getUnregisteredStation, getRegisteredStationCount };
+export { signInAdmin, getDashBoard, getUnregisteredStation, getRegisteredStationCount, updateFuelQuota };
