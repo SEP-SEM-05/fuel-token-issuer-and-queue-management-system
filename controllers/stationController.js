@@ -210,6 +210,35 @@ const get_announced_queues = async (req, res) => {
   }
 }
 
+// update a queue
+const update_queue = async (req, res) => {
+  console.log(req.body);
+  let id = req.body.id;
+  let state = req.body.state;
+  let estEndTime = req.body.estEndTime;
+
+  try {
+    //handle any possible errors
+    let result = await queueDBHelper.updateQueue(
+      id,
+      state,
+      estEndTime
+    );
+    //return necessary data
+    res.json({
+      status: "ok",
+      state: result.state,
+      estEndTime: result.estimatedEndTime,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "error",
+      error: "Internal server error!",
+    });
+  }
+}
+
 
   module.exports = {
     get_dashboard,
@@ -217,4 +246,5 @@ const get_announced_queues = async (req, res) => {
     get_waiting_queues,
     announce_fuel_queue,
     get_announced_queues,
+    update_queue
   };

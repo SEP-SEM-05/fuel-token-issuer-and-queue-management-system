@@ -70,10 +70,29 @@ const findAllQueuesAndUpdateByRegNos = async (regNoArr, ftype, reqId) => {
   return r;
 }
 
+// update the queue
+const updateQueue = async (id, state, estEndTime) => {
+
+  let result = estEndTime
+    ? await Queue.findOneAndUpdate(
+        { _id: id },
+        { state: state, estimatedEndTime: estEndTime },
+        { new: true }
+      )
+    : await Queue.findOneAndUpdate(
+        { _id: id },
+        { state: state },
+        { new: true }
+      );
+
+  return result;
+}
+
 
 module.exports = {
   findQueuesByStRegNo,
   addNewAnnouncedQueue,
   removeReqsFromWaitingQueue,
   findAllQueuesAndUpdateByRegNos,
+  updateQueue,
 };
