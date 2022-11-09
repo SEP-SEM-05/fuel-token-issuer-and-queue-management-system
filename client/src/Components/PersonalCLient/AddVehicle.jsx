@@ -9,6 +9,8 @@ import {
     Grid,
     TextField,
     Typography,
+    Snackbar,
+    Alert,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { getDashBoard, addVehicle } from "../../utils/api/personal";
@@ -19,8 +21,12 @@ const AddVehicle = () => {
 
     const { user, signUser } = useAuth();
 
-    const [value, setValue] = React.useState([]);
-    const [stationNameandCity, setStationNameandCity] = React.useState([]);
+    const [openSB, setOpenSB] = useState(false);
+    const [isValueEmpty, setIsValueEmpty] = useState(false);
+    const [value, setValue] = useState([]);
+    const [regNo, setRegNo] = useState("");
+    const [engNo, setEngNo] = useState("");
+    const [stationNameandCity, setStationNameandCity] = useState([]);
 
     useEffect(() => {
 
@@ -54,6 +60,67 @@ const AddVehicle = () => {
         fetchData();
     }, []);
 
+    const handleSBOpen = () => {
+        setOpenSB(true);
+    };
+
+    const handleSBClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        setOpenSB(false);
+    };
+
+    const submitAddVehicle = async (event) => {
+
+        event.preventDefault();
+
+        if (value.length > 0) {
+
+            setIsValueEmpty(false);
+
+            let data = {
+                nic: user.data.nic,
+                registrationNo: regNo,
+                engineNo: engNo,
+                stations: value
+            }
+
+            let response = await addVehicle(data);
+
+            let status = response.status;
+
+            if (status === 'ok') {
+
+                setValue([]);
+                setRegNo("");
+                setEngNo("");
+
+                handleSBOpen();
+            }
+            else if (status === 'auth-error') {
+
+                // sessionStorage.clear();
+                // localStorage.clear();
+
+                console.log(response.error);
+                document.location = '/';
+            }
+            else {
+
+                // TODO: handle error
+                console.log(response.error);
+                // document.location = '/';
+            }
+        }
+        else {
+
+            setIsValueEmpty(true);
+            handleSBOpen();
+        }
+    }
+
     return (
         <Box>
             <Grid item xs={12} sx={{ pl: { xs: "unset", lg: 3 }, my: -3 }}>
@@ -61,7 +128,7 @@ const AddVehicle = () => {
             </Grid>
             <Grid container justifyContent="center">
                 <Grid item xs={12} md={9} sx={{ ml: { xs: "unset", lg: 10 }, mt: 5 }}>
-                    <form>
+                    <form onSubmit={submitAddVehicle}>
                         <Card
                             variant="outlined"
                             sx={{
@@ -93,6 +160,8 @@ const AddVehicle = () => {
                                             required
                                             color="info"
                                             label="Vehicle Registration Number"
+                                            value={regNo}
+                                            onChange={(event) => setRegNo(event.target.value)}
                                             type="text"
                                             size="small"
                                             sx={{
@@ -109,6 +178,8 @@ const AddVehicle = () => {
                                             variant="filled"
                                             color="info"
                                             label="Vehicle Engine Number"
+                                            value={engNo}
+                                            onChange={(event) => setEngNo(event.target.value)}
                                             type="text"
                                             size="small"
                                             sx={{
@@ -174,6 +245,15 @@ const AddVehicle = () => {
                     </form>
                 </Grid>
             </Grid>
+            <Snackbar open={openSB} autoHideDuration={3000} onClose={handleSBClose}>
+                <Alert
+                    onClose={handleSBClose}
+                    severity={isValueEmpty ? "error" : "success"}
+                    sx={{ width: "100%" }}
+                >
+                    {isValueEmpty ? "Stations cannot be empty" : "New Vehicle Added Successfully!"}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };

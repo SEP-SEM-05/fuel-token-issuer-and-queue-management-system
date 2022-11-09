@@ -11,7 +11,14 @@ const findQuotaByFuelType = async (fuelType) => {
     return quota;
 }
 
+//update the fuel quota for a vehicle type, given the fuel type
+const updateQuota = async (vehicleType, fuelType, newAmount) => {
+
+    let result = await Quota.findOneAndUpdate({ vehicleType: vehicleType, fuelType: fuelType }, { amount: newAmount});
+    return result.amount;
+}
 
 module.exports = {
     findQuotaByFuelType,
+    updateQuota,
 }

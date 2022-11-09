@@ -49,6 +49,7 @@ const RequestFuelOrg = () => {
     const [openSB, setOpenSB] = React.useState(false);
     const [stationNameandCity, setStationNameandCity] = useState([]);
     const [changedStations, setChangedStations] = useState([]);
+    const [isValueEmpty, setIsValueEmpty] = useState(false);
 
     useEffect(() => {
 
@@ -130,34 +131,44 @@ const RequestFuelOrg = () => {
 
     const saveChangedStations = async () => {
 
-        let data = {
-            registrationNo: user.data.registrationNo,
-            stations: value
-        }
+        if (value.length > 0) {
 
-        let response = await changeStations(data);
+            setIsValueEmpty(false);
 
-        let status = response.status;
+            let data = {
+                registrationNo: user.data.registrationNo,
+                stations: value
+            }
 
-        if (status === 'ok') {
+            let response = await changeStations(data);
 
-            setChangedStations(value);
-            
-            handleCloseSt();
-            handleSBOpen();
-        }
-        else if (status === 'auth-error') {
+            let status = response.status;
 
-            // sessionStorage.clear();
-            // localStorage.clear();
+            if (status === 'ok') {
 
-            console.log(response.error);
-            document.location = '/';
+                setChangedStations(value);
+
+                handleCloseSt();
+                handleSBOpen();
+            }
+            else if (status === 'auth-error') {
+
+                // sessionStorage.clear();
+                // localStorage.clear();
+
+                console.log(response.error);
+                document.location = '/';
+            }
+            else {
+
+                console.log(response.error);
+                // document.location = '/';
+            }
         }
         else {
 
-            console.log(response.error);
-            // document.location = '/';
+            setIsValueEmpty(true);
+            handleSBOpen();
         }
     };
 
@@ -387,10 +398,10 @@ const RequestFuelOrg = () => {
                 <Snackbar open={openSB} autoHideDuration={6000} onClose={handleSBClose}>
                     <Alert
                         onClose={handleSBClose}
-                        severity="success"
+                        severity={isValueEmpty ? "error" : "success"}
                         sx={{ width: "100%" }}
                     >
-                        Stations Changed Successfully!
+                        {isValueEmpty ? "Stations cannot be empty" : "Stations Changed Successfully!"}
                     </Alert>
                 </Snackbar>
             </Grid>

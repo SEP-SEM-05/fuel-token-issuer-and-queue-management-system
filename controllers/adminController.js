@@ -44,6 +44,33 @@ const get_dashboard = async (req, res) => {
     }
 }
 
+//Update the fuel quota
+const update_fuel_quota = async (req, res) => {
+    let vehicleType = req.body.vehicleType;
+    let fuelType = req.body.fuelType;
+    let newAmount = parseFloat(req.body.newAmount); 
+  
+    try {
+      //handle any possible errors
+      let result = await quotaDBHelper.updateQuota(
+        vehicleType,
+        fuelType,
+        newAmount
+      );
+      //return necessary data
+      res.json({
+        status: "ok",
+        newAmount: result,
+      });
+    } catch(err){
+          console.log(err);
+          res.status(500).json({
+              status: 'error',
+              error: 'Internal server error!'
+          });
+      }
+  };
+
 //get all registered stations info 
 const get_registered_station = async (req, res) => {
 
@@ -172,4 +199,5 @@ module.exports = {
     get_unregistered_station,
     get_vehicle,
     get_count_registered_station,
+    update_fuel_quota,
 }

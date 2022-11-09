@@ -102,7 +102,7 @@ const add_vehicle = async (req, res) => {
     let nic = req.body.nic
     let regNo = req.body.registrationNo;
     let engineNo = req.body.engineNo;
-    let stations = req.body.stations;
+    let req_stations = req.body.stations;
 
     try {
 
@@ -127,6 +127,13 @@ const add_vehicle = async (req, res) => {
             });
         }
         else {
+
+            let stations = [];
+
+            for(let i = 0; i < req_stations.length; i++){
+                let station_regNo = req_stations[i].split('-')[0].trim();
+                stations.push(station_regNo);
+            }
 
             let result = await vehicleDBHelper.updateStationsAndRegister(regNo, stations);
             res.json({
