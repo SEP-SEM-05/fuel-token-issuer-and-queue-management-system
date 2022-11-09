@@ -87,7 +87,12 @@ const QueuesComponent = () => {
     });
 
     if (response.status == "ok") {
-      setReloadData(response.reqs);
+      setReloadData(response.noti);
+      setMaxCount(0);
+      setFuelQueueToGo([]);
+      setStartTime("");
+      setAvgTime("");
+      setEstEndTime("");
     } else {
       console.log("error");
     }
@@ -124,24 +129,41 @@ const QueuesComponent = () => {
     let arr = getMaxVehicleCount(queues[fuelType], newValue, 0, []);
     setMaxCount(arr[1]);
     setFuelQueueToGo(arr[0]);
+    setStateAndEstEndTime(arr[0]);
   };
 
   const handleInputChange = (event) => {
     setFuelAmount(event.target.value === "" ? "" : Number(event.target.value));
   };
 
-  const calculateEstEnd = (avg) => {
-    setAvgTime(avg);
+  const calculateEstEnd = (fuelQueueToGo = [], startTime = "", avgTime = "") => {
     let st = new Date(startTime);
     let et = st;
 
     for (let i = 0; i < fuelQueueToGo.length; i++) {
-      addMinutes(avg, et);
+      addMinutes(avgTime, et);
       fuelQueueToGo[i]["estTime"] = et.toString().split("GMT")[0];
       
     }
     setEstEndTime((et.toString()).split("GMT")[0]);
   };
+
+  const setStateAndEstEndTime = (event) => {
+    if (event.target) {
+      if (event.target.id === "startDateTime") {
+        setStartTime(event.target.value);
+        calculateEstEnd(fuelQueueToGo, event.target.value, avgTime);
+      } else if (event.target.id === "avgTime") {
+        setAvgTime(event.target.value);
+        calculateEstEnd(fuelQueueToGo, startTime, event.target.value);
+      }
+    } else {
+      setFuelQueueToGo(event);
+      calculateEstEnd(event, startTime, avgTime);
+    }
+    
+
+  }
 
   const handleBlur = () => {
     if (fuelAmount < 0) {
@@ -204,6 +226,7 @@ const QueuesComponent = () => {
               >
                 <Slider
                   color="info"
+                  id="slider"
                   sx={{ maxWidth: { xs: "80%", md: "300px" }, height: "10px" }}
                   value={typeof fuelAmount === "number" ? fuelAmount : 0}
                   onChange={handleSliderChange}
@@ -251,7 +274,7 @@ const QueuesComponent = () => {
                   color="info"
                   label="Start Date and Time"
                   value={startTime}
-                  onChange={(event) => setStartTime(event.target.value)}
+                  onChange={(event) => setStateAndEstEndTime(event)}
                   type="datetime-local"
                   sx={{ width: "80%" }}
                 />
@@ -264,7 +287,9 @@ const QueuesComponent = () => {
                   color="info"
                   label="Avg. time for a vehicle"
                   value={avgTime}
-                  onChange={(event) => calculateEstEnd(event.target.value)}
+                  onChange={(event) =>
+                    setStateAndEstEndTime(event)
+                  }
                   type="number"
                   InputProps={{
                     endAdornment: (

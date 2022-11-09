@@ -1,3 +1,4 @@
+const res = require("express/lib/response");
 let mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 require("dotenv").config();
@@ -5,13 +6,13 @@ require("dotenv").config();
 const Queue = require("../models/queue");
 
 // get all the 4 queues of a given station
-const findQueuesByStRegNo = async (stId, stat) => {
-    let queues = await Queue.find({ stationID: stId, state: stat });
+const findQueuesByStRegNo = async (stId, states) => {
+    let queues = await Queue.find({ stationID: stId, state: { $in: states } });
     return queues;
 }
 
 // add new announced queue
-const addNewAnnouncedQueue = (regNo, ftype, requests, stime, etime) => {
+const addNewAnnouncedQueue = (regNo, ftype, requests, stime, etime, vcount) => {
   
   return new Promise(async (resolve, reject) => { 
     let data = {
@@ -21,6 +22,7 @@ const addNewAnnouncedQueue = (regNo, ftype, requests, stime, etime) => {
       queueStartTime: stime,
       estimatedEndTime: etime,
       state: "announced",
+      vehicleCount: vcount,
     };
 
     let queue = new Queue(data);
@@ -36,7 +38,7 @@ const addNewAnnouncedQueue = (regNo, ftype, requests, stime, etime) => {
 }
 
 // remove announced requests from waiting queue
-const removeReqsFromWaitingQueue = async (regNo, ftype, reqs) => { 
+const removeReqsFromWaitingQueue = async (regNo, ftype, reqs) => {
   let wq = await Queue.findOne({ 
     stationID: regNo,
     state: "waiting",
@@ -58,9 +60,20 @@ const removeReqsFromWaitingQueue = async (regNo, ftype, reqs) => {
   return result.requests;
 }
 
+// find all Queues by regNo array
+const findAllQueuesAndUpdateByRegNos = async (regNoArr, ftype, reqId) => {
+  let r;
+  for (let i = 0; i < regNoArr.length; i++) {
+    let re = await removeReqsFromWaitingQueue(regNoArr[i], ftype, [reqId]);
+    r = re;
+  }
+  return r;
+}
+
 
 module.exports = {
   findQueuesByStRegNo,
   addNewAnnouncedQueue,
-  removeReqsFromWaitingQueue
+  removeReqsFromWaitingQueue,
+  findAllQueuesAndUpdateByRegNos,
 };

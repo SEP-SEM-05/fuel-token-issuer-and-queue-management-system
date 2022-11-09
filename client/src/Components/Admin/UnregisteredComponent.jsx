@@ -11,8 +11,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import { getUnregisteredStation } from "../../utils/api/admin";
 
-const axios = require('axios').default;
 
 //main function
 const UnregisteredComponent = () => {
@@ -25,18 +25,11 @@ const UnregisteredComponent = () => {
 
         try {
 
-            //const token = sessionStorage.getItem('admin_token');
+            let response = await getUnregisteredStation();
 
-            let response = await axios.get(`http://localhost:5000/admin/unregistered`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    //token: token,
-                    //state: props.state
-                }
-            });
-            let stationDetails = response.data.station;
+            let stationDetails = response.station;
 
-            if (response.data.status === 'ok') {
+            if (response.status === 'ok') {
               console.log(stationDetails);
               setRows(
                 stationDetails
@@ -44,7 +37,7 @@ const UnregisteredComponent = () => {
               
             }
             else {
-                console.log(response.data.error);
+                console.log(response.error);
             }
 
         }

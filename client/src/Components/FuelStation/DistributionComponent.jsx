@@ -18,13 +18,9 @@ import {
 import DepartureBoardIcon from "@mui/icons-material/DepartureBoard";
 import MOBILEAPPIMG from "../../assets/mobileApp.png";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import useAuth from "../../utils/providers/AuthProvider";
+import { getAnnouncedQueues } from "../../utils/api/fuelStation";
 
-const fuel_types = [
-  ["Auto Diesel", "19/09/2022 15:20", 123, 567.5, "success", 0],
-  ["Super Diesel", "10/09/2022 10:20", 67, 113.75, "success", 1],
-  ["Petrol 92 Octane", "01/09/2022 11:10", 280, 890.3, "warning", 0],
-  ["Petrol 95 Octane", "12/09/2022 18:30", 29, 145.85, "warning", 1],
-];
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -54,8 +50,57 @@ function a11yProps(index) {
 }
 
 const Distribution = () => {
+  const { user, signUser } = useAuth();
   const [value, setValue] = React.useState(0);
   const [open, setOpen] = React.useState(false);
+  const [fuelQueues, setfuelQueues] = React.useState([]);
+
+  React.useEffect(() => {
+    async function fetchData() {
+      let response = await getAnnouncedQueues(user.data.registrationNo);
+      //console.log(response.fuelQueues);
+
+      let queues = []
+
+      for (let i = 0; i < response.fuelQueues.length; i++) {
+        let q = response.fuelQueues[i];
+        
+        let time = [];
+        let now = new Date();
+        let st = new Date(q.queueStartTime);
+        let et = new Date(q.estimatedEndTime);
+
+        if (q.state === "announced" && st.getTime() > now.getTime()) {
+          time = [st.toString().split("GMT")[0], 0];
+        } else if (q.state === "announced" && st.getTime() <= now.getTime() && et.getTime() > now.getTime()) {
+          time = [et.toString().split("GMT")[0], 1];
+          // set state to active
+        } else if (q.state === "announced" && st.getTime() <= now.getTime() && et.getTime() <= now.getTime()) {
+          //open the dialog
+          console.log("open dialog");
+          time = [et.toString().split("GMT")[0], 1];
+        }else if (q.state === "active" && et.getTime() > now.getTime()) {
+          time = [et.toString().split("GMT")[0], 1];
+        } else if (q.state === "active" && et.getTime() <= now.getTime()) {
+          //open the dialog
+          console.log("open dialog");
+          time = [et.toString().split("GMT")[0], 1];
+        }
+        
+        
+        queues.push([
+          q.fuelType,
+          time[0],
+          q.vehicleCount,
+          q.fuelType.includes("Diesel") ? "success" : "warning",
+          time[1]
+        ]);
+      };
+      
+      setfuelQueues(queues);
+    }
+    fetchData();
+  }, []);
 
   const handleClose = () => {
     setOpen(false);
@@ -70,10 +115,10 @@ const Distribution = () => {
   };
 
   const filterOngoing = (ft) => {
-    return ft[5] === 1;
+    return ft[4] === 1;
   };
   const filterScheduled = (ft) => {
-    return ft[5] === 0;
+    return ft[4] === 0;
   };
 
   return (
@@ -119,7 +164,7 @@ const Distribution = () => {
           <h2>Ongoing Queues</h2>
         </Grid>
         <Grid container spacing={8} justifyContent="center">
-          {fuel_types.filter(filterOngoing).map((ft) => (
+          {fuelQueues.filter(filterOngoing).map((ft) => (
             <Grid key={ft[0]} item md={5}>
               <Card
                 variant="outlined"
@@ -164,7 +209,7 @@ const Distribution = () => {
                 >
                   <Button
                     onClick={handleClickOpen}
-                    color={ft[4]}
+                    color={ft[3]}
                     variant="contained"
                   >
                     <Typography variant="h6" sx={{ fontWeight: "bold" }}>
@@ -184,7 +229,7 @@ const Distribution = () => {
           <h2>Upcoming Queues</h2>
         </Grid>
         <Grid container spacing={8} justifyContent="center">
-          {fuel_types.filter(filterScheduled).map((ft) => (
+          {fuelQueues.filter(filterScheduled).map((ft) => (
             <Grid key={ft[0]} item md={5}>
               <Card
                 variant="outlined"
@@ -217,7 +262,7 @@ const Distribution = () => {
                       sx={{ fontWeight: "bold" }}
                       icon={<AccessTimeIcon />}
                       label={`Start Time ${ft[1]}`}
-                      color={ft[4]}
+                      color={ft[3]}
                     ></Chip>
                   </Typography>
                   <Typography variant="h6" display="block" gutterBottom>
