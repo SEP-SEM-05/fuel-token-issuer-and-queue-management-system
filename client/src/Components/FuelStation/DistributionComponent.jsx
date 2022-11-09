@@ -21,12 +21,6 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import useAuth from "../../utils/providers/AuthProvider";
 import { getAnnouncedQueues } from "../../utils/api/fuelStation";
 
-const fuel_types = [
-  ["Auto Diesel", "19/09/2022 15:20", 123, 567.5, "success", 0],
-  ["Super Diesel", "10/09/2022 10:20", 67, 113.75, "success", 1],
-  ["Petrol 92 Octane", "01/09/2022 11:10", 280, 890.3, "warning", 0],
-  ["Petrol 95 Octane", "12/09/2022 18:30", 29, 145.85, "warning", 1],
-];
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -71,8 +65,27 @@ const Distribution = () => {
       for (let i = 0; i < response.fuelQueues.length; i++) {
         let q = response.fuelQueues[i];
         
-        let time = (q.state === "announced") ? [new Date(q.queueStartTime).toString().split("GMT")[0], 0] : [new Date(q.estimatedEndTime).toString().split("GMT")[0], 1];
-        
+        let time = [];
+        let now = new Date();
+        let st = new Date(q.queueStartTime);
+        let et = new Date(q.estimatedEndTime);
+
+        if (q.state === "announced" && st.getTime() > now.getTime()) {
+          time = [st.toString().split("GMT")[0], 0];
+        } else if (q.state === "announced" && st.getTime() <= now.getTime() && et.getTime() > now.getTime()) {
+          time = [et.toString().split("GMT")[0], 1];
+          // set state to active
+        } else if (q.state === "announced" && st.getTime() <= now.getTime() && et.getTime() <= now.getTime()) {
+          //open the dialog
+          console.log("open dialog");
+          time = [et.toString().split("GMT")[0], 1];
+        }else if (q.state === "active" && et.getTime() > now.getTime()) {
+          time = [et.toString().split("GMT")[0], 1];
+        } else if (q.state === "active" && et.getTime() <= now.getTime()) {
+          //open the dialog
+          console.log("open dialog");
+          time = [et.toString().split("GMT")[0], 1];
+        }
         
         
         queues.push([
