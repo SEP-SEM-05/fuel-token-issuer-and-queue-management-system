@@ -101,6 +101,71 @@ const get_registered_station = async (req, res) => {
     }
 }
 
+// register as newly registered station
+const register_station = async (req, res) => {
+let regNo = req.body.registrationNo;
+
+try {
+    //handle any possible errors
+    let result = await stationDBHelper.registerStation(regNo);
+
+    //return necessary data
+    res.json({
+    status: "ok",
+    registeredStation: result,
+    });
+} catch(err){
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
+};
+
+// register all as newly registered stations
+const register_all_station = async (req, res) => {
+    
+    try {
+        //handle any possible errors
+        let result = await stationDBHelper.registerAllStation();
+    
+        //return necessary data
+        res.json({
+        status: "ok",
+        registeredStations: result,
+        });
+    } catch(err){
+            console.log(err);
+            res.status(500).json({
+                status: 'error',
+                error: 'Internal server error!'
+            });
+        }
+    };
+  
+// update the station as ongoing station
+const update_station_state = async (req, res) => {
+let regNo = req.body.registrationNo;
+
+try {
+    //handle any possible errors
+    let result = await stationDBHelper.updateStationState(regNo);
+
+    //return necessary data
+    res.json({
+    status: "ok",
+    registeredStation: result,
+    });
+} catch(err){
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
+};
+
 //get count of registered stations
 const get_count_registered_station = async (req, res) => {
 
@@ -135,10 +200,38 @@ const get_count_registered_station = async (req, res) => {
 //get all unregistered stations info 
 const get_unregistered_station = async (req, res) => {
 
-
     try{
 
         let station = await stationDBHelper.findAllUnregisteredStations();
+        console.log(station)
+        if(station !== null){
+            res.json({
+                status: 'ok',
+                station: station,
+            });
+        }
+        else{
+            res.status(400).json({
+                status: 'error',
+                error: 'Invalid Station!'
+            });
+        }  
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
+}
+
+//get all newly registered stations info 
+const get_newlyregistered_station = async (req, res) => {
+
+    try{
+
+        let station = await stationDBHelper.findAllNewlyregisteredStations();
         console.log(station)
         if(station !== null){
             res.json({
@@ -200,4 +293,8 @@ module.exports = {
     get_vehicle,
     get_count_registered_station,
     update_fuel_quota,
+    register_station,
+    update_station_state,
+    get_newlyregistered_station,
+    register_all_station
 }

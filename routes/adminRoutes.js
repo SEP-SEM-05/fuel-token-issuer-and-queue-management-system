@@ -12,7 +12,7 @@ router.get('/dashboard/:fueltype', auth.requireAuth, adminController.get_dashboa
 
 //update fuel quota
 //router.post("/updatequota", auth.requireAuth, adminController.update_fuel_quota);
-router.post("/updatequota", adminController.update_fuel_quota);
+router.post("/updatequota", auth.requireAuth, adminController.update_fuel_quota);
 
 //get registered station info
 router.get('/registered', auth.requireAuth, adminController.get_registered_station);
@@ -20,8 +20,20 @@ router.get('/registered', auth.requireAuth, adminController.get_registered_stati
 //get unregistered station info
 router.get('/unregistered', auth.requireAuth, adminController.get_unregistered_station);
 
+//get newly registered station info
+router.get('/newlyregistered', auth.requireAuth, adminController.get_newlyregistered_station);
+
 //get count of registered stations
 router.get('/count/:stationType', auth.requireAuth, adminController.get_count_registered_station);
+
+//register as newly registered station
+router.post("/registerstation", auth.requireAuth, adminController.register_station);
+
+//register all as newly registered stations
+router.post("/registerallstation", auth.requireAuth, adminController.register_all_station);
+
+// update the station as ongoing station
+router.post("/updatestation", auth.requireAuth, adminController.update_station_state);
 
 
 module.exports = router;

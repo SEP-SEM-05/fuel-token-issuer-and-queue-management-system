@@ -36,7 +36,14 @@ const findAllRegisteredStations = async () => {
 //get all unregistered stations
 const findAllUnregisteredStations = async () => {
 
-    let stations = await Station.find({isRegistered: false});
+    let stations = await Station.find({isRegistered: false, isNew: false});
+    return stations;
+}
+
+//get all newlyregistered stations
+const findAllNewlyregisteredStations = async () => {
+
+    let stations = await Station.find({isRegistered: false, isNew: true});
     return stations;
 }
 
@@ -68,7 +75,36 @@ const updateLastAnnounced = async (regNo, ftype ,time) => {
       { new: true }
     );
     return result;
+}
 
+// register as newly registered station
+const registerStation = async (regNo) => {
+
+    let result = await Station.findOneAndUpdate(
+      { registrationNo: regNo },
+      { isNew: true }
+    );
+    return result;
+}
+
+// register all as newly registered station
+const registerAllStation = async () => {
+
+    let result = await Station.updateMany(
+        { isRegistered: false , isNew: false },
+        { isNew: true }
+      );
+    return result;
+}
+
+// update the station as ongoing station
+const updateStationState = async (regNo) => {
+
+    let result = await Station.findOneAndUpdate(
+      { registrationNo: regNo },
+      { isRegistered: true }
+    );
+    return result;
 }
 
 module.exports = {
@@ -80,4 +116,8 @@ module.exports = {
   updateAmount,
   countRegisteredStations,
   updateLastAnnounced,
+  registerStation,
+  updateStationState,
+  findAllNewlyregisteredStations,
+  registerAllStation
 };

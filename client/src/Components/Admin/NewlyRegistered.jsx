@@ -1,24 +1,49 @@
-import * as React from "react";
+import React, { useState, useEffect } from 'react';
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import { Button, Grid } from "@mui/material";
+import { getNewlyregisteredStation } from "../../utils/api/admin";
 
-function createData(station) {
-  return { station };
-}
-
-const rows = [
-  createData("Station 01"),
-  createData("Station 02"),
-  createData("Station 03"),
-  createData("Station 04"),
-  createData("Station 05"),
-];
 
 //main function
 const NewlyRegistered = () => {
+
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+
+    async function fetchData() {
+
+        try {
+
+            let response = await getNewlyregisteredStation();
+
+            let stationDetails = response.station;
+
+            if (response.status === 'ok') {
+              console.log(stationDetails);
+              setRows(
+                stationDetails
+              )
+              
+            }
+            else {
+                console.log(response.error);
+            }
+
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    fetchData();
+    
+  }, []);
+
+
   return (
     <Grid
       sx={{ borderRadius: 4, backgroundColor: "#282835", paddingBottom: "3px" }}
@@ -33,7 +58,7 @@ const NewlyRegistered = () => {
                 component="th"
                 scope="row"
               >
-                {row.station}
+                {row.name}
               </TableCell>
               <TableCell align="center">
                 <Button

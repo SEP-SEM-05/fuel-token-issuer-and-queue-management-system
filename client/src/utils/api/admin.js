@@ -115,6 +115,97 @@ const getUnregisteredStation = async () => {
     }
 }
 
+// register new station
+const registerNewStation = async (data) => {
+    try {
+
+        const refreshToken = localStorage.getItem("refreshToken");
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        let api = axios.create({
+          baseURL: url,
+          headers: {
+            "x-refresh-token": refreshToken
+              ? "Bearer " + refreshToken
+              : undefined,
+            "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+          },
+        });
+
+        let response = await api.post(`admin/registerstation`, data);
+
+        if (response.headers["x-access-token"]) {
+            sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+        }
+
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+}
+
+// register all new station
+const registerAllNewStation = async (data) => {
+    try {
+
+        const refreshToken = localStorage.getItem("refreshToken");
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        let api = axios.create({
+          baseURL: url,
+          headers: {
+            "x-refresh-token": refreshToken
+              ? "Bearer " + refreshToken
+              : undefined,
+            "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+          },
+        });
+
+        let response = await api.post(`admin/registerallstation`);
+
+        if (response.headers["x-access-token"]) {
+            sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+        }
+
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+}
+
+//get newly registered station info
+const getNewlyregisteredStation = async () => {
+
+    try {
+
+        const refreshToken = localStorage.getItem("refreshToken");
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        let api = axios.create({
+            baseURL: url,
+            headers: {
+                "x-refresh-token": refreshToken ? "Bearer " + refreshToken : undefined,
+                "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+            },
+        });
+
+        let response = await api.get(
+            `admin/newlyregistered`
+        )
+
+        if(response.headers["x-access-token"]){
+            sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+        }
+        return response.data;
+    } 
+    catch (err) {
+        // console.log(err);
+        return err.response.data;
+    }
+}
+
 //get count of each registered station type
 const getRegisteredStationCount = async (stationType) => {
 
@@ -146,4 +237,13 @@ const getRegisteredStationCount = async (stationType) => {
     }
 }
 
-export { signInAdmin, getDashBoard, getUnregisteredStation, getRegisteredStationCount, updateFuelQuota };
+export { 
+    signInAdmin, 
+    getDashBoard, 
+    getUnregisteredStation, 
+    getRegisteredStationCount, 
+    updateFuelQuota,
+    getNewlyregisteredStation,
+    registerNewStation,
+    registerAllNewStation 
+};
