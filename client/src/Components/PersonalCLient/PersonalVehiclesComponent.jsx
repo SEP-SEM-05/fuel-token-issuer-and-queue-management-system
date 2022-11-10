@@ -25,6 +25,7 @@ import {
 import OpacityIcon from "@mui/icons-material/Opacity";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import QrCode2Icon from "@mui/icons-material/QrCode2";
+import QRCode from "react-qr-code";
 import QRIMG from "../../assets/QR.svg";
 import { getDashBoard, changeStations } from "../../utils/api/personal";
 import useAuth from "../../utils/providers/AuthProvider";
@@ -45,6 +46,7 @@ export default function PersonalVehicles() {
     const [selectedVehicle, setSelectedVehicle] = useState({});
     const [changedStations, setChangedStations] = useState([]);
     const [isValueEmpty, setIsValueEmpty] = useState(false);
+    const [qrValue, setQrValue] = useState("");
 
     useEffect(() => {
 
@@ -100,6 +102,9 @@ export default function PersonalVehicles() {
     };
 
     const handleClickOpenQR = (vehicle) => {
+
+        let qrValue = "Registration No.: " + vehicle.registrationNo;
+        setQrValue(qrValue);
         setOpenQR(true);
         setValue(vehicle.stations);
     };
@@ -265,7 +270,12 @@ export default function PersonalVehicles() {
                     <Box sx={{ display: "flex", alignItems: "center" }}>QR Code</Box>
                 </DialogTitle>
                 <DialogContent>
-                    <img alt="QR" src={QRIMG} />
+                    <QRCode
+                        size={256}
+                        style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                        value={qrValue}
+                        viewBox={`0 0 256 256`}
+                    />
                 </DialogContent>
             </Dialog>
 

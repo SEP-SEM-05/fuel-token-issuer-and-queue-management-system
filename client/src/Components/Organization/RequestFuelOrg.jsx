@@ -27,6 +27,7 @@ import {
 import EventRepeatIcon from "@mui/icons-material/EventRepeat";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import QrCode2Icon from "@mui/icons-material/QrCode2";
+import QRCode from "react-qr-code";
 import QRIMG from "../../assets/QR.svg";
 import { getDashBoard, changeStations } from "../../utils/api/organization";
 import useAuth from "../../utils/providers/AuthProvider";
@@ -50,6 +51,7 @@ const RequestFuelOrg = () => {
     const [stationNameandCity, setStationNameandCity] = useState([]);
     const [changedStations, setChangedStations] = useState([]);
     const [isValueEmpty, setIsValueEmpty] = useState(false);
+    const [qrValue, setQrValue] = useState("");
 
     useEffect(() => {
 
@@ -60,6 +62,9 @@ const RequestFuelOrg = () => {
             let status = response.status;
 
             if (status === 'ok') {
+
+                let qrValue = "Registration No.: " + user.data.registrationNo;
+                setQrValue(qrValue);
 
                 setStationNameandCity(response.stations);
 
@@ -256,7 +261,12 @@ const RequestFuelOrg = () => {
                     <Box sx={{ display: "flex", alignItems: "center" }}>QR Code</Box>
                 </DialogTitle>
                 <DialogContent>
-                    <img alt="QR" src={QRIMG} />
+                    <QRCode
+                        size={256}
+                        style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                        value={qrValue}
+                        viewBox={`0 0 256 256`}
+                    />
                 </DialogContent>
             </Dialog>
 
