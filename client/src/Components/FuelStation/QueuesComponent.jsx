@@ -23,6 +23,10 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DepartureBoardIcon from "@mui/icons-material/DepartureBoard";
 import DirectionsBusFilledIcon from "@mui/icons-material/DirectionsBusFilled";
 import { announceFuelQueue, getWaitingQueues } from "../../utils/api/fuelStation";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 const types = [
   "Auto Diesel",
@@ -49,10 +53,11 @@ const QueuesComponent = () => {
   const [vehicleCounts, setVehicleCounts] = React.useState({});
   const [maxCount, setMaxCount] = React.useState(0);
   const [fuelQueueToGo, setFuelQueueToGo] = React.useState([]);
-  const [startTime, setStartTime] = React.useState("");
+  const [startTime, setStartTime] = React.useState(null);
   const [avgTime, setAvgTime] = React.useState("");
   const [estEndTime, setEstEndTime] = React.useState("");
   const [reloadData, setReloadData] = React.useState();
+  const [today] = React.useState(new Date().getTime());
 
   React.useEffect(() => {
     async function fetchData() {
@@ -150,16 +155,16 @@ const QueuesComponent = () => {
 
   const setStateAndEstEndTime = (event) => {
     if (event.target) {
-      if (event.target.id === "startDateTime") {
-        setStartTime(event.target.value);
-        calculateEstEnd(fuelQueueToGo, event.target.value, avgTime);
-      } else if (event.target.id === "avgTime") {
-        setAvgTime(event.target.value);
-        calculateEstEnd(fuelQueueToGo, startTime, event.target.value);
-      }
+      setAvgTime(event.target.value);
+      calculateEstEnd(fuelQueueToGo, startTime, event.target.value);
     } else {
-      setFuelQueueToGo(event);
-      calculateEstEnd(event, startTime, avgTime);
+      if (Array.isArray(event)) {
+        setFuelQueueToGo(event);
+        calculateEstEnd(event, startTime, avgTime);   
+      }else{
+        setStartTime(event);
+        calculateEstEnd(fuelQueueToGo, event, avgTime);
+      }
     }
     
 
@@ -266,51 +271,57 @@ const QueuesComponent = () => {
                 <Divider sx={{ pt: 2 }} />
                 <br />
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  focused
-                  required
-                  id="startDateTime"
-                  color="info"
-                  label="Start Date and Time"
-                  value={startTime}
-                  onChange={(event) => setStateAndEstEndTime(event)}
-                  type="datetime-local"
-                  sx={{ width: "80%" }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  focused
-                  required
-                  id="avgTime"
-                  color="info"
-                  label="Avg. time for a vehicle"
-                  value={avgTime}
-                  onChange={(event) =>
-                    setStateAndEstEndTime(event)
-                  }
-                  type="number"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">Minutes</InputAdornment>
-                    ),
-                  }}
-                  sx={{ width: "80%" }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Chip
-                  id="estEndTime"
-                  variant="outlined"
-                  label={
-                    estEndTime === "Invalid Date" || !estEndTime
-                      ? "Estimated End Time"
-                      : "Estimated End Time: " + estEndTime
-                  }
-                  color={fuelType.includes("Diesel") ? "success" : "warning"}
-                />
-              </Grid>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Grid item xs={12}>
+                  <DateTimePicker
+                    renderInput={(params) => (
+                      <TextField
+                        sx={{ width: "80%" }}
+                        required
+                        focused
+                        color="info"
+                        helperText="Select the estimated queue starting time"
+                        {...params}
+                      />
+                    )}
+                    id="startDateTime"
+                    minDateTime={dayjs(today)}
+                    value={startTime}
+                    onChange={(event, id) => setStateAndEstEndTime(event)}
+                    label="Start Date and Time"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    focused
+                    required
+                    id="avgTime"
+                    color="info"
+                    label="Avg. time for a vehicle"
+                    value={avgTime}
+                    onChange={(event) => setStateAndEstEndTime(event)}
+                    type="number"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">Minutes</InputAdornment>
+                      ),
+                    }}
+                    sx={{ width: "80%" }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Chip
+                    id="estEndTime"
+                    variant="outlined"
+                    label={
+                      estEndTime === "Invalid Date" || !estEndTime
+                        ? "Estimated End Time"
+                        : "Estimated End Time: " + estEndTime
+                    }
+                    color={fuelType.includes("Diesel") ? "success" : "warning"}
+                  />
+                </Grid>
+              </LocalizationProvider>
               <Grid item>
                 <Button
                   size="large"

@@ -23,7 +23,10 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import useAuth from "../../utils/providers/AuthProvider";
 import { getAnnouncedQueues, updateQueue } from "../../utils/api/fuelStation";
 import OpacityIcon from "@mui/icons-material/Opacity";
-
+import dayjs from "dayjs";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -58,11 +61,13 @@ const Distribution = () => {
   const [open, setOpen] = React.useState(false);
   const [fuelQueues, setfuelQueues] = React.useState([]);
   const [openEx, setOpenEx] = React.useState(false);
-  const [newEndTime, setNewEndTime] = React.useState("");
+  const [today] = React.useState(new Date(new Date().getTime() + 1800000));
+  const [newEndTime, setNewEndTime] = React.useState(null);
   const [qid, setQid] = React.useState("");
   const [updateDate, setUpdateData] = React.useState("");
   const [fuelType, setFuelType] = React.useState("");
   const [vehicleCount, setVehicleCount] = React.useState("");
+  
 
   React.useEffect(() => {
     async function fetchData() {
@@ -167,15 +172,22 @@ const Distribution = () => {
           </DialogTitle>
 
           <DialogContent>
-            <Typography variant="button" sx={{ fontWeight: "bold", display:"flex", justifyContent:"space-between" }}>
+            <Typography
+              variant="button"
+              sx={{
+                fontWeight: "bold",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
               <Chip
                 icon={<OpacityIcon />}
                 label={fuelType}
                 color={fuelType.includes("Diesel") ? "success" : "warning"}
               />
               <Typography variant="body1" display="block" gutterBottom>
-                <DepartureBoardIcon fontSize="small"/> <strong>{vehicleCount}</strong> vehicles
-                remaining
+                <DepartureBoardIcon fontSize="small" />{" "}
+                <strong>{vehicleCount}</strong> vehicles remaining
               </Typography>
             </Typography>
             <Divider sx={{ pt: 2 }} />
@@ -183,20 +195,26 @@ const Distribution = () => {
               Estimated end time of the queue is passed. Do you want to extend
               the queue?
             </Typography>
-
-            <TextField
-              required
-              focused
-              margin="dense"
-              id="endtime"
-              value={newEndTime}
-              onChange={(event) => setNewEndTime(event.target.value)}
-              label="Enter New End Time"
-              type="datetime-local"
-              fullWidth
-              variant="outlined"
-              helperText="Select a time only if you want to extend the queue time"
-            />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateTimePicker
+                renderInput={(params) => (
+                  <TextField
+                    required
+                    focused
+                    fullWidth
+                    color="info"
+                    helperText="Select a time only if you want to extend the queue time"
+                    {...params}
+                  />
+                )}
+                margin="dense"
+                id="endtime"
+                value={newEndTime}
+                onChange={(newValue) => setNewEndTime(newValue)}
+                label="Enter New End Time"
+                minDateTime={dayjs(today)}
+              />
+            </LocalizationProvider>
           </DialogContent>
           <DialogActions>
             <Button color="success" type="submit">
