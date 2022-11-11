@@ -19,18 +19,23 @@ const register_post_personal = async (req, res) => {
 
     try {
 
+        data['firstName'] = data.fname;
+        delete data.fname;
+        data['lastName'] = data.lname;
+        delete data.lname;
+
         data.password = await encHandler.encryptCredential(password);
+        delete data.confirmPassword;
+        
+        //add isVerified field
 
         await personalDBHelper.saveClient(data);
 
         let user = await personalDBHelper.findClientByNic(nic);
-
-        let token = auth.createToken();
         let fullName = user.firstName + " " + user.lastName;
 
         res.json({
             status: "ok",
-            token: token,
             userType: "personal",
             data: {
                 nic: nic,

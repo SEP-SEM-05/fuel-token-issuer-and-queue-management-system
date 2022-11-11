@@ -2,7 +2,7 @@ import baseApi from "./@baseURL";
 import url from "./urlString";
 import axios from "axios";
 
-//fuel station login
+//organizatioin login
 const signInOrg = async (data) => {
 
     try {

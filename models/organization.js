@@ -63,7 +63,11 @@ const organizationSchema = new Schema({
     stations: {
         type: [String],
         default: []
-    }
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
 }, { timestamps: true });
 
 const Organizatioin = mongoose.model('Organization', organizationSchema);

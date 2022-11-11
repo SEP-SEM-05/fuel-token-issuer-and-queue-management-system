@@ -40,6 +40,10 @@ const personalSchema = new Schema({
         type: Number,
         default: 0
     },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
 }, { timestamps: true });
 
 const Personal = mongoose.model('Personal', personalSchema);

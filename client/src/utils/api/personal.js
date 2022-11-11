@@ -2,7 +2,29 @@ import baseApi from "./@baseURL";
 import url from "./urlString";
 import axios from "axios";
 
-//fuel station login
+
+//personal client register
+const signUpPersonal = async (data) => {
+
+    try {
+
+        let response = await baseApi.post(
+            "auth/registerPersonal",
+            data
+        );
+
+        // localStorage.setItem("refreshToken", response.headers["x-refresh-token"]);
+        // sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+
+        return response.data;
+    } 
+    catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+};
+
+//personal client login
 const signInPersonal = async (data) => {
 
     try {
@@ -180,4 +202,4 @@ const getNotifications = async (id) => {
     }
 }
 
-export { signInPersonal, getDashBoard, changeStations, addVehicle, getUnreadNotificationCount, getNotifications };
+export { signUpPersonal, signInPersonal, getDashBoard, changeStations, addVehicle, getUnreadNotificationCount, getNotifications };
