@@ -26,8 +26,6 @@ const register_post_personal = async (req, res) => {
 
         data.password = await encHandler.encryptCredential(password);
         delete data.confirmPassword;
-        
-        //add isVerified field
 
         await personalDBHelper.saveClient(data);
 
@@ -61,11 +59,11 @@ const register_post_org = async (req, res) => {
 
     let data = req.body;
     let password = data.password;
-    let registrationNo = data.registrationNo;
+    let registrationNo = data.regNo;
 
     try {
 
-        let orgClient = await orgDBHelper.findClientByRegNo(registrationNo);
+        let orgClient = await orgDBHelper.findOrgByRegNo(registrationNo);
 
         if (!orgClient) {
 
@@ -80,28 +78,24 @@ const register_post_org = async (req, res) => {
                 status: "error",
                 error: "Organization is already registered!",
             });
-        } 
-        else if (orgClient.email === data.email) {
-
-            res.status(400).json({
-                status: "error",
-                error: "email already exists!",
-            });
-        } 
+        }
         else {
 
+            data['registrationNo'] = registrationNo;
+            delete data.regNo;
+
             data.isRegistered = true;
+
             data.password = await encHandler.encryptCredential(password);
+            delete data.confirmPassword
 
             await orgDBHelper.saveClient(registrationNo, data);
             await vehicleDBHelper.registerAll(orgClient.vehicles);
 
-            let token = auth.createToken();
             let name = data.name;
 
             res.json({
                 status: "ok",
-                token: token,
                 userType: "organization",
                 data: {
                     registrationNo: registrationNo,
@@ -177,6 +171,8 @@ const login_post_personal = async (req, res) => {
 
         if (user !== null) {
 
+            //check is verified
+
             let password_check = await encHandler.checkEncryptedCredential(
                 password,
                 user.password
@@ -249,6 +245,8 @@ const login_post_org = async (req, res) => {
         const user = await orgDBHelper.findClientByRegNo(registrationNo);
 
         if (user !== null) {
+
+            //check is verified
 
             let password_check = await encHandler.checkEncryptedCredential(
                 password,

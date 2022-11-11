@@ -2,6 +2,28 @@ import baseApi from "./@baseURL";
 import url from "./urlString";
 import axios from "axios";
 
+
+//organization register
+const signUpOrg = async (data) => {
+
+    try {
+
+        let response = await baseApi.post(
+            "auth/registerOrg",
+            data
+        );
+
+        // localStorage.setItem("refreshToken", response.headers["x-refresh-token"]);
+        // sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+
+        return response.data;
+    } 
+    catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+};
+
 //organizatioin login
 const signInOrg = async (data) => {
 
@@ -179,4 +201,4 @@ const getNotifications = async (id) => {
     }
 }
 
-export { signInOrg, getDashBoard, getVehicles, changeStations, getUnreadNotificationCount, getNotifications };
+export { signUpOrg, signInOrg, getDashBoard, getVehicles, changeStations, getUnreadNotificationCount, getNotifications };

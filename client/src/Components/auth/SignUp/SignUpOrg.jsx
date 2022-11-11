@@ -11,6 +11,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { Link } from "react-router-dom";
+import { signUpOrg } from "../../../utils/api/organization";
 
 const darkTheme = createTheme({
   palette: {
@@ -46,7 +47,11 @@ export default function SignUpOrg() {
     confirmPassword: Yup.string().oneOf([Yup.ref('password')], "Password not matches").required('Required')
   })
 
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = async (data) => {
+
+    let response = await signUpOrg(data);
+    console.log(response);
+};
 
   //variables and functions for show password and hide password
   const [values, setValues] = React.useState({

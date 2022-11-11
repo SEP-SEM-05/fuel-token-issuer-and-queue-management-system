@@ -19,6 +19,13 @@ const saveRefreshToken = async (token, id) => {
     return result;
 }
 
+//find an organization given the registration No.
+const findOrgByRegNo = async (registrationNo) => {
+
+    let client = await Org.findOne({registrationNo});
+    return client;
+}
+
 //find an registered organization given the registration No.
 const findClientByRegNo = async (registrationNo) => {
 
@@ -48,6 +55,7 @@ const updateFullQuotas = async (regNo, fullQuotas) => {
 module.exports = {
     saveClient,
     saveRefreshToken,
+    findOrgByRegNo,
     findClientByRegNo,
     findClientByID,
     updateStations,
