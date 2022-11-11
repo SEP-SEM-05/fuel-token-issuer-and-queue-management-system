@@ -3,7 +3,7 @@ import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
-import { Button, Grid } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import { getNewlyregisteredStation, sendEmail, sendManyEmail } from "../../utils/api/admin";
 
 
@@ -11,6 +11,9 @@ import { getNewlyregisteredStation, sendEmail, sendManyEmail } from "../../utils
 const NewlyRegistered = () => {
 
   const [rows, setRows] = useState([]);
+  const [sendList, setSendList] = useState([]);
+  const [newId, setNewId] = React.useState();
+
 
   useEffect(() => {
 
@@ -41,7 +44,7 @@ const NewlyRegistered = () => {
 
     fetchData();
     
-  }, []);
+  }, [newId]);
 
   const sendAnnouncement = async (row) => {
 
@@ -51,7 +54,8 @@ const NewlyRegistered = () => {
     });
 
     if (response.status == "ok") {
-      //setNewAmount(value);
+      setNewId(row.registrationNo);
+      sendList.push(row.registrationNo);
       console.log(row.email);
 
     } else {
@@ -69,7 +73,7 @@ const NewlyRegistered = () => {
     });
 
     if (response.status == "ok") {
-      //setNewAmount(value);
+      setNewId("all");
       console.log(rows);
 
     } else {
@@ -89,6 +93,15 @@ const NewlyRegistered = () => {
     console.log("done")
   };
 
+  // const showButton = (regNo) => {
+  //   console.log(sendList.includes(regNo));
+  //   if (sendList.includes(regNo)){
+  //     return false;
+  //   }else{
+  //     return true;
+  //   }
+  // }
+
 
   return (
     <Grid
@@ -107,6 +120,9 @@ const NewlyRegistered = () => {
                 {row.name}
               </TableCell>
               <TableCell align="center">
+
+                { !sendList.includes(row.registrationNo) &&
+                newId !== "all" &&
                 <Button
                   onClick={() => sendAnnouncement(row)}
                   variant="contained"
@@ -118,13 +134,27 @@ const NewlyRegistered = () => {
                 >
                   Send Announcement
                 </Button>
+                }
+                { (sendList.includes(row.registrationNo) ||
+                newId === "all") &&
+                <Typography
+                  sx={{
+                    borderRadius: 3,
+                    paddingX: "30px",
+                    color: "#ff9966",
+                  }}
+                >
+                  Announcement Sent!
+                </Typography>
+                }
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
       <Grid display="flex" justifyContent="center" margin={3}>
-        <Button
+        { newId !== "all" &&
+          <Button
           onClick={() => sendAllAnnouncement(rows)}
           variant="contained"
           color="error"
@@ -135,6 +165,7 @@ const NewlyRegistered = () => {
         >
           Send Announcement to all
         </Button>
+        }
       </Grid>
     </Grid>
   );
