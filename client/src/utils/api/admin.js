@@ -237,6 +237,66 @@ const getRegisteredStationCount = async (stationType) => {
     }
 }
 
+//send email to station
+const sendEmail = async (data) => {
+    try {
+
+        const refreshToken = localStorage.getItem("refreshToken");
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        let api = axios.create({
+          baseURL: url,
+          headers: {
+            "x-refresh-token": refreshToken
+              ? "Bearer " + refreshToken
+              : undefined,
+            "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+          },
+        });
+
+        let response = await api.post(`admin/sendemail`, data);
+
+        if (response.headers["x-access-token"]) {
+            sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+        }
+
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+}
+
+//send email to many stations
+const sendManyEmail = async (data) => {
+    try {
+
+        const refreshToken = localStorage.getItem("refreshToken");
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        let api = axios.create({
+          baseURL: url,
+          headers: {
+            "x-refresh-token": refreshToken
+              ? "Bearer " + refreshToken
+              : undefined,
+            "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+          },
+        });
+
+        let response = await api.post(`admin/sendmanyemail`, data);
+
+        if (response.headers["x-access-token"]) {
+            sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+        }
+
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+}
+
 export { 
     signInAdmin, 
     getDashBoard, 
@@ -245,5 +305,7 @@ export {
     updateFuelQuota,
     getNewlyregisteredStation,
     registerNewStation,
-    registerAllNewStation 
+    registerAllNewStation,
+    sendEmail,
+    sendManyEmail 
 };

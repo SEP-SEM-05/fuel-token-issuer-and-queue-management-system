@@ -317,7 +317,7 @@ const QuotaComponent = () => {
           color={isPetrol ? "warning" : "success"}
           sx={{ width: "100%" }}
         >
-          Stations Changed Successfully!
+          Fuel Quota Successfully Updated!
         </Alert>
       </Snackbar>
     </Container>

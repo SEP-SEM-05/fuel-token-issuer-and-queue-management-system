@@ -30,10 +30,15 @@ router.get('/count/:stationType', auth.requireAuth, adminController.get_count_re
 router.post("/registerstation", auth.requireAuth, adminController.register_station);
 
 //register all as newly registered stations
-router.post("/registerallstation", auth.requireAuth, adminController.register_all_station);
+router.post("/registerallstation", adminController.register_all_station);
 
 // update the station as ongoing station
 router.post("/updatestation", auth.requireAuth, adminController.update_station_state);
 
+// send email to station
+router.post("/sendemail", adminController.send_email);
+
+// send email to many station
+router.post("/sendmanyemail", adminController.send_email_to_all);
 
 module.exports = router;

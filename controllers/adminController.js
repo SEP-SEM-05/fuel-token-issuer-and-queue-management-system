@@ -6,6 +6,8 @@ const quotaDBHelper = require('../services/quotaDBHelper');
 const stationDBHelper = require('../services/stationDBHelper');
 const vehicleDBHelper = require('../services/vehicleDBHelper');
 
+const nodemailer = require("nodemailer");
+
 const admin_username = process.env.ADMIN_USERNAME
 const admin_psw = process.env.ADMIN_PASSWORD
 
@@ -285,6 +287,90 @@ const get_vehicle = async (req, res) => {
     }
 }
 
+//send email to station
+const send_email = async (req, res) => {
+
+    const msg = {
+        from: "sem05project101@gmail.com",
+        to: req.body.email,
+        subject: "Welcome to Fast Fueler",
+        text: "Now you can go to this link (http://localhost:3000/fuelstationgetstands/"+req.body.regNo+") and login to our system using this temporary password \nTemp password: " + req.body.regNo
+    };
+
+    try{
+        nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: "sem05project101@gmail.com",
+                pass: "vpegnhbfwrcgwsel"
+            },
+        })
+        .sendMail(msg , (err) => {
+            if (err) {
+                return console.log('Error', err)
+            }else{
+                return console.log("Email sent")
+        
+            }
+        })
+        res.json({
+            status: "ok",
+            msg: "Email sent",
+          });
+    }catch(err){
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
+}
+
+//send email to many station
+const send_email_to_all = async (req, res) => {
+
+    let rows = req.body.rows;
+
+    try{
+
+        rows.forEach(station => {
+            const msg = {
+                from: "sem05project101@gmail.com",
+                to: station.email,
+                subject: "Welcome to Fast Fueler",
+                text: "Now you can go to this link (http://localhost:3000/fuelstationgetstands/"+station.registrationNo+") and login to our system using this temporary password \nTemp password: " + station.registrationNo
+            };
+    
+            nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: "sem05project101@gmail.com",
+                    pass: "vpegnhbfwrcgwsel"
+                },
+            })
+            .sendMail(msg , (err) => {
+                if (err) {
+                    return console.log('Error', err)
+                }else{
+                    return console.log("Email sent")
+            
+                }
+            })
+        })
+        res.json({
+            status: "ok",
+            msg: "Email sent",
+          });
+        
+    }catch(err){
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
+}
+
 
 module.exports = {
     get_dashboard,
@@ -296,5 +382,7 @@ module.exports = {
     register_station,
     update_station_state,
     get_newlyregistered_station,
-    register_all_station
+    register_all_station,
+    send_email,
+    send_email_to_all
 }
