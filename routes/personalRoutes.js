@@ -20,4 +20,12 @@ router.post('/changeStations', auth.requireAuth, personalController.change_stati
 router.post('/requestFuel', auth.requireAuth, personalController.request_fuel);
 // router.post('/requestFuel', personalController.request_fuel);
 
+//get unread notification count
+router.get('/notifyCount/:id', auth.requireAuth, personalController.get_unread_notification_count);
+// router.get('/notifyCount/:id', personalController.get_unread_notification_count);
+
+//get all notifications
+router.get('/notifications/:id', auth.requireAuth, personalController.get_all_notifications);
+// router.get('/notifications/:id', personalController.get_all_notifications);
+
 module.exports = router;

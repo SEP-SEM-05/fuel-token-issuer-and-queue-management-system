@@ -49,7 +49,7 @@ const getDashBoard = async (id) => {
         return response.data;
     } 
     catch (err) {
-        // console.log(err);
+        console.log(err);
         return err.response.data;
     }
 }
@@ -118,4 +118,66 @@ const addVehicle = async (data) => {
     }
 }
 
-export { signInPersonal, getDashBoard, changeStations, addVehicle };
+//get the unread notification count
+const getUnreadNotificationCount = async (id) => {
+
+    try {
+
+        const refreshToken = localStorage.getItem("refreshToken");
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        let api = axios.create({
+            baseURL: url,
+            headers: {
+                "x-refresh-token": refreshToken ? "Bearer " + refreshToken : undefined,
+                "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+            },
+        });
+
+        let response = await api.get(
+            `personal/notifyCount/${id}`
+        )
+
+        if(response.headers["x-access-token"]){
+            sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+        }
+        return response.data;
+    } 
+    catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+}
+
+//get all notifications
+const getNotifications = async (id) => {
+
+    try {
+
+        const refreshToken = localStorage.getItem("refreshToken");
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        let api = axios.create({
+            baseURL: url,
+            headers: {
+                "x-refresh-token": refreshToken ? "Bearer " + refreshToken : undefined,
+                "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+            },
+        });
+
+        let response = await api.get(
+            `personal/notifications/${id}`
+        )
+
+        if(response.headers["x-access-token"]){
+            sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+        }
+        return response.data;
+    } 
+    catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+}
+
+export { signInPersonal, getDashBoard, changeStations, addVehicle, getUnreadNotificationCount, getNotifications };

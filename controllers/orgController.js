@@ -5,6 +5,7 @@ require('dotenv').config();
 const orgDBHelper = require('../services/orgDBHelper');
 const stationDBHelper = require('../services/stationDBHelper');
 const vehicleDBHelper = require('../services/vehicleDBHelper');
+const notificationDBHelper = require('../services/notificationDBHelper');
 
 const auth = require('../middleware/auth');
 const encHandler = require('../middleware/encryptionHandler');
@@ -300,9 +301,103 @@ const request_fuel = async (req, res) => {
     }
 }
 
+// get unread notification count
+const get_unread_notification_count = async (req, res) => {
+
+    let id = req.params.id;
+
+    try {
+
+        let user = await orgDBHelper.findClientByID(id);
+
+        if (user !== null) {
+
+            let count = await notificationDBHelper.getUnreadNotificationCount(user.registrationNo);
+
+            res.json({
+                status: 'ok',
+                notifyCount: count,
+            });
+        }
+        else {
+            res.status(400).json({
+                status: 'error',
+                error: 'Invalid User!'
+            });
+        }
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
+}
+
+//get all notifications
+const get_all_notifications = async (req, res) => {
+
+    let id = req.params.id;
+
+    try {
+
+        let user = await orgDBHelper.findClientByID(id);
+
+        if (user !== null) {
+
+            let notifications = await notificationDBHelper.getNotifications(user.registrationNo);
+
+            let return_notifications = [];
+            for(let i = 0; i < notifications.length; i++){
+
+                let created_date = new Date(notifications[i].createdAt);
+                
+                let hours24 = created_date.getHours();
+                let hours12 = (hours24 === 0 ? 0 : hours24 > 12 ? hours24 - 12 : hours24);
+                let minutes = created_date.getMinutes();
+                let am_pm = (hours24 < 12 ? "AM" : "PM");
+                let time_created = String(hours12).padStart(2, '0') + ":" + String(minutes).padStart(2, '0') + " " + am_pm;
+
+                let return_not = {};
+
+                return_not['_id'] = notifications[i]._id;
+                return_not['isRead'] = notifications[i].isRead;
+                return_not['title'] = notifications[i].title;
+                return_not['msg'] = notifications[i].msg;
+                return_not['time'] = time_created;
+
+                return_notifications.push(return_not);
+            }
+
+            await notificationDBHelper.mark_as_read(user.registrationNo);
+
+            res.json({
+                status: 'ok',
+                notifications: return_notifications,
+            });
+        }
+        else {
+            res.status(400).json({
+                status: 'error',
+                error: 'Invalid User!'
+            });
+        }
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
+}
+
 module.exports = {
     get_dashboard,
     get_vehicles,
     change_stations,
     request_fuel,
+    get_unread_notification_count,
+    get_all_notifications,
 }

@@ -32,8 +32,25 @@ const addNewNotifications = async (dataArr) => {
     return result;
 }
 
+//get unread notification count that matches a given regNo(nic)
+const getUnreadNotificationCount = async (regNo) => {
 
+    let count = await Notification.count({regNo: regNo, isRead: false});
+    return count;
+}
 
+//get all the notifications given a regNo(nic)
+const getNotifications = async (regNo) => {
 
+    let notifications = await Notification.find({regNo: regNo});
+    return notifications;
+}
 
-module.exports = { addNewNotification, addNewNotifications };
+//mark notification as read given a regNo(nic)
+const mark_as_read = async (regNo) => {
+
+    let result = await Notification.updateMany({regNo: regNo}, {isRead: true});
+    return result;
+}
+
+module.exports = { addNewNotification, addNewNotifications, getUnreadNotificationCount, getNotifications, mark_as_read };

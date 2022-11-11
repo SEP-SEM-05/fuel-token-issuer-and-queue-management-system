@@ -19,6 +19,7 @@ import BellIcon from "@mui/icons-material/Notifications";
 import { NavLink } from "react-router-dom";
 import FUELIMG from "../../../assets/station.gif";
 import useAuth from "../../../utils/providers/AuthProvider";
+import { getUnreadNotificationCount, getNotifications } from "../../../utils/api/organization";
 import {
     Badge,
     Grid,
@@ -43,36 +44,41 @@ function DrawerAppBar() {
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
     const [anchorElNotf, setAnchorElNotf] = React.useState(null);
-    const [notifications] = React.useState([
-        {
-            nid: 0,
-            read: 0,
-            title: "notification 01",
-            msg: "sample msg smaple msg sample msg as the sample msg...",
-            time: "11:12AM",
-        },
-        {
-            nid: 1,
-            read: 0,
-            title: "notification 02",
-            msg: "sample msg smaple msg sample msg...",
-            time: "11:12AM",
-        },
-        {
-            nid: 2,
-            read: 1,
-            title: "notification 03",
-            msg: "sample msg smaple msg sample msg...",
-            time: "11:12AM",
-        },
-        {
-            nid: 3,
-            read: 1,
-            title: "notification 04",
-            msg: "sample msg smaple msg sample msg...",
-            time: "11:12AM",
-        },
-    ]);
+    const [notificationCount, setNotificationCount] = React.useState(0);
+    const [notifications, setNotifications] = React.useState([]);
+
+    React.useEffect(() => {
+
+        async function fetchData() {
+
+            let response = await getUnreadNotificationCount(user.data.id);
+
+            let status = response.status;
+
+            if (status === 'ok') {
+
+                setNotificationCount(response.notifyCount);
+            }
+            else if (status === 'auth-error') {
+
+                // sessionStorage.clear();
+                // localStorage.clear();
+
+                console.log(response.error);
+                document.location = '/';
+            }
+            else {
+
+                // sessionStorage.clear();
+                // localStorage.clear();
+
+                console.log(response.error);
+                // document.location = '/';
+            }
+        }
+
+        fetchData();
+    }, []);
 
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
@@ -82,8 +88,34 @@ function DrawerAppBar() {
         setAnchorElUser(null);
     };
 
-    const handleOpenNotfMenu = (event) => {
+    const handleOpenNotfMenu = async (event) => {
+
         setAnchorElNotf(event.currentTarget);
+
+        let response = await getNotifications(user.data.id);
+
+        let status = response.status;
+
+        if (status === 'ok') {
+            setNotifications(response.notifications);
+            setNotificationCount(0);
+        }
+        else if (status === 'auth-error') {
+
+            // sessionStorage.clear();
+            // localStorage.clear();
+
+            console.log(response.error);
+            document.location = '/';
+        }
+        else {
+
+            // sessionStorage.clear();
+            // localStorage.clear();
+
+            console.log(response.error);
+            // document.location = '/';
+        }
     };
 
     const handleCloseNotfMenu = () => {
@@ -183,7 +215,7 @@ function DrawerAppBar() {
                         </Box>
                         <Box sx={{ display: "flex", alignItems: "center" }}>
                             <IconButton sx={{ pr: 2 }} onClick={handleOpenNotfMenu}>
-                                <Badge badgeContent={4} color="secondary">
+                                <Badge badgeContent={notificationCount} color="secondary">
                                     <BellIcon sx={{ color: "white" }} />
                                 </Badge>
                             </IconButton>
@@ -212,10 +244,10 @@ function DrawerAppBar() {
                                 {notifications.map((notification) => {
                                     return (
                                         <MenuItem
-                                            key={notification.nid}
+                                            key={notification._id}
                                             sx={{
                                                 borderBottom: "1px solid #e8eaf6",
-                                                backgroundColor: notification.read ? "" : "#e3f2fd",
+                                                backgroundColor: notification.isRead ? "" : "#e3f2fd",
                                             }}
                                         >
                                             <Grid
