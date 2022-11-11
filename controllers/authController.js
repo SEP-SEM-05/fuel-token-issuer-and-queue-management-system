@@ -41,7 +41,7 @@ const register_post_personal = async (req, res) => {
                 fullName: fullName,
             },
         });
-    } 
+    }
     catch (err) {
 
         console.log(err);
@@ -71,7 +71,7 @@ const register_post_org = async (req, res) => {
                 status: "error",
                 error: "Invalid Registration No.!",
             });
-        } 
+        }
         else if (orgClient.isRegistered) {
 
             res.status(400).json({
@@ -104,7 +104,7 @@ const register_post_org = async (req, res) => {
                 },
             });
         }
-    } 
+    }
     catch (err) {
 
         console.log(err);
@@ -140,7 +140,7 @@ const login_post_admin = async (req, res) => {
                 status: "ok",
                 userType: "admin",
             });
-        } 
+        }
         else {
 
             res.status(400).json({
@@ -148,7 +148,7 @@ const login_post_admin = async (req, res) => {
                 error: "Authentication error!",
             });
         }
-    } 
+    }
     catch (err) {
 
         console.error(err);
@@ -171,14 +171,23 @@ const login_post_personal = async (req, res) => {
 
         if (user !== null) {
 
-            //check is verified
-
             let password_check = await encHandler.checkEncryptedCredential(
                 password,
                 user.password
             );
 
             if (password_check) {
+
+                // //check is verified
+                // if (!user.isVerified) {
+                //     res.status(400).json({
+                //         status: "error",
+                //         error: "Unverified User!",
+                //     });
+                // }
+                // else{
+                //     // the rest
+                // }
 
                 let token_data = {
                     userType: 'personal',
@@ -207,7 +216,7 @@ const login_post_personal = async (req, res) => {
                 };
 
                 res.json(return_data);
-            } 
+            }
             else {
 
                 res.status(400).json({
@@ -215,7 +224,7 @@ const login_post_personal = async (req, res) => {
                     error: "Authentication error!",
                 });
             }
-        } 
+        }
         else {
 
             res.status(400).json({
@@ -223,7 +232,7 @@ const login_post_personal = async (req, res) => {
                 error: "Authentication error!",
             });
         }
-    } 
+    }
     catch (err) {
 
         console.log(err);
@@ -246,14 +255,23 @@ const login_post_org = async (req, res) => {
 
         if (user !== null) {
 
-            //check is verified
-
             let password_check = await encHandler.checkEncryptedCredential(
                 password,
                 user.password
             );
 
             if (password_check) {
+
+                // //check is verified
+                // if (!user.isVerified) {
+                //     res.status(400).json({
+                //         status: "error",
+                //         error: "Unverified User!",
+                //     });
+                // }
+                // else{
+                //     // the rest
+                // }
 
                 let token_data = {
                     userType: 'organization',
@@ -281,21 +299,21 @@ const login_post_org = async (req, res) => {
                     },
                 };
                 res.json(return_data);
-            } 
+            }
             else {
                 res.status(400).json({
                     status: "error",
                     error: "Authentication error!",
                 });
             }
-        } 
+        }
         else {
             res.status(400).json({
                 status: "error",
                 error: "Authentication error!",
             });
         }
-    } 
+    }
     catch (err) {
         console.log(err);
         res.status(500).json({
@@ -307,7 +325,7 @@ const login_post_org = async (req, res) => {
 
 //post station login details
 const login_post_station = async (req, res) => {
-    
+
     const registrationNo = req.body.registrationNo;
     const password = req.body.password;
 
@@ -316,7 +334,7 @@ const login_post_station = async (req, res) => {
         const user = await stationDBHelper.findStationByRegNo(registrationNo);
 
         if (user !== null) {
-            
+
             let password_check = await encHandler.checkEncryptedCredential(
                 password,
                 user.password
@@ -351,7 +369,7 @@ const login_post_station = async (req, res) => {
                 };
 
                 res.json(return_data);
-            } 
+            }
             else {
 
                 res.status(400).json({
@@ -359,15 +377,15 @@ const login_post_station = async (req, res) => {
                     error: "Authentication error!",
                 });
             }
-        } 
+        }
         else {
-            
+
             res.status(400).json({
                 status: "error",
                 error: "Authentication error!",
             });
         }
-    } 
+    }
     catch (err) {
 
         console.log(err);
