@@ -35,6 +35,7 @@
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "fs": "^0.0.1-security",
+    "generate-password": "^1.7.0",
     "jsonwebtoken": "^8.5.1",
     "mocha": "^10.0.0",
     "mockgoose": "^8.0.4",

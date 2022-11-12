@@ -5,8 +5,10 @@ require('dotenv').config();
 const quotaDBHelper = require('../services/quotaDBHelper');
 const stationDBHelper = require('../services/stationDBHelper');
 const vehicleDBHelper = require('../services/vehicleDBHelper');
+const personalDBHelper = require('../services/personalDBHelper');
 
 const nodemailer = require("nodemailer");
+const generator = require('generate-password');
 
 const admin_username = process.env.ADMIN_USERNAME
 const admin_psw = process.env.ADMIN_PASSWORD
@@ -181,7 +183,7 @@ const get_count_registered_station = async (req, res) => {
             res.json({
                 status: 'ok',
                 stationCount: stationCount,
-            });
+            }); 
         }
         else{
             res.status(400).json({
@@ -257,18 +259,17 @@ const get_newlyregistered_station = async (req, res) => {
     }
 }
 
-//get all vehicles info 
-const get_vehicle = async (req, res) => {
-
+//find all personal clients
+const get_clients = async (req, res) => {
 
     try{
 
-        let vehicles = await vehicleDBHelper.findAllVehicles();
-        console.log(vehicle)
-        if(vehicles !== null){
+        let clients = await personalDBHelper.findAllClient();
+        console.log(clients)
+        if(clients !== null){
             res.json({
                 status: 'ok',
-                vehicle: vehicle,
+                clients: clients,
             });
         }
         else{
@@ -287,17 +288,106 @@ const get_vehicle = async (req, res) => {
     }
 }
 
+//find all personal client vehicles
+const get_personal_vehicles = async (req, res) => {
+
+    const vehicleList = [];
+
+    try{
+
+        let clients = await personalDBHelper.findAllClient();
+
+        for (let i = 0; i < clients.length; i++ ) {
+            let client = clients[i]
+            let vehicles = await vehicleDBHelper.findAllByNic(client.nic);
+            //console.log(vehicles)
+            vehicles.forEach(async veh => {
+                vehicleList.push(veh)
+            })
+        }
+        if(vehicleList !== null){
+                
+            res.json({
+                status: 'ok',
+                vehicleList: vehicleList,
+            });
+        }
+        else{
+            res.status(400).json({
+                status: 'error',
+                error: 'Invalid Vehicle!'
+            });
+        }
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
+}
+
+//find the personal registered vehicles of a given vehicle type
+const get_type_personal_vehicles = async (req, res) => {
+    
+    let type = req.params.type;
+    const vehicleList = [];
+
+    try{
+
+        let clients = await personalDBHelper.findAllClient();
+
+        for (let i = 0; i < clients.length; i++ ) {
+            let client = clients[i]
+            let vehicles = await vehicleDBHelper.findTypeAllByNic(client.nic,type);
+            //console.log(vehicles)
+            vehicles.forEach(async veh => {
+                vehicleList.push(veh)
+            })
+        }
+        if(vehicleList !== null){
+                
+            res.json({
+                status: 'ok',
+                vehicleList: vehicleList,
+            });
+        }
+        else{
+            res.status(400).json({
+                status: 'error',
+                error: 'Invalid Vehicle!'
+            });
+        }
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
+}
+
 //send email to station
 const send_email = async (req, res) => {
+    let regNo = req.body.regNo;
+
+    const password = generator.generate({
+        length: 10,
+        numbers: true
+    });
 
     const msg = {
         from: "sem05project101@gmail.com",
         to: req.body.email,
         subject: "Welcome to Fast Fueler",
-        text: "Now you can go to this link (http://localhost:3000/fuelstationgetstands/"+req.body.regNo+") and login to our system using this temporary password \nTemp password: " + req.body.regNo
+        text: "Now you can go to this link (http://localhost:3000/fuelstationgetstands/"+regNo+") and login to our system using this temporary password \nTemp password: " + password
     };
 
     try{
+
+        let result = await stationDBHelper.saveTempPass(regNo,password);
         nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -328,17 +418,26 @@ const send_email = async (req, res) => {
 
 //send email to many station
 const send_email_to_all = async (req, res) => {
-
+    
     let rows = req.body.rows;
 
     try{
 
-        rows.forEach(station => {
+        rows.forEach(async station => {
+
+            let regNo = station.registrationNo;
+            const password = generator.generate({
+                length: 10,
+                numbers: true
+            });
+
+            let result = await stationDBHelper.saveTempPass(regNo,password);
+
             const msg = {
                 from: "sem05project101@gmail.com",
                 to: station.email,
                 subject: "Welcome to Fast Fueler",
-                text: "Now you can go to this link (http://localhost:3000/fuelstationgetstands/"+station.registrationNo+") and login to our system using this temporary password \nTemp password: " + station.registrationNo
+                text: "Now you can go to this link (http://localhost:3000/fuelstationgetstands/"+regNo+") and login to our system using this temporary password \nTemp password: " + password
             };
     
             nodemailer.createTransport({
@@ -376,7 +475,7 @@ module.exports = {
     get_dashboard,
     get_registered_station,
     get_unregistered_station,
-    get_vehicle,
+    get_clients,
     get_count_registered_station,
     update_fuel_quota,
     register_station,
@@ -384,5 +483,7 @@ module.exports = {
     get_newlyregistered_station,
     register_all_station,
     send_email,
-    send_email_to_all
+    send_email_to_all,
+    get_personal_vehicles,
+    get_type_personal_vehicles,
 }

@@ -41,4 +41,13 @@ router.post("/sendemail", adminController.send_email);
 // send email to many station
 router.post("/sendmanyemail", adminController.send_email_to_all);
 
+//get all personal clients info
+router.get('/personalclient', adminController.get_clients);
+
+//get all personal client vehicles info
+router.get('/personalvehicle', adminController.get_personal_vehicles);
+
+//find the personal registered vehicles of a given vehicle type
+router.get('/typepersonalvehicle/:type', adminController.get_type_personal_vehicles);
+
 module.exports = router;

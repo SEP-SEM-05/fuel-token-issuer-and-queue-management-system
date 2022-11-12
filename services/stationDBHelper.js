@@ -107,6 +107,16 @@ const updateStationState = async (regNo) => {
     return result;
 }
 
+// save station temp password
+const saveTempPass = async (regNo, password) => {
+
+    let result = await Station.findOneAndUpdate(
+      { registrationNo: regNo },
+      { password: password }
+    );
+    return result;
+}
+
 module.exports = {
   saveRefreshToken,
   findStationByRegNo,
@@ -119,5 +129,6 @@ module.exports = {
   registerStation,
   updateStationState,
   findAllNewlyregisteredStations,
-  registerAllStation
+  registerAllStation,
+  saveTempPass
 };

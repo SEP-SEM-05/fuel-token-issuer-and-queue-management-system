@@ -43,9 +43,17 @@ const findClientByID = async (id) => {
     return client;
 }
 
+//find all personal clients
+const findAllClient = async (id) => {
+
+    let clients = await Personal.find();
+    return clients;
+}
+
 module.exports = {
     saveClient,
     saveRefreshToken,
     findClientByNic,
     findClientByID,
+    findAllClient,
 }
