@@ -9,6 +9,8 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { getStand } from "../../../utils/api/fuelStation";
+import { useNavigate } from "react-router-dom";
 
 const darkTheme = createTheme({
   palette: {
@@ -17,6 +19,30 @@ const darkTheme = createTheme({
 });
 
 export default function StationGetStand() {
+
+  const regNo = window.location.pathname.slice(-10);
+  const navigate = useNavigate();
+
+  const [tempPassword, setTempPassword] = React.useState();
+  const [password, setPassword] = React.useState();
+
+  const onSubmit = async (data) => {
+
+    let response = await getStand({
+      regNo: regNo,
+      tempPassword: data.temppass,
+      password: data.newpassword
+    });
+
+    if (response.status === 'ok') {
+
+      navigate('/fuelstation', { replace: true });
+    }
+    else {
+        //handle error
+        // clear browser storages
+    }
+  }
 
   //Form validation regex
   const passwordRegExp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
@@ -35,8 +61,6 @@ export default function StationGetStand() {
     confirmpassword: Yup.string().oneOf([Yup.ref('newpassword')], "Password not matches").required('Required')
   })
 
-  const onSubmit = (data) => console.log(data);
-
   //variables and functions for show password and hide password
   const [values, setValues] = React.useState({
     showPass: false,
@@ -54,6 +78,7 @@ export default function StationGetStand() {
       showConfirmPass: !values.showConfirmPass,
     });
   };
+
 
   return (
     <ThemeProvider theme={darkTheme}>

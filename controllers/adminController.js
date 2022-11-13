@@ -373,7 +373,7 @@ const get_type_personal_vehicles = async (req, res) => {
 const send_email = async (req, res) => {
     let regNo = req.body.regNo;
 
-    const password = generator.generate({
+    let password = generator.generate({
         length: 10,
         numbers: true
     });
@@ -387,7 +387,8 @@ const send_email = async (req, res) => {
 
     try{
 
-        let result = await stationDBHelper.saveTempPass(regNo,password);
+        password = await encHandler.encryptCredential(password);
+        await stationDBHelper.saveTempPass(regNo,password);
         nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -426,12 +427,13 @@ const send_email_to_all = async (req, res) => {
         rows.forEach(async station => {
 
             let regNo = station.registrationNo;
-            const password = generator.generate({
+            let password = generator.generate({
                 length: 10,
                 numbers: true
             });
 
-            let result = await stationDBHelper.saveTempPass(regNo,password);
+            let enpassword = await encHandler.encryptCredential(password);
+            await stationDBHelper.saveTempPass(regNo,enpassword);
 
             const msg = {
                 from: "sem05project101@gmail.com",

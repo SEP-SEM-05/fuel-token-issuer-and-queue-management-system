@@ -24,4 +24,7 @@ router.post('/loginOrg', authController.login_post_org);
 //station login
 router.post('/loginStation', authController.login_post_station);
 
+//station get stand
+router.post('/getStandStation', authController.getstand_post_station);
+
 module.exports = router;

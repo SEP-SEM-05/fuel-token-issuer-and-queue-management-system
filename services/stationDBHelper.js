@@ -19,6 +19,14 @@ const findStationByRegNo = async (registrationNo) => {
     return station;
 }
 
+//find any station given the registration No.
+const findAnyStationByRegNo = async (registrationNo) => {
+
+    let station = await Station.findOne({ registrationNo});
+    
+    return station;
+}
+
 //find a stationgiven the _id
 const findStationByID = async (id) => {
 
@@ -117,9 +125,20 @@ const saveTempPass = async (regNo, password) => {
     return result;
 }
 
+// get start station
+const getStartStation = async (regNo, password) => {
+
+    let result = await Station.findOneAndUpdate(
+      { registrationNo: regNo },
+      { password: password, isRegistered: true }
+    );
+    return result;
+}
+
 module.exports = {
   saveRefreshToken,
   findStationByRegNo,
+  findAnyStationByRegNo,
   findStationByID,
   findAllRegisteredStations,
   findAllUnregisteredStations,
@@ -130,5 +149,6 @@ module.exports = {
   updateStationState,
   findAllNewlyregisteredStations,
   registerAllStation,
-  saveTempPass
+  saveTempPass,
+  getStartStation
 };

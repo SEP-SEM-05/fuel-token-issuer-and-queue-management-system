@@ -116,6 +116,84 @@ const register_post_org = async (req, res) => {
     }
 };
 
+//post station get stand details
+const getstand_post_station = async (req, res) => {
+
+    const regNo = req.body.regNo;
+    const tempPassword = req.body.tempPassword;
+    let password = req.body.password;
+
+    try {
+
+        const station = await stationDBHelper.findAnyStationByRegNo(regNo);
+
+        if (station !== null) {
+
+            let password_check = await encHandler.checkEncryptedCredential(
+                tempPassword,
+                station.password
+            );
+
+            if (password_check) {
+
+                password = await encHandler.encryptCredential(password);
+
+                await stationDBHelper.getStartStation(regNo, password);
+
+                let token_data = {
+                    userType: 'station',
+                    id: station._id,
+                    regNo
+                };
+
+                let accessToken = auth.createAccessToken(token_data);
+                let refreshToken = auth.createRefreshToken(token_data);
+
+                await stationDBHelper.saveRefreshToken(refreshToken, station._id);
+
+                res.header("x-access-token", accessToken);
+                res.header("x-refresh-token", refreshToken);
+
+                let name = station.name;
+
+                return_data = {
+                    status: "ok",
+                    userType: "station",
+                    data: {
+                        registrationNo: regNo,
+                        id: station._id,
+                        name: name,
+                    },
+                };
+
+                res.json(return_data);
+
+            }else {
+
+                res.status(400).json({
+                    status: "error",
+                    error: "Authentication error!",
+                });
+            }
+        } 
+        else {
+
+            res.status(400).json({
+                status: "error",
+                error: "Invalid Registration No.!",
+            });
+        }
+    } 
+    catch (err) {
+
+        console.log(err);
+        res.status(500).json({
+            status: "error",
+            error: "Internal server error!",
+        });
+    }
+};
+
 //admin login
 const login_post_admin = async (req, res) => {
 
@@ -378,6 +456,7 @@ const login_post_station = async (req, res) => {
 module.exports = {
     register_post_personal,
     register_post_org,
+    getstand_post_station,
     login_post_admin,
     login_post_personal,
     login_post_org,
