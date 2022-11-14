@@ -45,6 +45,13 @@ const updateFullQuotas = async (regNo, fullQuotas) => {
     return result;
 }
 
+//find all org clients
+const findAllClient = async () => {
+
+    let clients = await Org.find();
+    return clients;
+}
+
 module.exports = {
     saveClient,
     saveRefreshToken,
@@ -52,4 +59,5 @@ module.exports = {
     findClientByID,
     updateStations,
     updateFullQuotas,
+    findAllClient,
 }

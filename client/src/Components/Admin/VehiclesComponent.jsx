@@ -1,20 +1,88 @@
-import * as React from "react";
+import React, { useState, useEffect } from 'react';
 import { Grid, Typography } from "@mui/material";
 import Container from "@mui/material/Container";
 import Chart from "react-apexcharts";
+import { getVehicleCount } from '../../utils/api/admin';
 
 const VehiclesComponent = () => {
+
+  const [vehicleType, setVehicleType] = useState(["A-Bicycle", "B-Car"]);
+  const [vehicleCount, setVehicleCount] = useState([]);
+
+  useEffect(() => {
+
+    async function fetchData() {
+
+        const vehicleCount = [];
+
+        try {
+
+          vehicleType.forEach(async type => {
+          
+            let response = await getVehicleCount(type);
+
+            let count = response.vehicleCount; 
+
+            if (response.status === 'ok') {
+              console.log(count);
+              vehicleCount.push(count)
+              console.log(vehicleCount);
+
+              
+            }
+            else {
+                console.log(response.error);
+            }
+          })
+
+          setVehicleCount(vehicleCount);
+
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    fetchData();
+    
+  }, []);
+
+
+
+
+
+  // // Personal vehicles details
+  // const options1 = {
+  //   labels: [
+  //     "Motorcycle",
+  //     "Three-wheeler",
+  //     "Vans",
+  //     "Cars",
+  //     "Land-vehicle",
+  //     "Lorries",
+  //     "Buses",
+  //   ],
+  //   plotOptions: {
+  //     pie: {
+  //       donut: {
+  //         size: "60px",
+  //         labels: {
+  //           show: true,
+  //           total: {
+  //             show: true,
+  //             fontSize: "20px",
+  //             color: "#000000",
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // };
+  // const series1 = [70109, 15546, 9658, 23879, 9237, 13456, 14789];
+
   // Personal vehicles details
   const options1 = {
-    labels: [
-      "Motorcycle",
-      "Three-wheeler",
-      "Vans",
-      "Cars",
-      "Land-vehicle",
-      "Lorries",
-      "Buses",
-    ],
+    labels: vehicleType,
     plotOptions: {
       pie: {
         donut: {
@@ -31,7 +99,8 @@ const VehiclesComponent = () => {
       },
     },
   };
-  const series1 = [70109, 15546, 9658, 23879, 9237, 13456, 14789];
+  const [series1, setSeries1] = useState(vehicleCount);
+  console.log(series1)
 
   //Organization vehicles details
   const options2 = {

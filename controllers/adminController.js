@@ -6,6 +6,7 @@ const quotaDBHelper = require('../services/quotaDBHelper');
 const stationDBHelper = require('../services/stationDBHelper');
 const vehicleDBHelper = require('../services/vehicleDBHelper');
 const personalDBHelper = require('../services/personalDBHelper');
+const orgDBHelper = require('../services/orgDBHelper');
 
 const nodemailer = require("nodemailer");
 const generator = require('generate-password');
@@ -350,7 +351,89 @@ const get_type_personal_vehicles = async (req, res) => {
                 
             res.json({
                 status: 'ok',
+                vehicleCount: vehicleList.length,
+            });
+        }
+        else{
+            res.status(400).json({
+                status: 'error',
+                error: 'Invalid Vehicle!'
+            });
+        }
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
+}
+
+//find all org client vehicles
+const get_org_vehicles = async (req, res) => {
+
+    const vehicleList = [];
+
+    try{
+
+        let clients = await orgDBHelper.findAllClient();
+
+        for (let i = 0; i < clients.length; i++ ) {
+            let client = clients[i]
+            let vehicles = await vehicleDBHelper.findAllByregistrationNoArray(client.vehicles);
+            //console.log(vehicles)
+            vehicles.forEach(async veh => {
+                vehicleList.push(veh)
+            })
+        }
+        if(vehicleList !== null){
+                
+            res.json({
+                status: 'ok',
                 vehicleList: vehicleList,
+            });
+        }
+        else{
+            res.status(400).json({
+                status: 'error',
+                error: 'Invalid Vehicle!'
+            });
+        }
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).json({
+            status: 'error',
+            error: 'Internal server error!'
+        });
+    }
+}
+
+//find one type vehicles of an organization using the registration No. array
+const get_type_org_vehicles = async (req, res) => {
+    
+    let type = req.params.type;
+    const vehicleList = [];
+
+    try{
+
+        let clients = await orgDBHelper.findAllClient();
+
+        for (let i = 0; i < clients.length; i++ ) {
+            let client = clients[i]
+            let vehicles = await vehicleDBHelper.findTypeAllByregistrationNoArray(client.vehicles,type);
+            //console.log(vehicles)
+            vehicles.forEach(async veh => {
+                vehicleList.push(veh)
+            })
+        }
+        if(vehicleList !== null){
+                
+            res.json({
+                status: 'ok',
+                vehicleCount: vehicleList,
+                //...................................................
             });
         }
         else{
@@ -488,4 +571,6 @@ module.exports = {
     send_email_to_all,
     get_personal_vehicles,
     get_type_personal_vehicles,
+    get_org_vehicles,
+    get_type_org_vehicles,
 }

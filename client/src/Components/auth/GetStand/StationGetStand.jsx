@@ -11,6 +11,8 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { getStand } from "../../../utils/api/fuelStation";
 import { useNavigate } from "react-router-dom";
+import useAuth from "../../../utils/providers/AuthProvider";
+
 
 const darkTheme = createTheme({
   palette: {
@@ -22,9 +24,7 @@ export default function StationGetStand() {
 
   const regNo = window.location.pathname.slice(-10);
   const navigate = useNavigate();
-
-  const [tempPassword, setTempPassword] = React.useState();
-  const [password, setPassword] = React.useState();
+  const { user, signUser } = useAuth();
 
   const onSubmit = async (data) => {
 
@@ -35,6 +35,8 @@ export default function StationGetStand() {
     });
 
     if (response.status === 'ok') {
+
+      signUser(response);
 
       navigate('/fuelstation', { replace: true });
     }

@@ -44,7 +44,7 @@ const findClientByID = async (id) => {
 }
 
 //find all personal clients
-const findAllClient = async (id) => {
+const findAllClient = async () => {
 
     let clients = await Personal.find();
     return clients;
