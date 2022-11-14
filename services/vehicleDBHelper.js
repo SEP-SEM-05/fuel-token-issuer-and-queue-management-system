@@ -104,9 +104,6 @@ module.exports = {
     updateStationsAndRegister,
     registerAll,
     getQuotas,
-    addToQueue,
-    saveRequest,
-    findWaitingRequest,
     findTypeAllByNic,
     findTypeAllByregistrationNoArray,
 }
