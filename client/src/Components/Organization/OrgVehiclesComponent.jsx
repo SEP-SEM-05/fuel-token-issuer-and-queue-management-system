@@ -2,23 +2,21 @@ import React from "react";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { Box, Chip, Grid } from "@mui/material";
+import { Box, Chip, Grid, Snackbar, Alert, } from "@mui/material";
 import OpacityIcon from "@mui/icons-material/Opacity";
 import { useState, useEffect } from "react";
 import { getVehicles } from "../../utils/api/organization";
 import useAuth from "../../utils/providers/AuthProvider";
 
-const vehicles = [
-    ["ABC 1234", "Diesel", "19/09/2022", "Mortor Car", 40],
-    ["ABD 4234", "Petrol", "17/08/2022", "Mortor Bike", 5],
-    ["ADT 4569", "Petrol", "17/08/2022", "Van", 30],
-];
 
 export default function OrgVehicles() {
 
     const { user, signUser } = useAuth();
 
     const [vehicles, setVehicles] = useState([]);
+    const [openSB, setOpenSB] = React.useState(false);
+    const [isSbError, setIsSbError] = useState(false);
+    const [sbMsg, setSbMsg] = useState("");
 
     useEffect(() => {
 
@@ -42,12 +40,27 @@ export default function OrgVehicles() {
             else {
 
                 console.log(response.error);
-                // document.location = '/';
+
+                setIsSbError(true);
+                setSbMsg(response.error);
+                handleSBOpen();
             }
         }
 
         fetchData();
-    }, [])
+    }, []);
+
+    const handleSBOpen = () => {
+        setOpenSB(true);
+    };
+
+    const handleSBClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        setOpenSB(false);
+    };
 
     return (
         <Box>
@@ -105,6 +118,15 @@ export default function OrgVehicles() {
                         </Card>
                     </Grid>
                 ))}
+                <Snackbar open={openSB} autoHideDuration={6000} onClose={handleSBClose}>
+                    <Alert
+                        onClose={handleSBClose}
+                        severity={isSbError ? "error" : "success"}
+                        sx={{ width: "100%" }}
+                    >
+                        {sbMsg}
+                    </Alert>
+                </Snackbar>
             </Grid>
         </Box>
     );

@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { createTheme } from "@mui/material/styles";
-import { IconButton, InputAdornment, ThemeProvider } from "@mui/material";
+import { IconButton, InputAdornment, ThemeProvider, Snackbar, Alert } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useForm } from "react-hook-form";
@@ -32,6 +32,22 @@ export default function ClientLogin() {
 
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { user, signUser } = useAuth();
+
+    const [openSB, setOpenSB] = React.useState(false);
+    const [isSbError, setIsSbError] = React.useState(false);
+    const [sbMsg, setSbMsg] = React.useState("");
+
+    const handleSBOpen = () => {
+        setOpenSB(true);
+    };
+
+    const handleSBClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        setOpenSB(false);
+    };
 
     const onSubmit = async (data) => {
 
@@ -82,8 +98,12 @@ export default function ClientLogin() {
             }
         }
         else {
-            //handle error
-            // clear browser storages
+
+            console.log(response.error);
+
+            setIsSbError(true);
+            setSbMsg(response.error);
+            handleSBOpen();
         }
     }
 
@@ -212,6 +232,15 @@ export default function ClientLogin() {
                         Copyright © 2022 Fast Fueler
                     </Typography>
                 </Box>
+                <Snackbar open={openSB} autoHideDuration={6000} onClose={handleSBClose}>
+                    <Alert
+                        onClose={handleSBClose}
+                        severity={isSbError ? "error" : "success"}
+                        sx={{ width: "100%" }}
+                    >
+                        {sbMsg}
+                    </Alert>
+                </Snackbar>
             </Box>
         </ThemeProvider>
     );

@@ -22,11 +22,12 @@ const AddVehicle = () => {
     const { user, signUser } = useAuth();
 
     const [openSB, setOpenSB] = useState(false);
-    const [isValueEmpty, setIsValueEmpty] = useState(false);
     const [value, setValue] = useState([]);
     const [regNo, setRegNo] = useState("");
     const [engNo, setEngNo] = useState("");
     const [stationNameandCity, setStationNameandCity] = useState([]);
+    const [isSbError, setIsSbError] = useState(false);
+    const [sbMsg, setSbMsg] = useState("");
 
     useEffect(() => {
 
@@ -53,7 +54,10 @@ const AddVehicle = () => {
                 // localStorage.clear();
 
                 console.log(response.error);
-                // document.location = '/';
+
+                setIsSbError(true);
+                setSbMsg(response.error);
+                handleSBOpen();
             }
         }
 
@@ -78,8 +82,6 @@ const AddVehicle = () => {
 
         if (value.length > 0) {
 
-            setIsValueEmpty(false);
-
             let data = {
                 nic: user.data.nic,
                 registrationNo: regNo,
@@ -96,7 +98,9 @@ const AddVehicle = () => {
                 setValue([]);
                 setRegNo("");
                 setEngNo("");
-
+                
+                setIsSbError(false);
+                setSbMsg("New Vehicle Added Successfully!");
                 handleSBOpen();
             }
             else if (status === 'auth-error') {
@@ -109,14 +113,17 @@ const AddVehicle = () => {
             }
             else {
 
-                // TODO: handle error
                 console.log(response.error);
-                // document.location = '/';
+
+                setIsSbError(true);
+                setSbMsg(response.error);
+                handleSBOpen();
             }
         }
         else {
 
-            setIsValueEmpty(true);
+            setIsSbError(true);
+            setSbMsg("Stations cannot be empty!");
             handleSBOpen();
         }
     }
@@ -248,10 +255,10 @@ const AddVehicle = () => {
             <Snackbar open={openSB} autoHideDuration={3000} onClose={handleSBClose}>
                 <Alert
                     onClose={handleSBClose}
-                    severity={isValueEmpty ? "error" : "success"}
+                    severity={isSbError ? "error" : "success"}
                     sx={{ width: "100%" }}
                 >
-                    {isValueEmpty ? "Stations cannot be empty" : "New Vehicle Added Successfully!"}
+                    {sbMsg}
                 </Alert>
             </Snackbar>
         </Box>
