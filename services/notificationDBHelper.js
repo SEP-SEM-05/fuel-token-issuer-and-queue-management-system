@@ -42,7 +42,7 @@ const getUnreadNotificationCount = async (regNo) => {
 //get all the notifications given a regNo(nic)
 const getNotifications = async (regNo) => {
 
-    let notifications = await Notification.find({regNo: regNo});
+    let notifications = await Notification.find({regNo: regNo}).sort({createdAt: 'desc'});
     return notifications;
 }
 

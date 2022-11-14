@@ -29,7 +29,7 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import QrCode2Icon from "@mui/icons-material/QrCode2";
 import QRCode from "react-qr-code";
 import QRIMG from "../../assets/QR.svg";
-import { getDashBoard, changeStations } from "../../utils/api/organization";
+import { getDashBoard, changeStations, requestFuel } from "../../utils/api/organization";
 import useAuth from "../../utils/providers/AuthProvider";
 
 
@@ -50,8 +50,9 @@ const RequestFuelOrg = () => {
     const [openSB, setOpenSB] = React.useState(false);
     const [stationNameandCity, setStationNameandCity] = useState([]);
     const [changedStations, setChangedStations] = useState([]);
-    const [isValueEmpty, setIsValueEmpty] = useState(false);
     const [qrValue, setQrValue] = useState("");
+    const [isSbError, setIsSbError] = useState(false);
+    const [sbMsg, setSbMsg] = useState("");
 
     useEffect(() => {
 
@@ -86,7 +87,10 @@ const RequestFuelOrg = () => {
             else {
 
                 console.log(response.error);
-                // document.location = '/';
+
+                setIsSbError(true);
+                setSbMsg(response.error);
+                handleSBOpen();
             }
         }
 
@@ -138,8 +142,6 @@ const RequestFuelOrg = () => {
 
         if (value.length > 0) {
 
-            setIsValueEmpty(false);
-
             let data = {
                 registrationNo: user.data.registrationNo,
                 stations: value
@@ -154,6 +156,8 @@ const RequestFuelOrg = () => {
                 setChangedStations(value);
 
                 handleCloseSt();
+                setIsSbError(false);
+                setSbMsg("Stations Changed Successfully!");
                 handleSBOpen();
             }
             else if (status === 'auth-error') {
@@ -167,15 +171,81 @@ const RequestFuelOrg = () => {
             else {
 
                 console.log(response.error);
-                // document.location = '/';
+
+                setIsSbError(true);
+                setSbMsg(response.error);
+                handleSBOpen();
             }
         }
         else {
 
-            setIsValueEmpty(true);
+            setIsSbError(true);
+            setSbMsg("Stations cannot be empty!");
             handleSBOpen();
         }
     };
+
+    const sendFuelRequest = async () => {
+
+        if (fuelType !== "") {
+
+            let remainingQuota = petrolQuota[1];
+            if (fuelType === "Super Diesel" || fuelType === "Auto Diesel") {
+                remainingQuota = dieselQuota[1]
+            }
+
+            if (remainingQuota > 0) {
+
+                let send_data = {};
+                send_data['registrationNo'] = user.data.registrationNo;
+                send_data['fuelType'] = fuelType;
+                send_data['remainingQuota'] = remainingQuota;
+                send_data['stations'] = stations;
+                send_data['priority'] = user.data.priority;
+
+                let response = await requestFuel(send_data);
+
+                let status = response.status;
+
+                if (status === 'ok') {
+
+                    handleClose();
+
+                    setIsSbError(false);
+                    setSbMsg("Fuel request successfull");
+                    handleSBOpen();
+                }
+                else if (status === 'auth-error') {
+
+                    // sessionStorage.clear();
+                    // localStorage.clear();
+
+                    console.log(response.error);
+                    document.location = '/';
+                }
+                else {
+
+                    console.log(response.error);
+
+                    setIsSbError(true);
+                    setSbMsg(response.error);
+                    handleSBOpen();
+                }
+            }
+            else {
+
+                setIsSbError(true);
+                setSbMsg("Your quota for the week is finished!");
+                handleSBOpen();
+            }
+        }
+        else {
+
+            setIsSbError(true);
+            setSbMsg("Fuel type cannot be empty!");
+            handleSBOpen();
+        }
+    }
 
     return (
         <Box>
@@ -198,15 +268,15 @@ const RequestFuelOrg = () => {
                             label="FuelType"
                             onChange={handleChange}
                         >
-                            <MenuItem value={10}>Auto Diesel</MenuItem>
-                            <MenuItem value={20}>Super Diesel</MenuItem>
-                            <MenuItem value={30}>Petrol 92 Octane</MenuItem>
-                            <MenuItem value={40}>Petrol 95 Octane</MenuItem>
+                            <MenuItem value={"Auto Diesel"}>Auto Diesel</MenuItem>
+                            <MenuItem value={"Super Diesel"}>Super Diesel</MenuItem>
+                            <MenuItem value={"Petrol 92 Octane"}>Petrol 92 Octane</MenuItem>
+                            <MenuItem value={"Petrol 95 Octane"}>Petrol 95 Octane</MenuItem>
                         </Select>
                     </FormControl>
                 </DialogContent>
                 <DialogActions sx={{ pr: 3, pl: 3, pb: 3 }}>
-                    <Button variant="outlined" color={"info"} sx={{ width: "100%" }}>
+                    <Button variant="outlined" color={"info"} sx={{ width: "100%" }} onClick={sendFuelRequest}>
                         Confirm and Request
                     </Button>
                 </DialogActions>
@@ -408,10 +478,10 @@ const RequestFuelOrg = () => {
                 <Snackbar open={openSB} autoHideDuration={6000} onClose={handleSBClose}>
                     <Alert
                         onClose={handleSBClose}
-                        severity={isValueEmpty ? "error" : "success"}
+                        severity={isSbError ? "error" : "success"}
                         sx={{ width: "100%" }}
                     >
-                        {isValueEmpty ? "Stations cannot be empty" : "Stations Changed Successfully!"}
+                        {sbMsg}
                     </Alert>
                 </Snackbar>
             </Grid>

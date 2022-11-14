@@ -140,6 +140,38 @@ const addVehicle = async (data) => {
     }
 }
 
+//request fuel for a vehicle
+const requestFuel = async (data) => {
+
+    try {
+        
+        const refreshToken = localStorage.getItem("refreshToken");
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        let api = axios.create({
+            baseURL: url,
+            headers: {
+                "x-refresh-token": refreshToken ? "Bearer " + refreshToken : undefined,
+                "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+            },
+        });
+
+        let response = await api.post(
+            `personal/requestFuel`,
+            data
+        )
+
+        if(response.headers["x-access-token"]){
+            sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+        }
+        return response.data;
+    } 
+    catch (err) {
+        console.log(err);
+        return err.response.data;
+    }
+}
+
 //get the unread notification count
 const getUnreadNotificationCount = async (id) => {
 
@@ -202,4 +234,4 @@ const getNotifications = async (id) => {
     }
 }
 
-export { signUpPersonal, signInPersonal, getDashBoard, changeStations, addVehicle, getUnreadNotificationCount, getNotifications };
+export { signUpPersonal, signInPersonal, getDashBoard, changeStations, addVehicle, requestFuel, getUnreadNotificationCount, getNotifications };

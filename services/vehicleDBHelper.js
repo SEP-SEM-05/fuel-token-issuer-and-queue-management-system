@@ -52,37 +52,37 @@ const getQuotas = async () => {
     return quotas;
 }
 
-//add a fuel request to queues of all the station based on fuel type
-const addToQueue = async (stations, fuelType, reqId) => {
+// //add a fuel request to queues of all the station based on fuel type
+// const addToQueue = async (stations, fuelType, reqId) => {
 
-    let result = await Queue.updateMany({stationID: {$in: stations}, fuelType}, {$push: { requests: reqId }});
-    return result;
-}
+//     let result = await Queue.updateMany({stationID: {$in: stations}, fuelType}, {$push: { requests: reqId }});
+//     return result;
+// }
 
-//save a fuel request to the database
-const saveRequest = (data) => {
+// //save a fuel request to the database
+// const saveRequest = (data) => {
 
-    return new Promise(async (resolve, reject) => {
+//     return new Promise(async (resolve, reject) => {
 
-        let request = new Request(data);
+//         let request = new Request(data);
 
-        request.save((err) => {
-            if(err){
-                reject(err);
-            }
-            else{
-                resolve(request._id);
-            }
-        });
-    });
-}
+//         request.save((err) => {
+//             if(err){
+//                 reject(err);
+//             }
+//             else{
+//                 resolve(request._id);
+//             }
+//         });
+//     });
+// }
 
-//find any waiting/active requests for a vehicle/organization given the registration No.
-const findWaitingRequest = async (registrationNo, userType) => {
+// //find any waiting/active requests for a vehicle/organization given the registration No.
+// const findWaitingRequest = async (registrationNo, userType) => {
 
-    result = await Request.findOne({registrationNo, userType, state: {$in: ['waiting', 'active']}});
-    return result;
-}
+//     result = await Request.findOne({registrationNo, userType, state: {$in: ['waiting', 'active']}});
+//     return result;
+// }
 
 module.exports = {
     findVehicleByRegNo,
@@ -92,7 +92,7 @@ module.exports = {
     updateStationsAndRegister,
     registerAll,
     getQuotas,
-    addToQueue,
-    saveRequest,
-    findWaitingRequest,
+    // addToQueue,
+    // saveRequest,
+    // findWaitingRequest,
 }

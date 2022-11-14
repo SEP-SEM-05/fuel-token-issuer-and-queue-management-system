@@ -296,6 +296,7 @@ const login_post_org = async (req, res) => {
                         registrationNo: registrationNo,
                         id: user._id,
                         name: name,
+                        priority: user.priority,
                     },
                 };
                 res.json(return_data);

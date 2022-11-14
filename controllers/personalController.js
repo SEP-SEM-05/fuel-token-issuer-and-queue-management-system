@@ -5,6 +5,8 @@ require('dotenv').config();
 const personalDBHelper = require('../services/personalDBHelper');
 const stationDBHelper = require('../services/stationDBHelper');
 const vehicleDBHelper = require('../services/vehicleDBHelper');
+const queueDBHelper = require('../services/queueDBHelper');
+const requestDBHelper = require('../services/requestDBHelper');
 const notificationDBHelper = require('../services/notificationDBHelper');
 
 const auth = require('../middleware/auth');
@@ -196,26 +198,32 @@ const change_stations = async (req, res) => {
 //request fuel for a vehicle
 const request_fuel = async (req, res) => {
 
-    //remaining quota should be more than some value
-    let nic = req.body.nic;
-    let regNo = req.body.registrationNo;
+    let nic = req.body.vehicle.ownerNIC;
+    let regNo = req.body.vehicle.registrationNo;
     let fuelType = req.body.fuelType;
-    let remainingQuota = req.body.remainingQuota;
-    let stations = req.body.stations;
-    let priority = req.body.priority;
+    let remainingQuota = req.body.vehicle.remainingQuota;
+    let req_stations = req.body.vehicle.stations;
+    let priority = req.body.vehicle.priority;
     let userType = 'personal';
 
     try {
 
         //find any opened requests - if any, error
-        let result = await vehicleDBHelper.findWaitingRequest(regNo, userType);
+        let result = await requestDBHelper.findWaitingAndActiveRequest(regNo, userType);
 
         if (!result) {
 
+            let stations = [];
+
+            for(let i = 0; i < req_stations.length; i++){
+                let station_regNo = req_stations[i].split('-')[0].trim();
+                stations.push(station_regNo);
+            }
+
             let reqDetails = {
-                userId: nic,
+                userID: nic,
                 userType: userType,
-                registrationNo,
+                registrationNo: regNo,
                 quota: remainingQuota,
                 fuelType,
                 requestedStations: stations,
@@ -223,22 +231,73 @@ const request_fuel = async (req, res) => {
             };
 
             //save request, get _id and add to client details
-            let reqId = await vehicleDBHelper.saveRequest(reqDetails);
+            let reqId = await requestDBHelper.saveRequest(reqDetails);
 
-            let clientDetails = {
-                nic,
-                userType,
-                registrationNo: regNo,
-                quota: remainingQuota,
-                priority
+            // check if there are any announced queues - add to all of them - store notification for each
+            // if not add to all the waiting queues of the selected stations
+
+            let all_station_queues = await queueDBHelper.findQueuesByRegNoAndFuel(stations, fuelType);
+
+            let announced_queue_ids = [];
+            let queue_announced_stations = [];
+
+            let notifications = [];
+
+            for(let i = 0; i < all_station_queues.length; i++){
+
+                if(all_station_queues[i].state === "announced" && all_station_queues[i].requests.length < parseInt(all_station_queues[i].vehicleCount)){
+
+                    announced_queue_ids.push(all_station_queues[i]._id);
+                    queue_announced_stations.push(all_station_queues[i].stationID);
+
+                    let station_str = "";
+                    for(let k = 0; k < req_stations.length; k++){
+
+                        let req_station = req_stations[k].split('-')[0].trim();
+
+                        if(all_station_queues[i].stationID === req_station){
+                            station_str = req_stations[k];
+                            break;
+                        }
+                    }
+
+                    let vehicle_count = parseInt(all_station_queues[i].vehicleCount);
+                    let start_time = new Date(all_station_queues[i].queueStartTime);
+                    let curr_end_time = new Date(all_station_queues[i].estimatedEndTime);
+                    let est_time_for_vehicle = Math.abs(Math.round((start_time.getTime() - curr_end_time.getTime()) / (1000 * 60 * vehicle_count)));
+                    let new_end_time = curr_end_time.setMinutes(curr_end_time.getMinutes() + est_time_for_vehicle);
+
+                    //update the new end time
+                    await queueDBHelper.updateEndTime(new_end_time, all_station_queues[i]._id);
+
+                    let notify_start_time = start_time.toString().split("GMT")[0];
+                    let notify_end_time = curr_end_time.toString().split("GMT")[0];
+
+                    //create notification
+                    let notification = {};
+                    notification['regNo'] = nic;
+                    notification['title'] = "Queue Announcement";
+                    notification['msg'] = `${station_str} will start fuel distribution on ${notify_start_time} and you will be able to take your ${remainingQuota} Liters of ${fuelType} quota around ${notify_end_time} to your ${regNo} vehicle`;
+
+                    notifications.push(notification);
+                }
+            }
+            
+            //save notifications
+            await notificationDBHelper.addNewNotifications(notifications);
+
+            let waiting_queue_ids = [];
+            for(let i = 0; i < all_station_queues.length; i++){
+
+                if(!queue_announced_stations.includes(all_station_queues[i].stationID)){
+                    waiting_queue_ids.push(all_station_queues[i]._id);
+                }
             }
 
-            await vehicleDBHelper.addToQueue(stations, fuelType, reqId);
-            delete clientDetails.requestID;
+            await queueDBHelper.addToQueue(announced_queue_ids.concat(waiting_queue_ids), reqId);
 
             res.json({
                 status: 'ok',
-                data: clientDetails
             });
         }
         else {

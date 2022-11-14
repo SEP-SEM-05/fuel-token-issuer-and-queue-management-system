@@ -27,7 +27,7 @@ import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import QrCode2Icon from "@mui/icons-material/QrCode2";
 import QRCode from "react-qr-code";
 import QRIMG from "../../assets/QR.svg";
-import { getDashBoard, changeStations } from "../../utils/api/personal";
+import { getDashBoard, changeStations, requestFuel } from "../../utils/api/personal";
 import useAuth from "../../utils/providers/AuthProvider";
 
 
@@ -45,8 +45,10 @@ export default function PersonalVehicles() {
     const [vehicles, setVehicles] = React.useState([]);
     const [selectedVehicle, setSelectedVehicle] = useState({});
     const [changedStations, setChangedStations] = useState([]);
-    const [isValueEmpty, setIsValueEmpty] = useState(false);
     const [qrValue, setQrValue] = useState("");
+    const [selectedFuelType, setSelectedFuelType] = useState(false);
+    const [isSbError, setIsSbError] = useState(false);
+    const [sbMsg, setSbMsg] = useState("");
 
     useEffect(() => {
 
@@ -75,7 +77,10 @@ export default function PersonalVehicles() {
                 // localStorage.clear();
 
                 console.log(response.error);
-                // document.location = '/';
+
+                setIsSbError(true);
+                setSbMsg(response.error);
+                handleSBOpen();
             }
         }
 
@@ -129,8 +134,6 @@ export default function PersonalVehicles() {
 
         if (value.length > 0) {
 
-            setIsValueEmpty(false);
-
             let data = {
                 nic: user.data.nic,
                 registrationNo: selectedVehicle.registrationNo,
@@ -146,6 +149,8 @@ export default function PersonalVehicles() {
                 setChangedStations(value);
 
                 handleCloseSt();
+                setIsSbError(false);
+                setSbMsg("Stations Changed Successfully!");
                 handleSBOpen();
             }
             else if (status === 'auth-error') {
@@ -159,15 +164,70 @@ export default function PersonalVehicles() {
             else {
 
                 console.log(response.error);
-                // document.location = '/';
+
+                setIsSbError(true);
+                setSbMsg(response.error);
+                handleSBOpen();
             }
         }
         else {
 
-            setIsValueEmpty(true);
+            setIsSbError(true);
+            setSbMsg("Stations cannot be empty!");
             handleSBOpen();
         }
     };
+
+    const toggleSwitch = () => {
+        setSelectedFuelType(!selectedFuelType);
+    }
+
+    const sendFuelRequest = async () => {
+
+        if (vehicle.remainingQuota > 0) {
+
+            let exactFuelType = vehicle.fuelType === "Petrol" ? (selectedFuelType ? "Petrol 95 Octane" : "Petrol 92 Octane") : (selectedFuelType ? "Super Diesel" : "Auto Diesel");
+
+            let send_data = {};
+            send_data['vehicle'] = vehicle;
+            send_data['fuelType'] = exactFuelType;
+
+            let response = await requestFuel(send_data);
+
+            let status = response.status;
+
+            if (status === 'ok') {
+
+                handleClose();
+
+                setIsSbError(false);
+                setSbMsg("Fuel request successfull");
+                handleSBOpen();
+            }
+            else if (status === 'auth-error') {
+
+                // sessionStorage.clear();
+                // localStorage.clear();
+
+                console.log(response.error);
+                document.location = '/';
+            }
+            else {
+
+                console.log(response.error);
+
+                setIsSbError(true);
+                setSbMsg(response.error);
+                handleSBOpen();
+            }
+        }
+        else {
+
+            setIsSbError(true);
+            setSbMsg("Your quota for the week is finished!");
+            handleSBOpen();
+        }
+    }
 
     return (
         <Box>
@@ -207,13 +267,14 @@ export default function PersonalVehicles() {
                     <Typography variant="subtitle2">
                         {vehicle.fuelType === "Diesel" ? "Super Diesel" : "Petrol 95 Octane"}
                     </Typography>
-                    <Switch color={vehicle.fuelType === "Diesel" ? "success" : "warning"} />
+                    <Switch color={vehicle.fuelType === "Diesel" ? "success" : "warning"} onChange={toggleSwitch} />
                 </DialogActions>
                 <DialogActions sx={{ pr: 3, pl: 3, pb: 3 }}>
                     <Button
                         variant="outlined"
                         color={vehicle.fuelType === "Diesel" ? "success" : "warning"}
                         sx={{ width: "100%" }}
+                        onClick={sendFuelRequest}
                     >
                         Request
                     </Button>
@@ -379,10 +440,10 @@ export default function PersonalVehicles() {
                 <Snackbar open={openSB} autoHideDuration={6000} onClose={handleSBClose}>
                     <Alert
                         onClose={handleSBClose}
-                        severity={isValueEmpty ? "error" : "success"}
+                        severity={isSbError ? "error" : "success"}
                         sx={{ width: "100%" }}
                     >
-                        {isValueEmpty ? "Stations cannot be empty" : "Stations Changed Successfully!"}
+                        {sbMsg}
                     </Alert>
                 </Snackbar>
             </Grid>
