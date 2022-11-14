@@ -13,8 +13,8 @@ const signUpPersonal = async (data) => {
             data
         );
 
-        // localStorage.setItem("refreshToken", response.headers["x-refresh-token"]);
-        // sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+        localStorage.setItem("refreshToken", response.headers["x-refresh-token"]);
+        sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
 
         return response.data;
     } 

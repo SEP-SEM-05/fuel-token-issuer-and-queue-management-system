@@ -5,13 +5,14 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { createTheme } from "@mui/material/styles";
-import { IconButton, InputAdornment, ThemeProvider } from "@mui/material";
+import { IconButton, InputAdornment, ThemeProvider, Snackbar, Alert } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { signUpPersonal } from "../../../utils/api/personal";
+import useAuth from "../../../utils/providers/AuthProvider";
 
 const darkTheme = createTheme({
     palette: {
@@ -50,10 +51,44 @@ export default function SignUpPer() {
         confirmPassword: Yup.string().oneOf([Yup.ref('password')], "Password not matches").required('Required')
     })
 
+    const navigate = useNavigate();
+    
+    const { user, signUser } = useAuth();
+
+    const [openSB, setOpenSB] = React.useState(false);
+    const [isSbError, setIsSbError] = React.useState(false);
+    const [sbMsg, setSbMsg] = React.useState("");
+
+    const handleSBOpen = () => {
+        setOpenSB(true);
+    };
+
+    const handleSBClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        setOpenSB(false);
+    };
+
     const onSubmit = async (data) => {
 
         let response = await signUpPersonal(data);
-        console.log(response);
+        
+        if (response.status === 'ok') {
+
+            signUser(response);
+
+            navigate('/userp', { replace: true });
+        }
+        else {
+
+            console.log(response.error);
+
+            setIsSbError(true);
+            setSbMsg(response.error);
+            handleSBOpen();
+        }
     };
 
     //variables and functions for show password and hide password
@@ -266,6 +301,15 @@ export default function SignUpPer() {
                         Copyright © 2022 Fast Fueler
                     </Typography>
                 </Box>
+                <Snackbar open={openSB} autoHideDuration={6000} onClose={handleSBClose}>
+                    <Alert
+                        onClose={handleSBClose}
+                        severity={isSbError ? "error" : "success"}
+                        sx={{ width: "100%" }}
+                    >
+                        {sbMsg}
+                    </Alert>
+                </Snackbar>
             </Box>
         </ThemeProvider>
     );

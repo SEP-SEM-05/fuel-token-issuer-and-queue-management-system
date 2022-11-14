@@ -30,6 +30,21 @@ const register_post_personal = async (req, res) => {
         await personalDBHelper.saveClient(data);
 
         let user = await personalDBHelper.findClientByNic(nic);
+
+        let token_data = {
+            userType: 'personal',
+            id: user._id,
+            nic
+        };
+
+        let accessToken = auth.createAccessToken(token_data);
+        let refreshToken = auth.createRefreshToken(token_data);
+
+        await personalDBHelper.saveRefreshToken(refreshToken, user._id);
+
+        res.header("x-access-token", accessToken);
+        res.header("x-refresh-token", refreshToken);
+
         let fullName = user.firstName + " " + user.lastName;
 
         res.json({
@@ -92,6 +107,20 @@ const register_post_org = async (req, res) => {
             await orgDBHelper.saveClient(registrationNo, data);
             await vehicleDBHelper.registerAll(orgClient.vehicles);
 
+            let token_data = {
+                userType: 'organization',
+                id: user._id,
+                registrationNo
+            };
+
+            let accessToken = auth.createAccessToken(token_data);
+            let refreshToken = auth.createRefreshToken(token_data);
+
+            await orgDBHelper.saveRefreshToken(refreshToken, user._id);
+
+            res.header("x-access-token", accessToken);
+            res.header("x-refresh-token", refreshToken);
+
             let name = data.name;
 
             res.json({
@@ -101,6 +130,7 @@ const register_post_org = async (req, res) => {
                     registrationNo: registrationNo,
                     id: orgClient._id,
                     name: name,
+                    priority: user.priority,
                 },
             });
         }
