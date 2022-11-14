@@ -43,6 +43,10 @@ const stationSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isNew: {
+      type: Boolean,
+      default: false,
+    },
     capasities: {
       type: Map,
       of: Number, //this is a float value

@@ -4,20 +4,31 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
-import { Box, Button, Divider, Grid } from "@mui/material";
+import { Box, Button, Divider, Grid, Typography, Snackbar, Alert } from "@mui/material";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { getUnregisteredStation } from "../../utils/api/admin";
+import { 
+  getUnregisteredStation, 
+  registerNewStation, 
+  registerAllNewStation, 
+} from "../../utils/api/admin";
 
 
 //main function
 const UnregisteredComponent = () => {
 
   const [rows, setRows] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [regNo, setRegNo] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [contactNo, setContactNo] = useState(null);
+  const [address, setAddress] = useState(null);
+  const [openSB, setOpenSB] = React.useState(false);
+
 
   useEffect(() => {
 
@@ -48,14 +59,9 @@ const UnregisteredComponent = () => {
 
     fetchData();
     
-  }, []);
+  }, [open]);
 
-  const [open, setOpen] = useState(false);
-  const [regNo, setRegNo] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [contactNo, setContactNo] = useState(null);
-  const [address, setAddress] = useState(null);
-
+  
   const handleClickOpen = (row) => {
     setOpen(true);
     setRegNo(row.registrationNo);
@@ -65,6 +71,47 @@ const UnregisteredComponent = () => {
   };
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const registerStation = async () => {
+
+    let response = await registerNewStation({
+      registrationNo: regNo
+    });
+
+    if (response.status === "ok") {
+      console.log(response);
+    } else {
+      console.log("error");
+    }
+
+    handleClose();
+    handleSBOpen();
+  }
+
+  const registerAllStation = async () => {
+
+    let response = await registerAllNewStation();
+
+    if (response.status === "ok") {
+      console.log(response);
+    } else {
+      console.log("error");
+    }
+
+    //handleClose();  
+    //handleSBOpen();
+  }
+
+  const handleSBOpen = () => {
+    setOpenSB(true);
+  };
+
+  const handleSBClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSB(false);
   };
 
   return (
@@ -110,7 +157,8 @@ const UnregisteredComponent = () => {
             </TableBody>
           </Table>
           <Grid display="flex" justifyContent="center" margin={3}>
-            <Button
+            {rows.length > 0 && <Button
+              onClick={registerAllStation}
               variant="contained"
               color="error"
               sx={{
@@ -120,6 +168,17 @@ const UnregisteredComponent = () => {
             >
               Register All
             </Button>
+            }
+            {rows.length === 0 && <Typography
+              sx={{
+                borderRadius: 1,
+                paddingX: "30px",
+                color: "#ff9966",
+              }}
+            >
+              Currently All Stations are Registered..!
+            </Typography>
+            }
           </Grid>
         </Grid>
       </TableContainer>
@@ -174,11 +233,20 @@ const UnregisteredComponent = () => {
           />
         </DialogContent>
         <DialogActions sx={{ pr: 3, pl: 3, pb: 3 }}>
-          <Button variant="outlined" color="info" sx={{ width: "100%" }}>
+          <Button onClick={registerStation} variant="outlined" color="info" sx={{ width: "100%" }}>
             REGISTER
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar open={openSB} autoHideDuration={4000} onClose={handleSBClose}>
+        <Alert
+          onClose={handleSBClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Station Successfully Registered!
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

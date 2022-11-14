@@ -2,6 +2,29 @@ import baseApi from "./@baseURL";
 import url from "./urlString";
 import axios from "axios";
 
+//fuel station get start
+const getStand = async (data) => {
+  try {
+
+      let response = await baseApi.post(
+          "auth/getStandStation",
+          data
+      );
+      localStorage.setItem(
+          "refreshToken",
+          response.headers["x-refresh-token"]
+      );
+      sessionStorage.setItem(
+          "accessToken",
+          response.headers["x-access-token"]
+      );
+      return response.data;
+  } catch (err) {
+      console.log(err);
+      return err.response.data;
+  }
+};
+
 //fuel station login
 const signIn = async (data) => {
     try {
@@ -172,11 +195,40 @@ const getAnnouncedQueues = async (regNo) => {
   }
 };
 
+// update the state of a fuel queue
+const updateQueue = async (data) => {
+  try {
+    const refreshToken = localStorage.getItem("refreshToken");
+    const accessToken = sessionStorage.getItem("accessToken");
+
+    let api = axios.create({
+      baseURL: url,
+      headers: {
+        "x-refresh-token": refreshToken ? "Bearer " + refreshToken : undefined,
+        "x-access-token": accessToken ? "Bearer " + accessToken : undefined,
+      },
+    });
+
+    let response = await api.post(`station/updatequeue`, data);
+
+    if (response.headers["x-access-token"]) {
+      sessionStorage.setItem("accessToken", response.headers["x-access-token"]);
+    }
+
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    return err.response.data;
+  }
+}
+
 export {
+  getStand,
   signIn,
   getDashBoard,
   getWaitingQueues,
   addFuelAmount,
   announceFuelQueue,
   getAnnouncedQueues,
+  updateQueue,
 };

@@ -27,9 +27,21 @@ const findAllByNic = async (nic) => {
     return vehicles;
 }
 
+//find the personal registered vehicles of a given vehicle type
+const findTypeAllByNic = async (nic,vehType) => {
+    let vehicles = await Vehicle.find({ownerNIC: nic, type: vehType, isRegistered: true});
+    return vehicles;
+}
+
 //find vehicles of an organization using the registration No. array
 const findAllByregistrationNoArray = async (regNoArray) => {
     let vehicles = await Vehicle.find({registrationNo: { $in: regNoArray }});
+    return vehicles;
+}
+
+//find one type vehicles of an organization using the registration No. array
+const findTypeAllByregistrationNoArray = async (regNoArray, vehType) => {
+    let vehicles = await Vehicle.find({registrationNo: { $in: regNoArray }, type: vehType, isRegistered: true});
     return vehicles;
 }
 
@@ -92,7 +104,9 @@ module.exports = {
     updateStationsAndRegister,
     registerAll,
     getQuotas,
-    // addToQueue,
-    // saveRequest,
-    // findWaitingRequest,
+    addToQueue,
+    saveRequest,
+    findWaitingRequest,
+    findTypeAllByNic,
+    findTypeAllByregistrationNoArray,
 }

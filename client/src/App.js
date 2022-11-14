@@ -33,7 +33,7 @@ function App() {
         <Routes>
           <Route index element={<SignIn />} />
           <Route path="signup" element={<SignUp />} />
-          <Route path="fuelstationgetstands" element={<GetStand />} />
+          <Route path="fuelstationgetstands/:id" element={<GetStand />} />
 
           <Route path="fuelstation" element={<StationPrivateRoutes><DashboardContent /></StationPrivateRoutes>}>
             <Route index element={<StockComponent />} />

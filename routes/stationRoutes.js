@@ -19,4 +19,7 @@ router.post("/announcequeue", auth.requireAuth, stationController.announce_fuel_
 // get announced queues
 router.get("/announcedqueues/:regNo", auth.requireAuth, stationController.get_announced_queues); 
 
+// update a queue
+router.post("/updatequeue", auth.requireAuth, stationController.update_queue);
+
 module.exports = router;

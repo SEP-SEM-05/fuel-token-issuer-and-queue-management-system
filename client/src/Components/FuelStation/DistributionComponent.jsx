@@ -10,17 +10,23 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   Grid,
   Tab,
   Tabs,
+  TextField,
   Typography,
 } from "@mui/material";
 import DepartureBoardIcon from "@mui/icons-material/DepartureBoard";
 import MOBILEAPPIMG from "../../assets/mobileApp.png";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import useAuth from "../../utils/providers/AuthProvider";
-import { getAnnouncedQueues } from "../../utils/api/fuelStation";
-
+import { getAnnouncedQueues, updateQueue } from "../../utils/api/fuelStation";
+import OpacityIcon from "@mui/icons-material/Opacity";
+import dayjs from "dayjs";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -54,6 +60,14 @@ const Distribution = () => {
   const [value, setValue] = React.useState(0);
   const [open, setOpen] = React.useState(false);
   const [fuelQueues, setfuelQueues] = React.useState([]);
+  const [openEx, setOpenEx] = React.useState(false);
+  const [today] = React.useState(new Date(new Date().getTime() + 1800000));
+  const [newEndTime, setNewEndTime] = React.useState(null);
+  const [qid, setQid] = React.useState("");
+  const [updateDate, setUpdateData] = React.useState("");
+  const [fuelType, setFuelType] = React.useState("");
+  const [vehicleCount, setVehicleCount] = React.useState("");
+  
 
   React.useEffect(() => {
     async function fetchData() {
@@ -74,16 +88,15 @@ const Distribution = () => {
           time = [st.toString().split("GMT")[0], 0];
         } else if (q.state === "announced" && st.getTime() <= now.getTime() && et.getTime() > now.getTime()) {
           time = [et.toString().split("GMT")[0], 1];
-          // set state to active
-        } else if (q.state === "announced" && st.getTime() <= now.getTime() && et.getTime() <= now.getTime()) {
-          //open the dialog
-          console.log("open dialog");
+          let updated = await updateQueue({id:q._id, state:"active", nf:"start"});
+          setUpdateData(updated);
+        } else if (q.state === "announced" && st.getTime() <= now.getTime() && et.getTime() <= now.getTime()) {       
+          handleClickOpenEx(q._id, q.fuelType, q.vehicleCount);
           time = [et.toString().split("GMT")[0], 1];
         }else if (q.state === "active" && et.getTime() > now.getTime()) {
           time = [et.toString().split("GMT")[0], 1];
         } else if (q.state === "active" && et.getTime() <= now.getTime()) {
-          //open the dialog
-          console.log("open dialog");
+          handleClickOpenEx(q._id, q.fuelType, q.vehicleCount);
           time = [et.toString().split("GMT")[0], 1];
         }
         
@@ -100,7 +113,36 @@ const Distribution = () => {
       setfuelQueues(queues);
     }
     fetchData();
-  }, []);
+  }, [updateDate]);
+
+  const handleClickOpenEx = (qid, ft, vc) => {
+    setQid(qid);
+    setFuelType(ft);
+    setVehicleCount(vc);
+    setOpenEx(true);
+  };
+
+  const handleCloseEx = () => {
+    setOpenEx(false);
+  };
+
+  const handleEnd = async () => {
+    let response = await updateQueue({ id: qid, state: "ended", nf: "end" });
+    setUpdateData(response);
+    handleCloseEx();
+  };
+
+  const handleExtend = async (event) => {
+    event.preventDefault();
+    let response = await updateQueue({
+      id: qid,
+      state: "active",
+      estEndTime: new Date(newEndTime).toString().split("GMT")[0],
+      nf:"extend"
+    });
+    setUpdateData(response); 
+    handleCloseEx();
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -108,7 +150,7 @@ const Distribution = () => {
 
   const handleClickOpen = () => {
     setOpen(true);
-  };
+  }; 
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -123,6 +165,68 @@ const Distribution = () => {
 
   return (
     <Box>
+      <Dialog open={openEx} onClose={handleCloseEx}>
+        <form onSubmit={handleExtend}>
+          <DialogTitle sx={{ fontWeight: "bold", pb: 1 }}>
+            Extend or End Distribution?
+          </DialogTitle>
+
+          <DialogContent>
+            <Typography
+              variant="button"
+              sx={{
+                fontWeight: "bold",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <Chip
+                icon={<OpacityIcon />}
+                label={fuelType}
+                color={fuelType.includes("Diesel") ? "success" : "warning"}
+              />
+              <Typography variant="body1" display="block" gutterBottom>
+                <DepartureBoardIcon fontSize="small" />{" "}
+                <strong>{vehicleCount}</strong> vehicles remaining
+              </Typography>
+            </Typography>
+            <Divider sx={{ pt: 2 }} />
+            <Typography variant="body1" sx={{ pb: 2, pt: 1 }}>
+              Estimated end time of the queue is passed. Do you want to extend
+              the queue?
+            </Typography>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateTimePicker
+                renderInput={(params) => (
+                  <TextField
+                    required
+                    focused
+                    fullWidth
+                    color="info"
+                    helperText="Select a time only if you want to extend the queue time"
+                    {...params}
+                  />
+                )}
+                margin="dense"
+                id="endtime"
+                value={newEndTime}
+                onChange={(newValue) => setNewEndTime(newValue)}
+                label="Enter New End Time"
+                minDateTime={dayjs(today)}
+              />
+            </LocalizationProvider>
+          </DialogContent>
+          <DialogActions>
+            <Button color="success" type="submit">
+              Extend Time
+            </Button>
+            <Button color="error" onClick={handleEnd}>
+              End Distribution
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle sx={{ fontWeight: "bold" }}>
           {" "}

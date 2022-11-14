@@ -95,13 +95,29 @@ const updateEndTime = async (newEndTime, id) => {
     return result;
 }
 
+// update the queue
+const updateQueue = async (id, state, estEndTime) => {
+
+  let result = estEndTime
+    ? await Queue.findOneAndUpdate(
+        { _id: id },
+        { state: state, estimatedEndTime: estEndTime },
+        { new: true }
+      )
+    : await Queue.findOneAndUpdate(
+        { _id: id },
+        { state: state },
+        { new: true }
+      );
+
+  return result;
+}
+
 
 module.exports = {
-    addToQueue,
-    findQueuesByRegNoAndFuel,
-    findQueuesByStRegNo,
-    addNewAnnouncedQueue,
-    removeReqsFromWaitingQueue,
-    findAllQueuesAndUpdateByRegNos,
-    updateEndTime,
+  findQueuesByStRegNo,
+  addNewAnnouncedQueue,
+  removeReqsFromWaitingQueue,
+  findAllQueuesAndUpdateByRegNos,
+  updateQueue,
 };

@@ -19,6 +19,14 @@ const findStationByRegNo = async (registrationNo) => {
     return station;
 }
 
+//find any station given the registration No.
+const findAnyStationByRegNo = async (registrationNo) => {
+
+    let station = await Station.findOne({ registrationNo});
+    
+    return station;
+}
+
 //find a stationgiven the _id
 const findStationByID = async (id) => {
 
@@ -36,7 +44,14 @@ const findAllRegisteredStations = async () => {
 //get all unregistered stations
 const findAllUnregisteredStations = async () => {
 
-    let stations = await Station.find({isRegistered: false});
+    let stations = await Station.find({isRegistered: false, isNew: false});
+    return stations;
+}
+
+//get all newlyregistered stations
+const findAllNewlyregisteredStations = async () => {
+
+    let stations = await Station.find({isRegistered: false, isNew: true});
     return stations;
 }
 
@@ -68,16 +83,72 @@ const updateLastAnnounced = async (regNo, ftype ,time) => {
       { new: true }
     );
     return result;
+}
 
+// register as newly registered station
+const registerStation = async (regNo) => {
+
+    let result = await Station.findOneAndUpdate(
+      { registrationNo: regNo },
+      { isNew: true }
+    );
+    return result;
+}
+
+// register all as newly registered station
+const registerAllStation = async () => {
+
+    let result = await Station.updateMany(
+        { isRegistered: false , isNew: false },
+        { isNew: true }
+      );
+    return result;
+}
+
+// update the station as ongoing station
+const updateStationState = async (regNo) => {
+
+    let result = await Station.findOneAndUpdate(
+      { registrationNo: regNo },
+      { isRegistered: true }
+    );
+    return result;
+}
+
+// save station temp password
+const saveTempPass = async (regNo, password) => {
+
+    let result = await Station.findOneAndUpdate(
+      { registrationNo: regNo },
+      { password: password }
+    );
+    return result;
+}
+
+// get start station
+const getStartStation = async (regNo, password) => {
+
+    let result = await Station.findOneAndUpdate(
+      { registrationNo: regNo },
+      { password: password, isRegistered: true }
+    );
+    return result;
 }
 
 module.exports = {
   saveRefreshToken,
   findStationByRegNo,
+  findAnyStationByRegNo,
   findStationByID,
   findAllRegisteredStations,
   findAllUnregisteredStations,
   updateAmount,
   countRegisteredStations,
   updateLastAnnounced,
+  registerStation,
+  updateStationState,
+  findAllNewlyregisteredStations,
+  registerAllStation,
+  saveTempPass,
+  getStartStation
 };
