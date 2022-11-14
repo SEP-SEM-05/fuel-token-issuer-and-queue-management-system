@@ -332,26 +332,35 @@ const get_personal_vehicles = async (req, res) => {
 //find the personal registered vehicles of a given vehicle type
 const get_type_personal_vehicles = async (req, res) => {
     
-    let type = req.params.type;
-    const vehicleList = [];
+    //let type = req.params.type;
+    const vehicleType = ["A-Bicycle", "B-Car", "C-Lorry", "D-Bus", "G-Agricultural", "J-Special Purpose"];
+    let vehicleCount = [];
 
     try{
 
         let clients = await personalDBHelper.findAllClient();
 
-        for (let i = 0; i < clients.length; i++ ) {
-            let client = clients[i]
-            let vehicles = await vehicleDBHelper.findTypeAllByNic(client.nic,type);
-            //console.log(vehicles)
-            vehicles.forEach(async veh => {
-                vehicleList.push(veh)
-            })
-        }
-        if(vehicleList !== null){
+        for (let n = 0; n < vehicleType.length; n++ ) {
+            let type = vehicleType[n];
+            let vehicleList = [];
+
+            for (let i = 0; i < clients.length; i++ ) {
+                let client = clients[i]
+                let vehicles = await vehicleDBHelper.findTypeAllByNic(client.nic,type);
+                for (let j = 0; j < vehicles.length; j++ ) {
+                    vehicleList.push(vehicles[j])
+                }
+            }
+
+            vehicleCount.push(vehicleList.length);
+        };
+
+        
+        if(vehicleCount !== null){
                 
             res.json({
                 status: 'ok',
-                vehicleCount: vehicleList.length,
+                vehicleCount: vehicleCount,
             });
         }
         else{
@@ -413,27 +422,52 @@ const get_org_vehicles = async (req, res) => {
 //find one type vehicles of an organization using the registration No. array
 const get_type_org_vehicles = async (req, res) => {
     
-    let type = req.params.type;
-    const vehicleList = [];
+    //let type = req.params.type;
+    const vehicleType = ["A-Bicycle", "B-Car", "C-Lorry", "D-Bus", "G-Agricultural", "J-Special Purpose"];
+    let vehicleCount = [];
 
     try{
 
         let clients = await orgDBHelper.findAllClient();
 
-        for (let i = 0; i < clients.length; i++ ) {
-            let client = clients[i]
-            let vehicles = await vehicleDBHelper.findTypeAllByregistrationNoArray(client.vehicles,type);
-            //console.log(vehicles)
-            vehicles.forEach(async veh => {
-                vehicleList.push(veh)
-            })
-        }
-        if(vehicleList !== null){
+        // for (let i = 0; i < clients.length; i++ ) {
+        //     let client = clients[i]
+        //     let vehicles = await vehicleDBHelper.findTypeAllByregistrationNoArray(client.vehicles,type);
+        //     //console.log(vehicles)
+        //     vehicles.forEach(async veh => {
+        //         vehicleList.push(veh)
+        //     })
+        // }
+        // if(vehicleList !== null){
+                
+        //     res.json({
+        //         status: 'ok',
+        //         vehicleCount: vehicleList,
+        //         //...................................................
+        //     });
+        // }
+
+        for (let n = 0; n < vehicleType.length; n++ ) {
+            let type = vehicleType[n];
+            let vehicleList = [];
+
+            for (let i = 0; i < clients.length; i++ ) {
+                let client = clients[i]
+                let vehicles = await vehicleDBHelper.findTypeAllByregistrationNoArray(client.vehicles,type);
+                for (let j = 0; j < vehicles.length; j++ ) {
+                    vehicleList.push(vehicles[j])
+                }
+            }
+
+            vehicleCount.push(vehicleList.length);
+        };
+
+        
+        if(vehicleCount !== null){
                 
             res.json({
                 status: 'ok',
-                vehicleCount: vehicleList,
-                //...................................................
+                vehicleCount: vehicleCount,
             });
         }
         else{

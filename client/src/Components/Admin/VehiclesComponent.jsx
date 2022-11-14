@@ -2,40 +2,54 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Typography } from "@mui/material";
 import Container from "@mui/material/Container";
 import Chart from "react-apexcharts";
-import { getVehicleCount } from '../../utils/api/admin';
+import { getPerVehicleCount, getOrgVehicleCount } from '../../utils/api/admin';
 
 const VehiclesComponent = () => {
 
-  const [vehicleType, setVehicleType] = useState(["A-Bicycle", "B-Car"]);
-  const [vehicleCount, setVehicleCount] = useState([]);
+  const [vehicleType, setVehicleType] = useState(["A-Bicycle", "B-Car", "C-Lorry", "D-Bus", "G-Agricultural", "J-Special Purpose"]);
+
+  const [series1, setSeries1] = useState([]);
+  const [series2, setSeries2] = useState([]);
+  let [total, setTotal] = useState("##");
 
   useEffect(() => {
 
     async function fetchData() {
 
-        const vehicleCount = [];
-
         try {
-
-          vehicleType.forEach(async type => {
           
-            let response = await getVehicleCount(type);
+          let perResponse = await getPerVehicleCount();
 
-            let count = response.vehicleCount; 
+          let perVehicleCount = perResponse.vehicleCount; 
 
-            if (response.status === 'ok') {
-              console.log(count);
-              vehicleCount.push(count)
-              console.log(vehicleCount);
+          if (perResponse.status === 'ok') {
+            //console.log(count);
+            console.log(perVehicleCount);
+            setSeries1(perVehicleCount);
+          }
+          else {
+              console.log(perResponse.error);
+          }
 
-              
-            }
-            else {
-                console.log(response.error);
-            }
-          })
+          let orgResponse = await getOrgVehicleCount();
 
-          setVehicleCount(vehicleCount);
+          let orgVehicleCount = orgResponse.vehicleCount; 
+
+          if (orgResponse.status === 'ok') {
+            //console.log(count);
+            console.log(orgVehicleCount);
+            setSeries2(orgVehicleCount);
+          }
+          else {
+              console.log(orgResponse.error);
+          }
+          let sum = 0
+          for (let i = 0; i < vehicleType.length; i++) {
+            sum += perVehicleCount[i] + orgVehicleCount[i];
+          };
+          setTotal(sum);
+          
+
 
         }
         catch (err) {
@@ -99,20 +113,10 @@ const VehiclesComponent = () => {
       },
     },
   };
-  const [series1, setSeries1] = useState(vehicleCount);
-  console.log(series1)
 
   //Organization vehicles details
   const options2 = {
-    labels: [
-      "Motorcycle",
-      "Three-wheeler",
-      "Vans",
-      "Cars",
-      "Land-vehicle",
-      "Lorries",
-      "Buses",
-    ],
+    labels: vehicleType,
     plotOptions: {
       pie: {
         donut: {
@@ -129,8 +133,38 @@ const VehiclesComponent = () => {
       },
     },
   };
-  //values of vehicle count
-  const series2 = [17109, 13546, 18658, 24879, 5237, 9456, 15789];
+
+  
+
+  // //Organization vehicles details
+  // const options2 = {
+  //   labels: [
+  //     "Motorcycle",
+  //     "Three-wheeler",
+  //     "Vans",
+  //     "Cars",
+  //     "Land-vehicle",
+  //     "Lorries",
+  //     "Buses",
+  //   ],
+  //   plotOptions: {
+  //     pie: {
+  //       donut: {
+  //         size: "60px",
+  //         labels: {
+  //           show: true,
+  //           total: {
+  //             show: true,
+  //             fontSize: "20px",
+  //             color: "#000000",
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // };
+  // //values of vehicle count
+  // const series2 = [17109, 13546, 18658, 24879, 5237, 9456, 15789];
 
   return (
     <Container>
@@ -159,7 +193,7 @@ const VehiclesComponent = () => {
           sx={{ backgroundColor: "#ffffff", borderRadius: 3 }}
         >
           <Typography variant="h5" marginY={0} paddingY={1}>
-            261 348
+            {total}
           </Typography>
         </Grid>
       </Grid>
@@ -187,7 +221,7 @@ const VehiclesComponent = () => {
               series={series1}
               type="donut"
               width="100%"
-              height={500}
+              //height={500}
             ></Chart>
           </Grid>
         </Grid>
@@ -208,7 +242,7 @@ const VehiclesComponent = () => {
               series={series2}
               type="donut"
               width="100%"
-              height={500}
+              //height={500}
             ></Chart>
           </Grid>
         </Grid>

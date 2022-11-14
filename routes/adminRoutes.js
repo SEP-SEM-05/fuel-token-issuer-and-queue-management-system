@@ -48,13 +48,13 @@ router.get('/personalclient', adminController.get_clients);
 router.get('/personalvehicle', adminController.get_personal_vehicles);
 
 //find the personal registered vehicles of a given vehicle type
-router.get('/typepersonalvehicle/:type', adminController.get_type_personal_vehicles);
+router.get('/typepersonalvehicle', adminController.get_type_personal_vehicles);
 
 //get all org client vehicles info
 router.get('/orgvehicle', adminController.get_org_vehicles);
 
 //find one type vehicles of an organization using the registration No. array
-router.get('/typeorgvehicle/:type', adminController.get_type_org_vehicles);
+router.get('/typeorgvehicle', adminController.get_type_org_vehicles);
 
 
 module.exports = router;
