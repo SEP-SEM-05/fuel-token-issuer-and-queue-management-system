@@ -153,12 +153,14 @@ const announce_fuel_queue = async (req, res) => {
         dataArr.push({
           regNo: veh.userID,
           userType: "personal",
+          title: "Queue Announcement",
           msg: `${result1.registrationNo} ${result1.name} - ${result1.location} will start fuel distribution on ${stime} and you will be able to take your ${veh.quota} Liters of ${ftype} quota around ${veh.estTime} to your ${veh.registrationNo} vehicle`,
         });
       }else{
         dataArr.push({
           regNo: veh.userID,
           userType: "organization",
+          title: "Queue Announcement",
           msg: `${result1.registrationNo} ${result1.name} - ${result1.location} will start fuel distribution on ${stime} and you will be able to take your ${veh.quota} Liters of ${ftype} quota around ${veh.estTime} to your Organization`,
         });
       }
@@ -170,10 +172,11 @@ const announce_fuel_queue = async (req, res) => {
     let result3 = await notificationDBHelper.addNewNotifications(dataArr);
     // console.log(result3);
 
-    for (let i = 0; i < reqs.length; i++) {
-      let sts = await requestDBHelper.getStationsOfReq(reqs[i]);
-      let result4 = await queueDBHelper.findAllQueuesAndUpdateByRegNos(sts, ftype, reqs[i]);
-    }
+    let result4 = await queueDBHelper.removeReqsFromWaitingQueue(regNo, ftype, reqs);
+    // for (let i = 0; i < reqs.length; i++) {
+    //   let sts = await requestDBHelper.getStationsOfReq(reqs[i]);
+      
+    // }
     
     //return necessary data
     res.json({
