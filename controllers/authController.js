@@ -209,7 +209,7 @@ const getstand_post_station = async (req, res) => {
 
             res.status(400).json({
                 status: "error",
-                error: "Invalid Registration No.!",
+                error: "Invalid url link!",
             });
         }
     } 
