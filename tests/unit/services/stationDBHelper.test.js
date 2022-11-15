@@ -10,7 +10,7 @@ const conn = require('../../../db_connection');
 
 const Station = require("../../../models/station");
 const {
-    saveRefreshToken, findStationByRegNo, findStationByID,
+    saveRefreshToken, findStationByRegNo, findStationByID, findAllRegisteredStations, findAllUnregisteredStations, countRegisteredStations, findAllNewlyregisteredStations, registerAllStation, registerStation, updateAmount, updateLastAnnounced, updateStationState, saveTempPass, getStartStation,
 } = require("../../../services/stationDBHelper");
 
 describe("Database access methods for fuel stations", () => {
@@ -67,17 +67,100 @@ describe("Database access methods for fuel stations", () => {
         });
     });
 
-    describe("updateAmount - Update the fuel amount of a particular fuel type of a given station", () => {
-        it("should return a null object for non exsisting id", async () => {
-            const station = await findStationByID("633ab4f95d62f03a23b988c5");
+    describe("findAllRegisteredStations - get all registered stations", () => {
 
-            expect(station).toEqual(null);
+        it("should return an array of registered stations", async () => {
+
+            const quriedStations = await findAllRegisteredStations();
+
+            expect(quriedStations.length >= 0).toEqual(true);
         });
+    });
 
-        it("should return a valid station object for an exsisting id", async () => {
-            const quriedClient = await findStationByID("633ab4f95d62f03a23b978c5");
+    describe("findAllUnregisteredStations - get all unregistered stations", () => {
 
-            expect(quriedClient.registrationNo).toEqual("6345263462");
+        it("should return an array of unregistered stations", async () => {
+
+            const quriedStations = await findAllUnregisteredStations();
+
+            expect(quriedStations.length >= 0).toEqual(true);
+        });
+    });
+
+    describe("findAllNewlyregisteredStations - get all newlyregistered stations", () => {
+
+        it("should return an array of newly registered stations", async () => {
+
+            const quriedStations = await findAllNewlyregisteredStations();
+
+            expect(quriedStations.length >= 0).toEqual(true);
+        });
+    });
+
+    describe("countRegisteredStations - get count of each type of registered stations", () => {
+
+        it("should return the station count to match the filter", async () => {
+
+            const cnt = await countRegisteredStations("ceypetc");
+
+            expect(cnt >= 0).toEqual(true);
+        });
+    });
+
+    describe("registerStation - register as newly registered station", () => {
+
+        it("should register a station as newly registered", async () => {
+
+            const result = await registerStation("6345299346");
+
+            expect(result === null).toEqual(false);
+        });
+    });
+
+    describe("updateAmount - update the fuel amount, given the fuel type", () => {
+
+        it("should update the amount of given fuel type of the given station", async () => {
+
+            const result = await updateAmount("testOnlyStation", "Auto Diesel", 50);
+            expect(result === null).toEqual(false);
+        });
+    });
+
+    describe("updateLastAnnounced - update last announced time", () => {
+
+        it("should update the last announced time of the station", async () => {
+
+            const result = await updateLastAnnounced("testOnlyStation", "Auto Diesel", "2022/12/12");
+            expect(result === null).toEqual(false);
+        });
+    });
+
+    describe("updateStationState - update the station as ongoing station", () => {
+
+        it("should update the state of the station", async () => {
+
+            const result = await updateStationState("testOnlyStation");
+            expect(result === null).toEqual(false);
+        });
+    });
+
+    describe("saveTempPass - save station temp password", () => {
+
+        it("should save the provided tempory password to the statioin", async () => {
+
+            const pass = "$2a$12$wn7cso3y66MOr30mo66jFeEHBmhEU6fC/x/FRXfcZe/LpuDInW2gu";
+            const result = await saveTempPass("testOnlyStation", pass);
+            expect(result === null).toEqual(false);
+        });
+    });
+
+    describe("getStartStation - get start station", () => {
+
+        it("should save the provided password to the statioin and register it", async () => {
+
+            const pass = "$2a$12$wn7cso3y66MOr30mo66jFeEHBmhEU6fC/x/FRXfcZe/LpuDInW2gu";
+            const result = await getStartStation("testOnlyNewStation", pass);
+            expect(result === null).toEqual(false);
         });
     });
 
@@ -108,4 +191,4 @@ describe("Database access methods for fuel stations", () => {
 
 //remaining
 
-//findAllRegisteredStations
+// registerAllStation,

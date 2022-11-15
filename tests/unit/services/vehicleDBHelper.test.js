@@ -12,7 +12,7 @@ const Vehicle = require('../../../models/vehicle');
 const Quota = require('../../../models/quota');
 const Request = require('../../../models/request');
 
-const { findVehicleByRegNo, findVehicleByRegNoAndEngNo, findAllByNic, findAllByregistrationNoArray, updateStationsAndRegister, registerAll, getQuotas, addToQueue, saveRequest, findWaitingRequest } = require('../../../services/vehicleDBHelper');
+const { findVehicleByRegNo, findVehicleByRegNoAndEngNo, findAllByNic, findAllByregistrationNoArray, updateStationsAndRegister, registerAll, getQuotas, findTypeAllByNic, findTypeAllByregistrationNoArray } = require('../../../services/vehicleDBHelper');
 
 describe("Database access methods for vehicles", () => {
 
@@ -52,7 +52,7 @@ describe("Database access methods for vehicles", () => {
         it("should return a valid vehicle object for an exsisting registration No.", async () => {
 
             const exsistingRegNo = "sampleRegNo01";
-            const mockVehicleId = "633ed6babc0b58545e91c3ee"
+            const mockVehicleId = "636d277d0753c9bd0a64146a"
 
             const quriedVehicle = await findVehicleByRegNo(exsistingRegNo);
 
@@ -86,7 +86,7 @@ describe("Database access methods for vehicles", () => {
 
             const mockRegNo = "sampleRegNo01";
             const mockEngNo = "sampleEngNo01";
-            const mockVehicleId = "633ed6babc0b58545e91c3ee";
+            const mockVehicleId = "636d277d0753c9bd0a64146a";
 
             const vehicle = await findVehicleByRegNoAndEngNo(mockRegNo, mockEngNo);
 
@@ -158,20 +158,6 @@ describe("Database access methods for vehicles", () => {
         });
     });
 
-    // describe("updateStationsAndRegister - Given the a registration No. and an array of stations, update the stations of the vehicle and mark as registered", () => {
-
-    //     // it("check whether the client is successfully saved", async () => {
-
-    //     //     const mockClient = {};
-    //     //     const mockData = {};
-
-    //     //     const err = await saveClient(mockData);
-    //     //     const quriedClient = await Personal.findOne({nic: mockData.nic});
-
-    //     //     expect(quriedClient).toEqual(mockClient);
-    //     // });
-    // });
-
     describe("registerAll - register all the vehicles matches a given registration No. array", () => {
 
         it("no document should be updated, given an empty array", async () => {
@@ -204,73 +190,73 @@ describe("Database access methods for vehicles", () => {
         });
     });
 
-    // describe("addToQueue - add a fuel request to queues of all the station based on fuel type", () => {
+    describe("updateStationsAndRegister - update the station and mark as registered, given the registrationNo.", () => {
 
-    //     it("should return a null object for non exsisting registrtation No.", async () => {
+        it("should fail to update any document for an invalid registration No.", async () => {
 
-    //         const vehicle = await findVehicleByRegNo('SP-AAA-7863');
+            const mockRegNo = "mockRegNo111";
+            const mockStations = ['stationRegNo01', 'stationRegNo02'];
 
-    //         expect(vehicle).toEqual(null);
-    //     });
+            let result = await updateStationsAndRegister(mockRegNo, mockStations);
 
-    //     it("should return a valid vehicle object for an exsisting registration No.", async () => {
-
-    //         const mockVehicle = {};
-
-    //         const quriedVehicle = await findVehicleByRegNo('AAA-6756');
-
-    //         expect(quriedVehicle).toEqual(mockVehicle);
-    //     });
-    // });
-
-    // describe("saveRequest - save a fuel request to the database", () => {
-
-    //     it("should return no error and a request document should able to be quried if the request has been successfully saved", async () => {
-
-    //         const mockReq = {
-    //             "userType": "personal",
-    //             "registrationNo": "sampleRegNo01ex",
-    //             "quota": 5,
-    //             "fuelType": "Auto Diesel",
-    //             "requestedStations": [
-    //                 "stationRegNo01",
-    //                 "stationRegNo02",
-    //                 "stationRegNo03"
-    //             ],
-    //         };
-
-    //         const result = await saveRequest(mockReq);
-    //         const quriedRequest = await Request.findById(mongoose.Types.ObjectId(result));
-
-    //         expect(quriedRequest).not.toEqual(result);
-    //     });
-    // });
-
-    describe("findWaitingRequest - find any waiting/active requests for a vehicle/organization given the registration No.", () => {
-
-        it("should return null if there are no waiting/active requests for regNo", async () => {
-
-            const mockRegNo = "sampleRegNo03ex";
-            const mockUserType = "personal";
-
-            const requests = await findWaitingRequest(mockRegNo, mockUserType);
-
-            expect(requests).toEqual(null);
+            expect(result.matchedCount).toEqual(0);
         });
 
-        it("should return a request object if there are any waiting/active requests for regNo", async () => {
+        it("should update the stations of a particular vehicle with provided stations array for a valid registration No.", async () => {
 
-            const mockRegNo = "sampleRegNo01ex";
-            const mockUserType = "personal";
+            const mockRegNo = "testOnlyVehicle01";
+            const mockStations = ['stationRegNo01', 'stationRegNo02'];
 
-            const requests = await findWaitingRequest(mockRegNo, mockUserType);
+            let result = await updateStationsAndRegister(mockRegNo, mockStations);
+            let quriedVehicle = await Vehicle.findOne({ registrationNo: mockRegNo });
 
-            expect(requests).not.toEqual(null);
+            expect(quriedVehicle.stations).toEqual(mockStations);
+        });
+    });
+
+    describe("findTypeAllByNic - find the personal registered vehicles of a given vehicle type", () => {
+
+        it("should fail to return any document for an invalid registration No.", async () => {
+
+            const mockOwner = "mockOwner111";
+            const mockType = "A-Bicycle";
+
+            let result = await findTypeAllByNic(mockOwner, mockType);
+            expect(result.length).toEqual(0);
+        });
+
+        it("should return a vehicle array that matches the filters", async () => {
+
+            const mockOwner = "TestOnlyOwner";
+            const mockType = "A-Bicycle";
+
+            let result = await findTypeAllByNic(mockOwner, mockType);
+            expect(result.length >= 0).toEqual(true);
+        });
+    });
+
+    describe("findTypeAllByregistrationNoArray - find one type vehicles of an organization using the registration No. array", () => {
+
+        it("should fail to return any document for an invalid registration No. array", async () => {
+
+            const mockRegNos = ["mockRegNo111"];
+            const mockType = "A-Bicycle";
+
+            let result = await findTypeAllByregistrationNoArray(mockRegNos, mockType);
+            expect(result.length).toEqual(0);
+        });
+
+        it("should return a vehicle array that matches the filters", async () => {
+
+            const mockRegNos = ["testOnlyVehicle01"];
+            const mockType = "A-Bicycle";
+
+            let result = await findTypeAllByregistrationNoArray(mockRegNos, mockType);
+            expect(result.length >= 0).toEqual(true);
         });
     });
 });
 
 //remaining
 
-//updateStationsAndRegister
-// addToQueue
+// updateFillingDetails,

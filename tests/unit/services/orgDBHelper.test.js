@@ -9,17 +9,17 @@ require('dotenv').config();
 const conn = require('../../../db_connection');
 
 const Organization = require('../../../models/organization');
-const {saveClient, saveRefreshToken, findClientByRegNo, findClientByID, updateStations} = require('../../../services/orgDBHelper');
+const { saveClient, saveRefreshToken, findClientByRegNo, findOrgByRegNo, findClientByID, updateStations, updateFullQuotas, findAllClient, updateFillingDetails } = require('../../../services/orgDBHelper');
 
 describe("Database access methods for organizations", () => {
-    
+
     beforeAll(async () => {
 
         // connect to mongodb and listen
 
         try {
             await conn.connect();
-        } 
+        }
         catch (err) {
             console.log(err);
         }
@@ -31,7 +31,7 @@ describe("Database access methods for organizations", () => {
 
         try {
             await conn.close();
-        } 
+        }
         catch (err) {
             console.log(err);
         }
@@ -55,13 +55,13 @@ describe("Database access methods for organizations", () => {
                 ]
             };
 
-            const result = await saveClient(mockRegNo ,mockClient);
+            const result = await saveClient(mockRegNo, mockClient);
 
             expect(result.modifiedCount).toEqual(1);
         });
     });
 
-    describe("findClientByRegNo - Find an organization by registrationNo.", () => {
+    describe("findClientByRegNo - Find a registered organization by registrationNo.", () => {
 
         it("should return a null object for non exsisting registrationNo", async () => {
 
@@ -75,6 +75,33 @@ describe("Database access methods for organizations", () => {
             const quriedClient = await findClientByRegNo('mockRegNo999');
 
             expect(quriedClient._id).toEqual(mongoose.Types.ObjectId("6335c554d94e2a08227ac7b2"));
+        });
+    });
+
+    describe("findOrgByRegNo - Find an organization by registrationNo.", () => {
+
+        it("should return a null object for non exsisting registrationNo", async () => {
+
+            const client = await findOrgByRegNo('non-existing regNo');
+
+            expect(client).toEqual(null);
+        });
+
+        it("should return a valid organization object for an exsisting registrationNo", async () => {
+
+            const quriedClient = await findOrgByRegNo('mockRegNo999');
+
+            expect(quriedClient._id).toEqual(mongoose.Types.ObjectId("6335c554d94e2a08227ac7b2"));
+        });
+    });
+
+    describe("findAllClient - Get all the organizations", () => {
+
+        it("should return an array of organizations", async () => {
+
+            const quriedClients = await findAllClient();
+
+            expect(quriedClients.length > 0).toEqual(true);
         });
     });
 
@@ -113,7 +140,7 @@ describe("Database access methods for organizations", () => {
             const mockStations = ['stationRegNo01', 'stationRegNo02'];
 
             let result = await updateStations(mockRegNo, mockStations);
-            let quriedClient = await Organization.findOne({registrationNo: mockRegNo});
+            let quriedClient = await Organization.findOne({ registrationNo: mockRegNo });
 
             expect(quriedClient.stations).toEqual(mockStations);
         });
@@ -142,4 +169,31 @@ describe("Database access methods for organizations", () => {
             expect(quriedClient.refreshToken).toEqual(mockToken);
         });
     });
+
+    describe("updateFullQuotas - update the full fuel quotas, given the registrationNo.", () => {
+
+        it("should fail to update any document for an invalid registration No.", async () => {
+
+            const mockRegNo = "mockRegNo111";
+            const mockQuotas = [30, 50];
+
+            let result = await updateFullQuotas(mockRegNo, mockQuotas);
+
+            expect(result.matchedCount).toEqual(0);
+        });
+
+        it("should update the stations of a particular organization with provided stations array for a valid registration No.", async () => {
+
+            const mockRegNo = "mockRegNo999";
+            const mockQuotas = [30, 50];
+
+            let result = await updateFullQuotas(mockRegNo, mockQuotas);
+            let quriedClient = await Organization.findOne({ registrationNo: mockRegNo });
+
+            expect(quriedClient.fullQuotas).toEqual(mockQuotas);
+        });
+    });
 });
+
+
+// updateFillingDetails,

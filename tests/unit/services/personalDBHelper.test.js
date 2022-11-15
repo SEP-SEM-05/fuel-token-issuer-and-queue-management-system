@@ -9,7 +9,7 @@ require('dotenv').config();
 const conn = require('../../../db_connection');
 
 const Personal = require('../../../models/personal');
-const {saveClient, saveRefreshToken, findClientByNic, findClientByID, } = require('../../../services/personalDBHelper');
+const {saveClient, saveRefreshToken, findClientByNic, findClientByID, findAllClient } = require('../../../services/personalDBHelper');
 
 describe("Database access methods for personal clients", () => {
     
@@ -37,73 +37,73 @@ describe("Database access methods for personal clients", () => {
         }
     });
 
-    // describe("saveClient - Save a personal client to the database", () => {
+    describe("saveClient - Save a personal client to the database", () => {
 
-    //     it("should return an error with email field for already exsisting email address", async () => {
+        it("should return an error with email field for already exsisting email address", async () => {
 
-    //         const mockNic = Date.now().toString().substring(2); //random
-    //         const mockExistingEmail = "Jaunita84@yahoo.com";
-    //         const mockClient = {
-    //             "nic": mockNic,
-    //             "firstName": "firstName",
-    //             "lastName": "lastName",
-    //             "password": "$2a$12$zXIzE0x2Eq1t8J06Bt6YF.9PawV5dV81HHbWy3kdkfyPQCY8rvqVy",
-    //             "contactNo": "2837363682823",
-    //             "address": "119/2, sample, address",
-    //             "email": mockExistingEmail
-    //         };
+            const mockNic = Date.now().toString().substring(2); //random
+            const mockExistingEmail = "Jaunita84@yahoo.com";
+            const mockClient = {
+                "nic": mockNic,
+                "firstName": "firstName",
+                "lastName": "lastName",
+                "password": "$2a$12$zXIzE0x2Eq1t8J06Bt6YF.9PawV5dV81HHbWy3kdkfyPQCY8rvqVy",
+                "contactNo": "2837363682823",
+                "address": "119/2, sample, address",
+                "email": mockExistingEmail
+            };
 
-    //         try {
-    //             const result = await saveClient(mockClient);
-    //         }
-    //         catch (err) {
-    //             expect(err.keyValue).toEqual({ email: 'Jaunita84@yahoo.com' });
-    //         }
-    //     });
+            try {
+                const result = await saveClient(mockClient);
+            }
+            catch (err) {
+                expect(err.keyValue).toEqual({ email: 'Jaunita84@yahoo.com' });
+            }
+        });
 
-    //     it("should return an error with nic field for already exsisting nic", async () => {
+        it("should return an error with nic field for already exsisting nic", async () => {
 
-    //         const mockExistingNic = "990972657v";
-    //         const mockEmail = Date.now().toString(36) + Math.random().toString(36).substring(2) + "@example.com"; //random
-    //         const mockClient = {
-    //             "nic": mockExistingNic,
-    //             "firstName": "firstName",
-    //             "lastName": "lastName",
-    //             "password": "$2a$12$zXIzE0x2Eq1t8J06Bt6YF.9PawV5dV81HHbWy3kdkfyPQCY8rvqVy",
-    //             "contactNo": "2837363682823",
-    //             "address": "119/2, sample, address",
-    //             "email": mockEmail
-    //         };
+            const mockExistingNic = "990972657v";
+            const mockEmail = Date.now().toString(36) + Math.random().toString(36).substring(2) + "@example.com"; //random
+            const mockClient = {
+                "nic": mockExistingNic,
+                "firstName": "firstName",
+                "lastName": "lastName",
+                "password": "$2a$12$zXIzE0x2Eq1t8J06Bt6YF.9PawV5dV81HHbWy3kdkfyPQCY8rvqVy",
+                "contactNo": "2837363682823",
+                "address": "119/2, sample, address",
+                "email": mockEmail
+            };
 
-    //         try {
-    //             const result = await saveClient(mockClient);
-    //         }
-    //         catch (err) {
-    //             expect(err.keyValue).toEqual({ nic: '990972657v' });
-    //         }
-    //     });
+            try {
+                const result = await saveClient(mockClient);
+            }
+            catch (err) {
+                expect(err.keyValue).toEqual({ nic: '990972657v' });
+            }
+        });
 
-    //     it("should return no error and the document should able to be quried if the client has been successfully saved", async () => {
+        it("should return no error and the document should able to be quried if the client has been successfully saved", async () => {
 
-    //         const mockNic = Date.now().toString().substring(2); //random
-    //         const mockEmail = Date.now().toString(36) + Math.random().toString(36).substring(2) + "@example.com"; //random
-    //         const mockClient = {
-    //             "nic": mockNic,
-    //             "firstName": "firstName",
-    //             "lastName": "lastName",
-    //             "password": "$2a$12$zXIzE0x2Eq1t8J06Bt6YF.9PawV5dV81HHbWy3kdkfyPQCY8rvqVy",
-    //             "contactNo": "2837363682823",
-    //             "address": "119/2, sample, address",
-    //             "email": mockEmail
-    //         };
+            const mockNic = Date.now().toString().substring(2); //random
+            const mockEmail = Date.now().toString(36) + Math.random().toString(36).substring(2) + "@example.com"; //random
+            const mockClient = {
+                "nic": mockNic,
+                "firstName": "firstName",
+                "lastName": "lastName",
+                "password": "$2a$12$zXIzE0x2Eq1t8J06Bt6YF.9PawV5dV81HHbWy3kdkfyPQCY8rvqVy",
+                "contactNo": "2837363682823",
+                "address": "119/2, sample, address",
+                "email": mockEmail
+            };
 
-    //         const result = await saveClient(mockClient);
-    //         const quriedClient = await Personal.findOne({nic: mockNic});
+            const result = await saveClient(mockClient);
+            const quriedClient = await Personal.findOne({nic: mockNic});
 
-    //         expect(quriedClient.nic).toEqual(mockNic);
-    //         expect(quriedClient._id).toEqual(result);
-    //     });
-    // });
+            expect(quriedClient.nic).toEqual(mockNic);
+            expect(quriedClient._id).toEqual(result);
+        });
+    });
 
     describe("findClientByNic - Find a personal client by NIC", () => {
 
@@ -160,6 +160,16 @@ describe("Database access methods for personal clients", () => {
             let quriedClient = await Personal.findById(mongoose.Types.ObjectId(mockId));
 
             expect(quriedClient.refreshToken).toEqual(mockToken);
+        });
+    });
+
+    describe("findAllClient - Get all the personal clients", () => {
+
+        it("should return an array of organizations", async () => {
+
+            const quriedClients = await findAllClient();
+
+            expect(quriedClients.length > 0).toEqual(true);
         });
     });
 });

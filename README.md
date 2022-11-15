@@ -22,3 +22,6 @@
 
 ### 4. To run a specific test file
 ### `npm test -- bar.test.js`
+
+### 5. To re-generate the test coverage
+### `npm test -- --coverage`
