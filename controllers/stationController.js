@@ -141,56 +141,59 @@ const announce_fuel_queue = async (req, res) => {
     vehicles = req.body.vehicles;
     stime = req.body.startTime;
     etime = req.body.estQueueEndTime;
-
+  
     try {
-
-        let result1 = await stationDBHelper.updateLastAnnounced(regNo, ftype, lastAnnounced);   // update last announced date
-        // console.log(result1);
-
-        let reqs = [];
-        let dataArr = [];
-
-        vehicles.forEach(veh => {
-            reqs.push(veh.reqId);
-            if (veh.registrationNo) {
-                dataArr.push({
-                    regNo: veh.userID,
-                    userType: "personal",
-                    msg: `${result1.registrationNo} ${result1.name} - ${result1.location} will start fuel distribution on ${stime} and you will be able to take your ${veh.quota} Liters of ${ftype} quota around ${veh.estTime} to your ${veh.registrationNo} vehicle`,
-                });
-            } else {
-                dataArr.push({
-                    regNo: veh.userID,
-                    userType: "organization",
-                    msg: `${result1.registrationNo} ${result1.name} - ${result1.location} will start fuel distribution on ${stime} and you will be able to take your ${veh.quota} Liters of ${ftype} quota around ${veh.estTime} to your Organization`,
-                });
-            }
-        });
-
-        let result2 = await queueDBHelper.addNewAnnouncedQueue(regNo, ftype, reqs, stime, etime, vehicles.length); // start a new announced queue
-        // console.log(result2);
-
-        let result3 = await notificationDBHelper.addNewNotifications(dataArr);
-        // console.log(result3);
-
-        for (let i = 0; i < reqs.length; i++) {
-            let sts = await requestDBHelper.getStationsOfReq(reqs[i]);
-            let result4 = await queueDBHelper.findAllQueuesAndUpdateByRegNos(sts, ftype, reqs[i]);
+  
+      let result1 = await stationDBHelper.updateLastAnnounced(regNo, ftype, lastAnnounced);   // update last announced date
+      // console.log(result1);
+  
+      let reqs = [];
+      let dataArr = [];
+  
+      vehicles.forEach(veh => {
+        reqs.push(veh.reqId);
+        if(veh.registrationNo){
+          dataArr.push({
+            regNo: veh.userID,
+            userType: "personal",
+            title: "Queue Announcement",
+            msg: `${result1.registrationNo} ${result1.name} - ${result1.location} will start fuel distribution on ${stime} and you will be able to take your ${veh.quota} Liters of ${ftype} quota around ${veh.estTime} to your ${veh.registrationNo} vehicle`,
+          });
+        }else{
+          dataArr.push({
+            regNo: veh.userID,
+            userType: "organization",
+            title: "Queue Announcement",
+            msg: `${result1.registrationNo} ${result1.name} - ${result1.location} will start fuel distribution on ${stime} and you will be able to take your ${veh.quota} Liters of ${ftype} quota around ${veh.estTime} to your Organization`,
+          });
         }
-
-        //return necessary data
-        res.json({
-            status: "ok",
-            noti: result3,
-        });
+      });
+  
+      let result2 = await queueDBHelper.addNewAnnouncedQueue(regNo, ftype, reqs, stime, etime, vehicles.length); // start a new announced queue
+      // console.log(result2);
+  
+      let result3 = await notificationDBHelper.addNewNotifications(dataArr);
+      // console.log(result3);
+  
+      let result4 = await queueDBHelper.removeReqsFromWaitingQueue(regNo, ftype, reqs);
+      // for (let i = 0; i < reqs.length; i++) {
+      //   let sts = await requestDBHelper.getStationsOfReq(reqs[i]);
+        
+      // }
+      
+      //return necessary data
+      res.json({
+        status: "ok",
+        noti: result3,
+      });
     } catch (err) {
-        console.log(err);
-        res.status(500).json({
-            status: "error",
-            error: "Internal server error!",
-        });
+      console.log(err);
+      res.status(500).json({
+        status: "error",
+        error: "Internal server error!",
+      });
     }
-}
+  }
 
 // get announced queues
 const get_announced_queues = async (req, res) => {
