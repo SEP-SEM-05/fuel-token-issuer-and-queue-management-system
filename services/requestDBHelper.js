@@ -41,9 +41,16 @@ const findWaitingAndActiveRequest = async (registrationNo, userType) => {
     return result;
 }
 
+//close the request after filling is done
+const closeRequest = async (reqId, filledStation, isFilled, filledDate, filledAmount, state) => {
+    let result = Request.findOneAndUpdate({ "_id": reqId }, { "$set": { filledStation, isFilled, filledDate, filledAmount, state }});
+    return result;
+}
+
 module.exports = {
   getAllReqByIds,
   getStationsOfReq,
   saveRequest,
   findWaitingAndActiveRequest,
+  closeRequest,
 };

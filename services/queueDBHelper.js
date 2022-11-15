@@ -6,11 +6,6 @@ require("dotenv").config();
 const Queue = require("../models/queue");
 
 //add a fuel request to queues of all the station given a queue id array
-// const addToQueue = async (stations, fuelType, reqId) => {
-
-//     let result = await Queue.updateMany({ stationID: { $in: stations }, fuelType }, { $push: { requests: reqId } });
-//     return result;
-// }
 const addToQueue = async (queue_ids, reqId) => {
 
     let result = await Queue.updateMany({ _id: { $in: queue_ids } }, { $push: { requests: reqId } });
@@ -20,7 +15,7 @@ const addToQueue = async (queue_ids, reqId) => {
 // get any exsisting announneced/waiting queues given the registration No. of the station and the fuel type
 const findQueuesByRegNoAndFuel = async (regNos, fuelType) => {
 
-    let queues = await Queue.find({stationID: {$in: regNos}, fuelType, state: {$in: ["waiting", "announced"]}});
+    let queues = await Queue.find({ stationID: { $in: regNos }, fuelType, state: { $in: ["waiting", "announced"] } });
     return queues;
 }
 
@@ -91,33 +86,43 @@ const findAllQueuesAndUpdateByRegNos = async (regNoArr, ftype, reqId) => {
 
 //update the estimated end time given the id
 const updateEndTime = async (newEndTime, id) => {
-    let result =await Queue.findByIdAndUpdate(id, {estimatedEndTime: newEndTime});
+    let result = await Queue.findByIdAndUpdate(id, { estimatedEndTime: newEndTime });
     return result;
 }
 
 // update the queue
 const updateQueue = async (id, state, estEndTime) => {
 
-  let result = estEndTime
-    ? await Queue.findOneAndUpdate(
-        { _id: id },
-        { state: state, estimatedEndTime: estEndTime },
-        { new: true }
-      )
-    : await Queue.findOneAndUpdate(
-        { _id: id },
-        { state: state },
-        { new: true }
-      );
+    let result = estEndTime
+        ? await Queue.findOneAndUpdate(
+            { _id: id },
+            { state: state, estimatedEndTime: estEndTime },
+            { new: true }
+        )
+        : await Queue.findOneAndUpdate(
+            { _id: id },
+            { state: state },
+            { new: true }
+        );
 
-  return result;
+    return result;
+}
+
+// find a fuel queue provided the _id
+const findQueueById = async (id) => {
+    let result = await Queue.findById(id);
+    return result;
 }
 
 
 module.exports = {
-  findQueuesByStRegNo,
-  addNewAnnouncedQueue,
-  removeReqsFromWaitingQueue,
-  findAllQueuesAndUpdateByRegNos,
-  updateQueue,
+    addToQueue,
+    findQueuesByRegNoAndFuel,
+    findQueuesByStRegNo,
+    addNewAnnouncedQueue,
+    removeReqsFromWaitingQueue,
+    findAllQueuesAndUpdateByRegNos,
+    updateEndTime,
+    updateQueue,
+    findQueueById,
 };

@@ -4,8 +4,6 @@ require('dotenv').config();
 
 const Vehicle = require('../models/vehicle');
 const Quota = require('../models/quota');
-const Queue = require('../models/queue');
-const Request = require('../models/request');
 
 //find a vehicle given the registration No.
 const findVehicleByRegNo = async (registrationNo) => {
@@ -64,37 +62,11 @@ const getQuotas = async () => {
     return quotas;
 }
 
-// //add a fuel request to queues of all the station based on fuel type
-// const addToQueue = async (stations, fuelType, reqId) => {
-
-//     let result = await Queue.updateMany({stationID: {$in: stations}, fuelType}, {$push: { requests: reqId }});
-//     return result;
-// }
-
-// //save a fuel request to the database
-// const saveRequest = (data) => {
-
-//     return new Promise(async (resolve, reject) => {
-
-//         let request = new Request(data);
-
-//         request.save((err) => {
-//             if(err){
-//                 reject(err);
-//             }
-//             else{
-//                 resolve(request._id);
-//             }
-//         });
-//     });
-// }
-
-// //find any waiting/active requests for a vehicle/organization given the registration No.
-// const findWaitingRequest = async (registrationNo, userType) => {
-
-//     result = await Request.findOne({registrationNo, userType, state: {$in: ['waiting', 'active']}});
-//     return result;
-// }
+//update the last filling details provided the registrationNo
+const updateFillingDetails = async (regNo, lastFilledDate, usedQuota) => {
+    let result = await Vehicle.findOneAndUpdate({registrationNo: regNo}, {$set: {lastFilledDate}, $inc: {usedQuota}});
+    return result;
+}
 
 module.exports = {
     findVehicleByRegNo,
@@ -106,4 +78,5 @@ module.exports = {
     getQuotas,
     findTypeAllByNic,
     findTypeAllByregistrationNoArray,
+    updateFillingDetails,
 }
