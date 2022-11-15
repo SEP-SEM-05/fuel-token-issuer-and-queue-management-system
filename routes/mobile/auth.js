@@ -55,8 +55,8 @@ authRouter.post("/tokenIsValid", async (req, res) => {
 
 // get user data
 authRouter.get("/", mobileAuth, async (req, res) => {
-  const user = await stationDBHelper.findStationByRegNo(req.user);
-  res.json({ ...user._doc, token: req.token });
+  const user = await stationDBHelper.findStationByID(req.user); 
+  res.json({ ...user._doc, token: req.token }); 
 });
 
 module.exports = authRouter;
