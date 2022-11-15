@@ -1,5 +1,5 @@
-const { Double } = require('bson');
-const mongoose = require('mongoose');
+const { Double } = require("bson");
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 //add name attribute
@@ -38,6 +38,10 @@ const stationSchema = new Schema(
     refreshToken: {
       type: String,
       required: false,
+    },
+    selectedAmount: {
+      type: String,
+      default: "0",
     },
     isRegistered: {
       type: Boolean,
@@ -92,5 +96,5 @@ const stationSchema = new Schema(
   { timestamps: true }
 );
 
-const Station = mongoose.model('Station', stationSchema);
+const Station = mongoose.model("Station", stationSchema);
 module.exports = Station;
