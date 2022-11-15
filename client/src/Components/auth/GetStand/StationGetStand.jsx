@@ -4,7 +4,7 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { createTheme } from "@mui/material/styles";
-import { IconButton, InputAdornment, ThemeProvider } from "@mui/material";
+import { IconButton, InputAdornment, ThemeProvider, Snackbar, Alert } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -26,24 +26,48 @@ export default function StationGetStand() {
   const navigate = useNavigate();
   const { user, signUser } = useAuth();
 
+  const [openSB, setOpenSB] = React.useState(false);
+  const [isSbError, setIsSbError] = React.useState(false);
+  const [sbMsg, setSbMsg] = React.useState("");
+  const [isDone, setIsDone] = React.useState(false);
+
+  const handleSBOpen = () => {
+    setOpenSB(true);
+  };
+
+  const handleSBClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSB(false);
+  };
   const onSubmit = async (data) => {
 
-    let response = await getStand({
-      regNo: regNo,
-      tempPassword: data.temppass,
-      password: data.newpassword
-    });
+    if (!isDone){
 
-    if (response.status === 'ok') {
+      let response = await getStand({
+        regNo: regNo,
+        tempPassword: data.temppass,
+        password: data.newpassword
+      });
+  
+      if (response.status === 'ok') {
+  
+        signUser(response);
+        setIsDone(true);
+        navigate('/fuelstation', { replace: true });
+      }
+      else {
+        console.log(response.error);
+  
+        setIsSbError(true);
+        setSbMsg(response.error);
+        handleSBOpen();
+      }
+    };
 
-      signUser(response);
-
-      navigate('/fuelstation', { replace: true });
-    }
-    else {
-        //handle error
-        // clear browser storages
-    }
+    
   }
 
   //Form validation regex
@@ -195,6 +219,15 @@ export default function StationGetStand() {
           </Typography>
         </Box>
       </Box>
+      <Snackbar open={openSB} autoHideDuration={6000} onClose={handleSBClose}>
+        <Alert
+          onClose={handleSBClose}
+          severity={isSbError ? "error" : "success"}
+          sx={{ width: "100%" }}
+        >
+          {sbMsg}
+        </Alert>
+      </Snackbar>
     </ThemeProvider>
   );
 }

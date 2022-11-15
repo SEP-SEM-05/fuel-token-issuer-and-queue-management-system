@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { createTheme } from "@mui/material/styles";
-import { IconButton, InputAdornment, ThemeProvider } from "@mui/material";
+import { IconButton, InputAdornment, ThemeProvider, Snackbar, Alert } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { signIn } from "../../../utils/api/fuelStation";
@@ -22,8 +22,24 @@ const darkTheme = createTheme({
 });
 
 export default function StationLogin() {
-  const {user, signUser} = useAuth();
+  const { user, signUser } = useAuth();
   const navigate = useNavigate();
+
+  const [openSB, setOpenSB] = React.useState(false);
+  const [isSbError, setIsSbError] = React.useState(false);
+  const [sbMsg, setSbMsg] = React.useState("");
+
+  const handleSBOpen = () => {
+    setOpenSB(true);
+  };
+
+  const handleSBClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSB(false);
+  };
 
   //Form validation regex
   const passwordRegExp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
@@ -52,10 +68,13 @@ export default function StationLogin() {
       signUser(response);
 
       navigate("/fuelstation", { replace: true });
-      
+
     } else {
-      //handle error
-    //   clear browser storages
+      console.log(response.error);
+
+      setIsSbError(true);
+      setSbMsg(response.error);
+      handleSBOpen();
     }
 
   };
@@ -164,6 +183,15 @@ export default function StationLogin() {
             Copyright © 2022 Fast Fueler
           </Typography>
         </Box>
+        <Snackbar open={openSB} autoHideDuration={6000} onClose={handleSBClose}>
+          <Alert
+            onClose={handleSBClose}
+            severity={isSbError ? "error" : "success"}
+            sx={{ width: "100%" }}
+          >
+            {sbMsg}
+          </Alert>
+        </Snackbar>
       </Box>
     </ThemeProvider>
   );
