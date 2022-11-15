@@ -11,6 +11,7 @@ const conn = require('../../../db_connection');
 const Station = require("../../../models/station");
 const {
     saveRefreshToken, findStationByRegNo, findStationByID,
+    findAnyStationByRegNo, countRegisteredStations, registerStation, updateStationState
 } = require("../../../services/stationDBHelper");
 
 describe("Database access methods for fuel stations", () => {
@@ -102,6 +103,63 @@ describe("Database access methods for fuel stations", () => {
             let quriedClient = await Station.findById(mongoose.Types.ObjectId(mockId));
 
             expect(quriedClient.refreshToken).toEqual(mockToken);
+        });
+    });
+
+    describe("findAnyStationByRegNo - Find a station by its registration number", () => {
+        it("should return a null object for non exsisting reg.no", async () => {
+            const station = await findAnyStationByRegNo("station99");
+
+            expect(station).toEqual(null);
+        });
+
+        it("should return a valid station object for an exsisting reg.no", async () => {
+            const quriedStation = await findAnyStationByRegNo("6345263462");
+
+            expect(quriedStation.registrationNo).toEqual("6345263462");
+        });
+    });
+
+    describe("countRegisteredStations - Count the stations by its type", () => {
+        it("should return a null object for non existing type", async () => {
+            const stationCount = await countRegisteredStations("non-existing-type");
+
+            expect(stationCount).toEqual(0);
+        });
+
+        it("should return station count for an exsisting station type", async () => {
+            const quriedCount = await countRegisteredStations("ioc");
+
+            expect(quriedCount > 0).toBeTruthy();
+
+        });
+    });
+
+    describe("registerStation - Register a unregistered station by its registration number", () => {
+        it("should return a null object for non exsisting reg.no", async () => {
+            const station = await registerStation("station99");
+
+            expect(station).toEqual(null);
+        });
+
+        it("should return a valid station object for an exsisting reg.no", async () => {
+            const quriedStation = await registerStation("6345263462");
+
+            expect(quriedStation.registrationNo).toEqual("6345263462");
+        });
+    });
+
+    describe("updateStationState - Update the station state by its registration number", () => {
+        it("should return a null object for non exsisting reg.no", async () => {
+            const station = await updateStationState("station99");
+
+            expect(station).toEqual(null);
+        });
+
+        it("should return a valid station object for an exsisting reg.no", async () => {
+            const quriedStation = await updateStationState("6345263462");
+
+            expect(quriedStation.registrationNo).toEqual("6345263462");
         });
     });
 });

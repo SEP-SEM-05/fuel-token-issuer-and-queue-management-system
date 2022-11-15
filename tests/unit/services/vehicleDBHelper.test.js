@@ -12,7 +12,7 @@ const Vehicle = require('../../../models/vehicle');
 const Quota = require('../../../models/quota');
 const Request = require('../../../models/request');
 
-const { findVehicleByRegNo, findVehicleByRegNoAndEngNo, findAllByNic, findAllByregistrationNoArray, updateStationsAndRegister, registerAll, getQuotas, addToQueue, saveRequest, findWaitingRequest } = require('../../../services/vehicleDBHelper');
+const { findVehicleByRegNo, findVehicleByRegNoAndEngNo, findAllByNic, findAllByregistrationNoArray, updateStationsAndRegister, registerAll, getQuotas, findTypeAllByNic, findTypeAllByregistrationNoArray, addToQueue, saveRequest, findWaitingRequest } = require('../../../services/vehicleDBHelper');
 
 describe("Database access methods for vehicles", () => {
 
@@ -268,6 +268,99 @@ describe("Database access methods for vehicles", () => {
             expect(requests).not.toEqual(null);
         });
     });
+
+    describe("findTypeAllByNic - Find a types vehicles that registered under a given nic", () => {
+
+        //checks whether the database has any vehicles under the given nic in given type
+        //if there are not, should return null
+        it("should return an empty array object if there are no vehicles under the provided nic and give type", async () => {
+
+            const mockNic = "non-existing-nic";
+            const mockType = "non-existing-Type";
+
+            const vehicles = await findTypeAllByNic(mockNic, mockType);
+
+            expect(vehicles).toEqual([]);
+        });
+
+        //checks whether the database has any vehicles under the given nic which are registered in the system
+        //if there are not, should return null
+        it("should return an empty array object if there are no vehicles registered in the system under the provided nic", async () => {
+
+            const mockNic = "nicex01unreg";//this has vehicles owened by it. but those are not registered in the system
+            const mockType = "non-existing-Type";
+
+            const vehicles = await findTypeAllByNic(mockNic, mockType);
+
+            expect(vehicles).toEqual([]);
+        });
+
+        //checks whether the database has any vehicles under the given nic in given type
+        //if there are not, should return null
+        it("should return an empty array object if there are no existing vehicle type", async () => {
+
+            const mockNic = "657637925v";
+            const mockType = "non-existing-Type";
+
+            const vehicles = await findTypeAllByNic(mockNic, mockType);
+
+            expect(vehicles).toEqual([]);
+        });
+
+        it("if there are vehicles registered under the given nic to the system and given vehicle type, return them in an array", async () => {
+
+            const mockNic = "657637925v";
+            const mockType = "A-Bicycle";
+
+            const vehicles = await findTypeAllByNic(mockNic, mockType);
+
+            expect(vehicles.length > 0).toBeTruthy();
+        });
+    });
+
+    describe("findTypeAllByregistrationNoArray - Find all the vehicles that the registraion No. is in the given array of registration numbers and giving type", () => {
+
+        it("if the registration No. array is empty, should return a null object", async () => {
+
+            const mockRegNos = [];
+            const mockType = "non-existing-Type";
+
+            const queriedVehicles = await findTypeAllByregistrationNoArray(mockRegNos, mockType);
+
+            expect(queriedVehicles).toEqual([]);
+        });
+
+        it("should return null object, if the vehicle type is not existing", async () => {
+
+            const mockRegNos = ["sampleRegNo01"];
+            const mockType = "non-existing-Type";
+
+            const queriedVehicles = await findTypeAllByregistrationNoArray(mockRegNos, mockType);
+
+            expect(queriedVehicles).toEqual([]);
+        });
+
+        it("should return an array with single vihicle object, if the regNo array contains only one registration No.", async () => {
+
+            const mockRegNos = ["sampleRegNo01"];
+            const mockType = "A-Bicycle";
+
+            const queriedVehicles = await findTypeAllByregistrationNoArray(mockRegNos, mockType);
+
+            expect(queriedVehicles.length).toEqual(1);
+        });
+
+        it("should return a vehicle objects array which has the length similar to the regNo array", async () => {
+
+            const mockRegNos = ["sampleRegNo01", "sampleRegNo02", "sampleRegNo03", "sampleRegNo04", ];
+            const mockType = "A-Bicycle";
+
+            const queriedVehicles = await findTypeAllByregistrationNoArray(mockRegNos, mockType);
+
+            expect(queriedVehicles.length > 0).toBeTruthy();
+        });
+    });
+
 });
 
 //remaining
