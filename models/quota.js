@@ -4,8 +4,7 @@ const Schema = mongoose.Schema;
 const quotaSchema = new Schema({
     vehicleType: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     fuelType: {
         type: String,
