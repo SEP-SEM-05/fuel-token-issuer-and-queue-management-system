@@ -421,7 +421,6 @@ const get_org_vehicles = async (req, res) => {
 
 //find one type vehicles of an organization using the registration No. array
 const get_type_org_vehicles = async (req, res) => {
-    
     //let type = req.params.type;
     const vehicleType = ["A-Bicycle", "B-Car", "C-Lorry", "D-Bus", "G-Agricultural", "J-Special Purpose"];
     let vehicleCount = [];
