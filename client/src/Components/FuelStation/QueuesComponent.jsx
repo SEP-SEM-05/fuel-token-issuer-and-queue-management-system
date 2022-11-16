@@ -89,6 +89,7 @@ const QueuesComponent = () => {
       announcedTime: new Date().toString().split("GMT")[0],
       estQueueEndTime: estEndTime,
       startTime: new Date(startTime).toString().split("GMT")[0],
+      fuelAmount: fuelAmount
     });
 
     if (response.status == "ok") {

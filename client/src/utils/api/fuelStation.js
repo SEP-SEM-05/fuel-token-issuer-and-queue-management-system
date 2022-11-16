@@ -140,7 +140,7 @@ const getWaitingQueues = async (regNo) => {
 
 // Announce a fuel queue
 const announceFuelQueue = async (data) => {
-  // console.log(data);
+  console.log(data);
   try {
     const refreshToken = localStorage.getItem("refreshToken");
     const accessToken = sessionStorage.getItem("accessToken");

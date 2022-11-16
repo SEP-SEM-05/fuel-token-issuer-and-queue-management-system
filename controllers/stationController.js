@@ -141,6 +141,7 @@ const announce_fuel_queue = async (req, res) => {
     vehicles = req.body.vehicles;
     stime = req.body.startTime;
     etime = req.body.estQueueEndTime;
+    selectedAmount = req.body.fuelAmount;
   
     try {
   
@@ -169,7 +170,7 @@ const announce_fuel_queue = async (req, res) => {
         }
       });
   
-      let result2 = await queueDBHelper.addNewAnnouncedQueue(regNo, ftype, reqs, stime, etime, vehicles.length); // start a new announced queue
+      let result2 = await queueDBHelper.addNewAnnouncedQueue(regNo, ftype, reqs, stime, etime, vehicles.length, selectedAmount); // start a new announced queue
       // console.log(result2);
   
       let result3 = await notificationDBHelper.addNewNotifications(dataArr);

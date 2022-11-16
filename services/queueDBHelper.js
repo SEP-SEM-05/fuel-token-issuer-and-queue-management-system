@@ -26,7 +26,7 @@ const findQueuesByStRegNo = async (stId, states) => {
 }
 
 // add new announced queue
-const addNewAnnouncedQueue = (regNo, ftype, requests, stime, etime, vcount) => {
+const addNewAnnouncedQueue = (regNo, ftype, requests, stime, etime, vcount, selectedAmount) => {
 
     return new Promise(async (resolve, reject) => {
         let data = {
@@ -37,6 +37,7 @@ const addNewAnnouncedQueue = (regNo, ftype, requests, stime, etime, vcount) => {
             estimatedEndTime: etime,
             state: "announced",
             vehicleCount: vcount,
+            selectedAmount: selectedAmount
         };
 
         let queue = new Queue(data);

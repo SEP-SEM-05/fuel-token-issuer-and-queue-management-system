@@ -10,7 +10,7 @@ const conn = require('../../../db_connection');
 
 const Station = require("../../../models/station");
 const {
-    saveRefreshToken, findStationByRegNo, findStationByID, findAllRegisteredStations, findAllUnregisteredStations, countRegisteredStations, findAllNewlyregisteredStations, registerAllStation, registerStation, updateAmount, updateLastAnnounced, updateStationState, saveTempPass, getStartStation,
+    saveRefreshToken, findStationByRegNo, findAnyStationByRegNo, findStationByID, findAllRegisteredStations, findAllUnregisteredStations, countRegisteredStations, findAllNewlyregisteredStations, registerAllStation, registerStation, updateAmount, updateLastAnnounced, updateStationState, saveTempPass, getStartStation,
 } = require("../../../services/stationDBHelper");
 
 describe("Database access methods for fuel stations", () => {
@@ -48,6 +48,20 @@ describe("Database access methods for fuel stations", () => {
 
         it("should return a valid station object for an exsisting reg.no", async () => {
             const quriedStation = await findStationByRegNo("6345263462");
+
+            expect(quriedStation.registrationNo).toEqual("6345263462");
+        });
+    });
+
+    describe("findAnyStationByRegNo - Find a station by its registration number", () => {
+        it("should return a null object for non exsisting reg.no", async () => {
+            const station = await findAnyStationByRegNo("station99");
+
+            expect(station).toEqual(null);
+        });
+
+        it("should return a valid station object for an exsisting reg.no", async () => {
+            const quriedStation = await findAnyStationByRegNo("6345263462");
 
             expect(quriedStation.registrationNo).toEqual("6345263462");
         });
@@ -98,22 +112,32 @@ describe("Database access methods for fuel stations", () => {
     });
 
     describe("countRegisteredStations - get count of each type of registered stations", () => {
+        it("should return a null object for non existing type", async () => {
+            const stationCount = await countRegisteredStations("non-existing-type");
 
-        it("should return the station count to match the filter", async () => {
+            expect(stationCount).toEqual(0);
+        });
 
-            const cnt = await countRegisteredStations("ceypetc");
+        it("should return station count for an exsisting station type", async () => {
+            const quriedCount = await countRegisteredStations("ioc");
 
-            expect(cnt >= 0).toEqual(true);
+            expect(quriedCount > 0).toBeTruthy();
+
         });
     });
 
     describe("registerStation - register as newly registered station", () => {
 
-        it("should register a station as newly registered", async () => {
+        it("should return a null object for non exsisting reg.no", async () => {
+            const station = await registerStation("station99");
 
-            const result = await registerStation("6345299346");
+            expect(station).toEqual(null);
+        });
 
-            expect(result === null).toEqual(false);
+        it("should return a valid station object for an exsisting reg.no", async () => {
+            const quriedStation = await registerStation("6345263462");
+
+            expect(quriedStation.registrationNo).toEqual("6345263462");
         });
     });
 
@@ -137,10 +161,16 @@ describe("Database access methods for fuel stations", () => {
 
     describe("updateStationState - update the station as ongoing station", () => {
 
-        it("should update the state of the station", async () => {
+        it("should return a null object for non exsisting reg.no", async () => {
+            const station = await updateStationState("station99");
 
-            const result = await updateStationState("testOnlyStation");
-            expect(result === null).toEqual(false);
+            expect(station).toEqual(null);
+        });
+
+        it("should return a valid station object for an exsisting reg.no", async () => {
+            const quriedStation = await updateStationState("6345263462");
+
+            expect(quriedStation.registrationNo).toEqual("6345263462");
         });
     });
 

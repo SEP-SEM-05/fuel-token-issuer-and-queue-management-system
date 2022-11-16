@@ -5,7 +5,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { Alert, Box, Button, Chip, Divider, Grid, Snackbar, Typography } from "@mui/material";
+import { Alert, InputAdornment, Box, Button, Chip, Divider, Grid, Snackbar, Typography } from "@mui/material";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
@@ -13,7 +13,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { getDashBoard, updateFuelQuota } from "../../utils/api/admin";
-
+import * as yup from "yup";
+import { useFormik } from "formik";
 
 function createData(vehicleType, liter) {
   return { vehicleType, liter };
@@ -102,16 +103,33 @@ const QuotaComponent = () => {
 
   }, [newAmount, fuelType]);
 
-  const updateNewFuelQuota = async () => {
+  const validationSchema = yup.object({
+    amount: yup
+      .number()
+      .required("Amount is required")
+      .positive("Amount should be positive")
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      amount: ""
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      updateNewFuelQuota(values.amount);
+    },
+  });
+
+  const updateNewFuelQuota = async (amount) => {
 
     let response = await updateFuelQuota({
-      newAmount: value,
+      newAmount: amount,
       fuelType: fuelType,
       vehicleType: vehicleType,
     });
 
     if (response.status == "ok") {
-      setNewAmount(value);
+      setNewAmount(amount);
     } else {
       console.log("error");
     }
@@ -272,43 +290,68 @@ const QuotaComponent = () => {
           <Box sx={{ display: "flex", alignItems: "center" }}>Change Quota</Box>
         </DialogTitle>
         <Divider />
-        <DialogContent>
-          <Typography variant="h6">
-            <strong>{vehicleType}</strong>
-          </Typography>
-          <Typography variant="subtitle1" sx={{ fontWeight: "bold", my: 1 }}>
-            <Chip
-              label={isPetrol ? "Petrol" : "Diesel"}
-              color={isPetrol ? "warning" : "success"}
-            />
-          </Typography>
+        <form onSubmit={formik.handleSubmit}>
+          <DialogContent>
+            <Typography variant="h6">
+              <strong>{vehicleType}</strong>
+            </Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: "bold", my: 1 }}>
+              <Chip
+                label={isPetrol ? "Petrol" : "Diesel"}
+                color={isPetrol ? "warning" : "success"}
+              />
+            </Typography>
 
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Fuel value"
-            type="number"
-            fullWidth
-            variant="outlined"
-            color="info"
-            focused
-            autoComplete="off"
-            onChange={(e) => {
-              setValue(e.target.value);
-            }}
-          />
-        </DialogContent>
-        <DialogActions sx={{ pr: 3, pl: 3, pb: 3 }}>
-          <Button
-            onClick={updateNewFuelQuota}
-            variant="outlined"
-            color={isPetrol ? "warning" : "success"}
-            sx={{ width: "100%" }}
-          >
-            CHANGE
-          </Button>
-        </DialogActions>
+            {/* <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Fuel value"
+              type="number"
+              fullWidth
+              variant="outlined"
+              color="info"
+              focused
+              autoComplete="off"
+              required
+              onChange={(e) => {
+                setValue(e.target.value);
+              }}
+            /> */}
+            <TextField
+              autoFocus
+              margin="dense"
+              id="amount"
+              name='amount'
+              label="Fuel value"
+              type="number"
+              fullWidth
+              variant="outlined"
+              color="info"
+              focused
+              autoComplete="off"
+              required
+              onChange={formik.handleChange}
+              error={formik.touched.amount && Boolean(formik.errors.amount)}
+              helperText={formik.touched.amount && formik.errors.amount}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">Liters</InputAdornment>
+                ),
+              }}
+            />
+          </DialogContent>
+          <DialogActions sx={{ pr: 3, pl: 3, pb: 3 }}>
+            <Button
+              type="submit"
+              variant="outlined"
+              color={isPetrol ? "warning" : "success"}
+              sx={{ width: "100%" }}
+            >
+              CHANGE
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
       <Snackbar open={openSB} autoHideDuration={4000} onClose={handleSBClose}>
         <Alert
