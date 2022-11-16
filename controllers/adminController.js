@@ -496,7 +496,7 @@ const send_email = async (req, res) => {
     });
 
     const msg = {
-        from: "sem05project101@gmail.com",
+        from: "fastfueler001@gmail.com",
         to: req.body.email,
         subject: "Welcome to Fast Fueler",
         text: "Now you can go to this link (http://localhost:3000/fuelstationgetstands/"+regNo+") and login to our system using this temporary password \nTemp password: " + password
@@ -509,8 +509,8 @@ const send_email = async (req, res) => {
         nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: "sem05project101@gmail.com",
-                pass: "vpegnhbfwrcgwsel"
+                user: "fastfueler001@gmail.com",
+                pass: "sjwrigiqzxjtawrh"
             },
         })
         .sendMail(msg , (err) => {
@@ -553,7 +553,7 @@ const send_email_to_all = async (req, res) => {
             await stationDBHelper.saveTempPass(regNo,enpassword);
 
             const msg = {
-                from: "sem05project101@gmail.com",
+                from: "fastfueler001@gmail.com",
                 to: station.email,
                 subject: "Welcome to Fast Fueler",
                 text: "Now you can go to this link (http://localhost:3000/fuelstationgetstands/"+regNo+") and login to our system using this temporary password \nTemp password: " + password
@@ -562,8 +562,8 @@ const send_email_to_all = async (req, res) => {
             nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
-                    user: "sem05project101@gmail.com",
-                    pass: "vpegnhbfwrcgwsel"
+                    user: "fastfueler001@gmail.com",
+                    pass: "sjwrigiqzxjtawrh"
                 },
             })
             .sendMail(msg , (err) => {
