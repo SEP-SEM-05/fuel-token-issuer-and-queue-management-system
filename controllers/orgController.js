@@ -290,7 +290,7 @@ const request_fuel = async (req, res) => {
 
             for(let i = 0; i < all_station_queues.length; i++){
 
-                if(all_station_queues[i].state === "announced" && all_station_queues[i].requests.length < parseInt(all_station_queues[i].vehicleCount)){
+                if(all_station_queues[i].state === "announced" && parseFloat(all_station_queues[i].selectedAmount) >= remainingQuota){
 
                     announced_queue_ids.push(all_station_queues[i]._id);
                     queue_announced_stations.push(all_station_queues[i].stationID);

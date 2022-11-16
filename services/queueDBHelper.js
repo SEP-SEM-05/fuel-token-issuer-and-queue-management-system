@@ -115,6 +115,12 @@ const findQueueById = async (id) => {
     return result;
 }
 
+//update selected amount of the queue
+const updateSlectedAmount = async (id, amount) => {
+    let result = await Queue.findByIdAndUpdate(id, {selectedAmount: amount});
+    return result;
+}
+
 
 module.exports = {
     addToQueue,
@@ -126,4 +132,5 @@ module.exports = {
     updateEndTime,
     updateQueue,
     findQueueById,
+    updateSlectedAmount,
 };
