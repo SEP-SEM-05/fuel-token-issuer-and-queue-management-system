@@ -19,6 +19,10 @@ const queueSchema = new Schema(
       type: String,
       default: "0",
     },
+    selectedAmount: {
+      type: String,
+      default: "0",
+    },
     queueStartTime: {
       type: Date,
       default: null,

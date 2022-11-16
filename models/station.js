@@ -39,10 +39,6 @@ const stationSchema = new Schema(
       type: String,
       required: false,
     },
-    selectedAmount: {
-      type: String,
-      default: "0",
-    },
     isRegistered: {
       type: Boolean,
       default: false,
